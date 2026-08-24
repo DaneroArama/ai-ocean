@@ -1,0 +1,6 @@
+export { HeroSection } from './HeroSection'
+export { BentoSection } from './BentoSection'
+export { CharacterSection } from './CharacterSection'
+export { PersonalityTestSection } from './PersonalityTestSection'
+export { EventCTASection } from './EventCTASection'
+export { AboutSection } from './AboutSection'

@@ -1,26 +1,430 @@
 @import "tailwindcss";
 
+/* Comic Theme Color Palette - Ocean Blues & Vibrant Accents */
 :root {
+  /* Ocean Blues */
+  --ocean-deep: #0045A1;
+  --ocean-primary: #02A4E3;
+  --ocean-medium: #2389B3;
+  --ocean-light: #1CB2E5;
+  --ocean-pale: #1FC2FF;
+  --ocean-surface: #b8d9f2;
+  --ocean-foam: #e3f2fd;
+  
+  /* Vibrant Accents */
+  --accent-coral: #ff6b6b;
+  --accent-sunset: #ff8e53;
+  --accent-yellow: #ffd93d;
+  --accent-teal: #4ecdc4;
+  --accent-purple: #a78bfa;
+  --accent-pink: #f472b6;
+  
+  /* Comic Neutrals */
+  --comic-black: #1a1a1a;
+  --comic-dark: #2d2d2d;
+  --comic-gray: #6b7280;
+  --comic-light: #e5e7eb;
+  --comic-white: #ffffff;
+  
+  /* Semantic Colors */
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #1a1a1a;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a2540;
+    --foreground: #e3f2fd;
   }
 }
 
+@theme inline {
+  /* ===== COLOR SYSTEM ===== */
+  /* Ocean Blue Palette */
+  --color-ocean-deep: var(--ocean-deep);
+  --color-ocean-primary: var(--ocean-primary);
+  --color-ocean-medium: var(--ocean-medium);
+  --color-ocean-light: var(--ocean-light);
+  --color-ocean-pale: var(--ocean-pale);
+  --color-ocean-surface: var(--ocean-surface);
+  --color-ocean-foam: var(--ocean-foam);
+  
+  /* Vibrant Accent Palette */
+  --color-accent-coral: var(--accent-coral);
+  --color-accent-sunset: var(--accent-sunset);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-pink: var(--accent-pink);
+  
+  /* Comic Neutrals */
+  --color-comic-black: var(--comic-black);
+  --color-comic-dark: var(--comic-dark);
+  --color-comic-gray: var(--comic-gray);
+  --color-comic-light: var(--comic-light);
+  --color-comic-white: var(--comic-white);
+  
+  /* Semantic Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  
+  /* ===== FONT FAMILIES ===== */
+  /* Syncopate for headings - bold, impactful comic-style font */
+  --font-family-syncopate: var(--font-syncopate), "Impact", "Arial Black", "Haettenschweiler", sans-serif;
+  --font-family-heading: var(--font-syncopate), "Impact", "Arial Black", "Haettenschweiler", sans-serif;
+  --font-family-display: var(--font-syncopate), "Impact", "Arial Black", "Haettenschweiler", sans-serif;
+  
+  /* Syne for alternative headings/navbar - modern, geometric */
+  --font-family-syne: var(--font-syne), "Helvetica Neue", Arial, sans-serif;
+  
+  /* Quicksand for body text - clean, friendly, readable */
+  --font-family-quicksand: var(--font-quicksand), "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-family-body: var(--font-quicksand), "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-family-sans: var(--font-quicksand), "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  
+  /* Monospace for code/technical content */
+  --font-family-mono: "Courier New", "Courier", monospace;
+  
+  /* ===== ANIMATION UTILITIES ===== */
+  /* Duration scale */
+  --duration-instant: 0.1s;
+  --duration-fast: 0.2s;
+  --duration-normal: 0.3s;
+  --duration-slow: 0.5s;
+  --duration-slower: 0.8s;
+  --duration-slowest: 1.2s;
+  
+  /* Easing functions - comic-style bounce and elastic */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  
+  /* ===== TRANSITION CLASSES ===== */
+  --transition-colors: color var(--duration-normal) var(--ease-smooth),
+                       background-color var(--duration-normal) var(--ease-smooth),
+                       border-color var(--duration-normal) var(--ease-smooth);
+  
+  --transition-transform: transform var(--duration-normal) var(--ease-smooth);
+  
+  --transition-bounce: transform var(--duration-slow) var(--ease-bounce);
+  
+  --transition-all: all var(--duration-normal) var(--ease-smooth);
+  
+  /* ===== RESPONSIVE BREAKPOINTS ===== */
+  /* Mobile-first approach with comic-optimized breakpoints */
+  --breakpoint-xs: 320px;   /* Small phones */
+  --breakpoint-sm: 640px;   /* Large phones */
+  --breakpoint-md: 768px;   /* Tablets */
+  --breakpoint-lg: 1024px;  /* Small desktops */
+  --breakpoint-xl: 1280px;  /* Large desktops */
+  --breakpoint-2xl: 1536px; /* Extra large screens */
+  --breakpoint-3xl: 1920px; /* Ultra-wide displays */
+  
+  /* ===== CUSTOM SPACING SCALE ===== */
+  /* Comic-style larger gaps for consistent layouts */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+  --spacing-4xl: 6rem;     /* 96px */
+  --spacing-5xl: 8rem;     /* 128px */
+  --spacing-6xl: 12rem;    /* 192px */
+  
+  /* ===== BORDER RADIUS (COMIC STYLE) ===== */
+  /* Rounded corners for friendly, approachable design */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-base: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 3rem;
+  --radius-full: 9999px;
+  
+  /* Comic-style box shadows - signature "pop" effect */
+  --shadow-comic-sm: 2px 2px 0px #1a1a1a;
+  --shadow-comic-md: 4px 4px 0px #1a1a1a;
+  --shadow-comic-lg: 6px 6px 0px #1a1a1a;
+  --shadow-comic-xl: 8px 8px 0px #1a1a1a;
+  
+  /* Soft shadows for depth */
+  --shadow-soft-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-soft-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-soft-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  /* ===== Z-INDEX SCALE ===== */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Font utility classes */
+.font-syncopate {
+  font-family: var(--font-family-syncopate) !important;
+}
+
+.font-syne {
+  font-family: var(--font-family-syne) !important;
+}
+
+.font-quicksand {
+  font-family: var(--font-family-quicksand) !important;
+}
+
+/* Z-index utilities */
+.z-sticky {
+  z-index: var(--z-sticky);
+}
+
+.z-fixed {
+  z-index: var(--z-fixed);
+}
+
+.z-dropdown {
+  z-index: var(--z-dropdown);
+}
+
+/* ===== CUSTOM ANIMATION KEYFRAMES ===== */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(74, 144, 217, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(74, 144, 217, 0.8);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.animate-bounce-in {
+  animation: bounce-in var(--duration-slow) var(--ease-bounce);
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: wave 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left var(--duration-slow) var(--ease-smooth);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right var(--duration-slow) var(--ease-smooth);
+}
+
+.animate-fade-in {
+  animation: fade-in var(--duration-normal) var(--ease-smooth);
+}
+
+.animate-pop {
+  animation: pop var(--duration-fast) var(--ease-bounce);
+}
+
+/* Comic-style border effect */
+.comic-border {
+  border: 3px solid var(--comic-black);
+  box-shadow: var(--shadow-comic-md);
+}
+
+/* Comic shadow utilities */
+.shadow-comic-sm {
+  box-shadow: var(--shadow-comic-sm);
+}
+
+.shadow-comic-md {
+  box-shadow: var(--shadow-comic-md);
+}
+
+.shadow-comic-lg {
+  box-shadow: var(--shadow-comic-lg);
+}
+
+.shadow-comic-xl {
+  box-shadow: var(--shadow-comic-xl);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .animate-float,
+  .animate-wave,
+  .animate-pulse-glow {
+    animation: none;
+  }
+}
+
+/* ===== BASE STYLES ===== */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Lenis manages smooth scrolling globally. */
+html {
+  scroll-behavior: auto;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 3px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

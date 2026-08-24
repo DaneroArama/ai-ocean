@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "test": "Take Test",
+    "dashboard": "Dashboard",
+    "changeLanguage": "Change Language"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover Your Ocean Personality",
+      "description": "Take our interactive personality test and explore the depths of who you are",
+      "cta": "Start Test"
+    }
+  },
+  "auth": {
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "signout": "Sign Out",
+    "email": "Email",
+    "password": "Password"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit"
+  }
+}
