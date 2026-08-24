@@ -11,7 +11,7 @@ import Ali from '@/app/assets/Mascots/Ali.png'
 import Coral from '@/app/assets/Coral.png'
 import Fishes from '@/app/assets/Fishes.png'
 import Waves from '@/app/assets/waves.png'
-import Bubble from '@/app/assets/bubble.svg'
+import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 
 /**
  * Personality Test Section — Discover Your AI Alter Ego
@@ -25,64 +25,24 @@ import Bubble from '@/app/assets/bubble.svg'
 export function PersonalityTestSection() {
   return (
     <section className="relative h-[680px] md:h-[720px] lg:h-[720px] overflow-hidden bg-gradient-to-b from-[#0CB6FF] via-[#1ABEFF] to-[#2BD3FF] flex flex-col z-30">
-      {/* Background bubbles - using app/assets/bubble.svg */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {/* Large bubbles */}
-        <div className="absolute left-[3%] top-[18%] w-7 h-7 md:w-9 md:h-9">
-          <Image src={Bubble} alt="" width={36} height={36} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[7%] top-[16%] w-7 h-7 md:w-9 md:h-9">
-          <Image src={Bubble} alt="" width={36} height={36} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute left-[4%] top-[68%] w-6 h-6 md:w-8 md:h-8 opacity-90">
-          <Image src={Bubble} alt="" width={32} height={32} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[6%] top-[66%] w-5 h-5 md:w-7 md:h-7 opacity-90">
-          <Image src={Bubble} alt="" width={28} height={28} className="w-full h-full object-contain" />
-        </div>
-        {/* Medium */}
-        <div className="absolute left-[9%] top-[42%] w-3 h-3 md:w-4 md:h-4 opacity-90">
-          <Image src={Bubble} alt="" width={16} height={16} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[8%] top-[40%] w-3 h-3 md:w-4 md:h-4 opacity-90">
-          <Image src={Bubble} alt="" width={16} height={16} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute left-[16%] top-[58%] w-2.5 h-2.5 md:w-3 md:h-3 opacity-80">
-          <Image src={Bubble} alt="" width={12} height={12} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[14%] top-[56%] w-2.5 h-2.5 md:w-3 md:h-3 opacity-80">
-          <Image src={Bubble} alt="" width={12} height={12} className="w-full h-full object-contain" />
-        </div>
-        {/* Tiny */}
-        <div className="absolute left-[6%] top-[52%] w-2 h-2 md:w-2.5 md:h-2.5 opacity-80">
-          <Image src={Bubble} alt="" width={10} height={10} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[18%] top-[48%] w-2 h-2 md:w-2.5 md:h-2.5 opacity-80">
-          <Image src={Bubble} alt="" width={10} height={10} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute left-[32%] top-[64%] w-2 h-2 opacity-70">
-          <Image src={Bubble} alt="" width={8} height={8} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[9%] top-[78%] w-2 h-2 md:w-2.5 md:h-2.5 opacity-70">
-          <Image src={Bubble} alt="" width={10} height={10} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute left-[36%] top-[54%] w-2 h-2 opacity-60">
-          <Image src={Bubble} alt="" width={8} height={8} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[36%] top-[58%] w-1.5 h-1.5 md:w-2 md:h-2 opacity-60">
-          <Image src={Bubble} alt="" width={8} height={8} className="w-full h-full object-contain" />
-        </div>
-        {/* extra top right tiny */}
-        <div className="absolute right-[3%] top-[12%] w-2 h-2 opacity-70">
-          <Image src={Bubble} alt="" width={8} height={8} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute right-[3%] top-[38%] w-2 h-2 opacity-70">
-          <Image src={Bubble} alt="" width={8} height={8} className="w-full h-full object-contain" />
-        </div>
-        <div className="absolute left-[52%] top-[42%] w-1.5 h-1.5 opacity-50">
-          <Image src={Bubble} alt="" width={6} height={6} className="w-full h-full object-contain" />
-        </div>
-      </div>
+      {/* Floating bubbles — rise + pop (reusable) — dense! */}
+      <FloatingBubbles
+        count={32}
+        className="inset-0"
+        sizeRange={[7, 36]}
+        durationRange={[5.5, 11]}
+        opacityRange={[0.25, 0.58]}
+        pop
+      />
+      {/* Extra tiny ambient layer for depth */}
+      <FloatingBubbles
+        count={14}
+        className="inset-0"
+        sizeRange={[4, 12]}
+        durationRange={[7, 13]}
+        opacityRange={[0.18, 0.38]}
+        pop
+      />
 
       {/* Fishes - using Fishes.png scattered */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">

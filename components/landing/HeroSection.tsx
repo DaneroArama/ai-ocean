@@ -103,24 +103,6 @@ export function HeroSection() {
 
       /*
        * ============================================================
-       * HERO FLOATING MOTION
-       * ============================================================
-       *
-       * Very subtle continuous movement.
-       * This makes the hero feel underwater even after the entrance.
-       */
-
-      gsap.to('.hero-mascot', {
-        y: -8,
-        rotation: 2,
-        duration: 2.2,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      })
-
-      /*
-       * ============================================================
        * HERO → NEXT SECTION (PINNED & SCROLL-DRIVEN)
        * ============================================================
        *
@@ -243,7 +225,7 @@ export function HeroSection() {
                 MASCOT
             ================================================== */}
 
-            <div className="hero-mascot shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
               <div className="relative w-full h-full border-[5px] border-white rounded-full bg-[#FFF2CC] overflow-hidden">
                 <Image
                   key={MASCOTS[currentMascotIndex].name}
