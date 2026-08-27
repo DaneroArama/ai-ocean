@@ -6,9 +6,9 @@ import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import eventLogo from '@/app/assets/event_logo.png'
-import waves from '@/app/assets/waves.png'
-import starfish from '@/app/assets/Starfish.png'
+import eventLogo from '@/app/assets/event_logo.webp'
+import waves from '@/app/assets/waves.webp'
+import starfish from '@/app/assets/Starfish.webp'
 import thinWaves from '@/app/assets/thin_waves.svg'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 

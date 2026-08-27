@@ -4,13 +4,13 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 
-import Title from '@/app/assets/Title.png'
-import Wave from '@/app/assets/waves_2.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Tuto from '@/app/assets/Mascots/Tuto.png'
+import Title from '@/app/assets/Title.webp'
+import Wave from '@/app/assets/waves_2.webp'
+import Ali from '@/app/assets/Mascots/Ali.webp'
+import Crabi from '@/app/assets/Mascots/Crabi.webp'
+import Octo from '@/app/assets/Mascots/Octo.webp'
+import Shark from '@/app/assets/Mascots/Shark.webp'
+import Tuto from '@/app/assets/Mascots/Tuto.webp'
 
 const FLOATERS = [
   { name: 'Ali', src: Ali, className: 'left-[3%] top-[55%] w-14 md:w-24' },

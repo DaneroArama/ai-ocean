@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 
-import Title from '@/app/assets/Title_coloured.png'
-import Tuto from '@/app/assets/Mascots/Tuto.png'
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
+import Title from '@/app/assets/Title_coloured.webp'
+import Tuto from '@/app/assets/Mascots/Tuto.webp'
+import Shark from '@/app/assets/Mascots/Shark.webp'
+import Crabi from '@/app/assets/Mascots/Crabi.webp'
+import Octo from '@/app/assets/Mascots/Octo.webp'
+import Ali from '@/app/assets/Mascots/Ali.webp'
 
 const mascots = [Tuto, Shark, Crabi, Octo, Ali]
 

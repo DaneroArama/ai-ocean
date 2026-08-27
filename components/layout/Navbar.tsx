@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n/provider'
 import { useState } from 'react'
-import eventTitle from "@/app/assets/Title.png";
+import eventTitle from "@/app/assets/Title.webp";
 import Image from "next/image";
 
 import uxmmLogo from "@/app/assets/uxmm_logo.svg"

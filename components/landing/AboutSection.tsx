@@ -2,12 +2,12 @@
 
 import Image from 'next/image'
 
-import Waves from '@/app/assets/waves_2.png'
-import N1 from '@/app/assets/num_icon_1.png'
-import N2 from '@/app/assets/num_icon_2.png'
-import N3 from '@/app/assets/num_icon_3.png'
-import N4 from '@/app/assets/num_icon_4.png'
-import Starfish from '@/app/assets/Starfish.png'
+import Waves from '@/app/assets/waves_2.webp'
+import N1 from '@/app/assets/num_icon_1.webp'
+import N2 from '@/app/assets/num_icon_2.webp'
+import N3 from '@/app/assets/num_icon_3.webp'
+import N4 from '@/app/assets/num_icon_4.webp'
+import Starfish from '@/app/assets/Starfish.webp'
 
 export function AboutSection() {
   return (

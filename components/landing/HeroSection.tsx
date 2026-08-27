@@ -6,12 +6,12 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import eventTitle from '@/app/assets/Title.png'
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Tuto from '@/app/assets/Mascots/Tuto.png'
+import eventTitle from '@/app/assets/Title.webp'
+import Shark from '@/app/assets/Mascots/Shark.webp'
+import Ali from '@/app/assets/Mascots/Ali.webp'
+import Crabi from '@/app/assets/Mascots/Crabi.webp'
+import Octo from '@/app/assets/Mascots/Octo.webp'
+import Tuto from '@/app/assets/Mascots/Tuto.webp'
 
 gsap.registerPlugin(ScrollTrigger)
 

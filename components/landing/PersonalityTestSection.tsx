@@ -3,14 +3,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import Tuto from '@/app/assets/Mascots/Tuto.png'
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
-import Coral from '@/app/assets/Coral.png'
-import Fishes from '@/app/assets/Fishes.png'
-import Waves from '@/app/assets/waves.png'
+import Tuto from '@/app/assets/Mascots/Tuto.webp'
+import Shark from '@/app/assets/Mascots/Shark.webp'
+import Crabi from '@/app/assets/Mascots/Crabi.webp'
+import Octo from '@/app/assets/Mascots/Octo.webp'
+import Ali from '@/app/assets/Mascots/Ali.webp'
+import Coral from '@/app/assets/Coral.webp'
+import Fishes from '@/app/assets/Fishes.webp'
+import Waves from '@/app/assets/waves.webp'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 
 /**
@@ -44,7 +44,7 @@ export function PersonalityTestSection() {
         pop
       />
 
-      {/* Fishes - using Fishes.png scattered */}
+      {/* Fishes - using Fishes.webp scattered */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute left-[6%] top-[38%] w-14 md:w-16 opacity-90">
           <Image src={Fishes} alt="" width={64} height={32} className="object-contain" />
