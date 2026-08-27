@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 /**
  * Convex Database Schema for Event Platform
@@ -13,6 +14,7 @@ import { v } from "convex/values";
  */
 
 export default defineSchema({
+  ...authTables,
   /**
    * Participants table
    * Stores user accounts with OAuth/Auth fields and app-specific profile data
@@ -196,4 +198,206 @@ export default defineSchema({
     .index("by_action", ["action"])
     .index("by_target_type", ["targetType"])
     .index("by_target_type_and_id", ["targetType", "targetId"]),
+
+  // ================================================================
+  // Buildathon Role Discovery — New Feature (Feature Brief §2-20)
+  // ================================================================
+
+  /**
+   * Buildathon Roles table — extensible role ecosystem
+   * New Feature §9: Product/Design/Engineering/Data/Business/Team
+   */
+  buildathonRoles: defineTable({
+    nameEn: v.string(),
+    nameMy: v.string(),
+    descriptionEn: v.string(),
+    descriptionMy: v.string(),
+    category: v.union(
+      v.literal("product"),
+      v.literal("design"),
+      v.literal("engineering"),
+      v.literal("data"),
+      v.literal("business"),
+      v.literal("team")
+    ),
+    traitsEn: v.array(v.string()),
+    traitsMy: v.array(v.string()),
+    priority: v.number(),
+    isActive: v.boolean(),
+    isDefault: v.optional(v.boolean()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_active", ["isActive"])
+    .index("by_priority", ["priority"]),
+
+  /**
+   * Assessment Versions — v1/v2 reproducibility
+   * New Feature §15: Existing results stay on v1 when scoring changes
+   */
+  assessmentVersions: defineTable({
+    version: v.string(), // e.g., "v1"
+    questionIds: v.array(v.id("roleDiscoveryQuestions")),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_version", ["version"])
+    .index("by_active", ["isActive"]),
+
+  /**
+   * Role Discovery Questions — hybrid engine, configurable, bilingual
+   * New Feature §6: ID/Category/Type/EN/MY/Options/Required/ScoringSignals/Order/Active
+   * Types: single|multiple|scenario|scale per §7
+   */
+  roleDiscoveryQuestions: defineTable({
+    phase: v.optional(v.union(v.literal("pre-event"), v.literal("main-event"))),
+    category: v.string(),
+    type: v.union(
+      v.literal("single"),
+      v.literal("multiple"),
+      v.literal("scenario"),
+      v.literal("scale"),
+      v.literal("longtext"),
+      v.literal("yesno"),
+      v.literal("single-with-text")
+    ),
+    textEn: v.string(),
+    textMy: v.string(),
+    options: v.array(
+      v.object({
+        id: v.string(), // stable id, shuffled position keeps identity per §8
+        labelEn: v.string(),
+        labelMy: v.string(),
+      })
+    ),
+    multiTextCount: v.optional(v.number()), // for "multiple" type: number of text inputs (2-6)
+    multiTextPlaceholders: v.optional(v.array(v.string())), // placeholder labels per input
+    required: v.boolean(),
+    scoringSignals: v.array(
+      v.object({
+        optionId: v.string(),
+        roleId: v.id("buildathonRoles"),
+        weight: v.number(), // e.g., +3, +2 per §8 — hidden from participant
+      })
+    ),
+    order: v.number(),
+    isActive: v.boolean(),
+    version: v.string(), // assessmentVersion
+    allowNotSure: v.optional(v.boolean()), // “I'm not sure yet.” per §13
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_active", ["isActive"])
+    .index("by_category", ["category"])
+    .index("by_version", ["version"])
+    .index("by_order", ["order"])
+    .index("by_version_and_active", ["version", "isActive"])
+    .index("by_phase", ["phase"]),
+
+  /**
+   * Buildathon Registrations — multi-step flow §3
+   * Basic→Background→Interests→Assessment→Recommended→Choice→Preferences→Review→Submit
+   * Keeps currentProfession vs interests vs recommended vs selectedRole separate per §4
+   * Separate Registration vs Assessment concepts per §14
+   */
+  buildathonRegistrations: defineTable({
+    participantId: v.id("participants"),
+    state: v.union(
+      v.literal("draft"),
+      v.literal("assessment"),
+      v.literal("recommended"),
+      v.literal("role_selected"),
+      v.literal("submitted")
+    ),
+    // Basic Information per §4
+    basicInfo: v.object({
+      name: v.string(),
+      email: v.string(),
+      phone: v.optional(v.string()),
+      university: v.optional(v.string()),
+      organization: v.optional(v.string()),
+    }),
+    // Background
+    background: v.optional(
+      v.object({
+        currentProfession: v.optional(v.string()),
+        occupation: v.optional(v.string()),
+        experienceLevel: v.optional(
+          v.union(
+            v.literal("none"),
+            v.literal("student"),
+            v.literal("junior"),
+            v.literal("mid"),
+            v.literal("senior")
+          )
+        ),
+      })
+    ),
+    interests: v.optional(v.array(v.string())),
+    skills: v.optional(v.array(v.string())),
+    preferences: v.optional(
+      v.object({
+        teamSize: v.optional(v.string()),
+        theme: v.optional(v.string()),
+        extra: v.optional(v.any()),
+      })
+    ),
+    dynamicResponses: v.optional(v.any()), // pre-event dynamic question responses
+    selectedRoleId: v.optional(v.id("buildathonRoles")), // participant decides per §11, never auto-overwritten
+    assessmentVersion: v.string(), // e.g., "v1"
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_participant", ["participantId"])
+    .index("by_state", ["state"])
+    .index("by_selected_role", ["selectedRoleId"])
+    .index("by_participant_and_state", ["participantId", "state"])
+    .index("by_version", ["assessmentVersion"]),
+
+  /**
+   * Role Discovery Answers — per-registration, supports multiple + notSure
+   * Includes responseMs for lightweight quality/confidence per §12
+   */
+  roleDiscoveryAnswers: defineTable({
+    registrationId: v.id("buildathonRegistrations"),
+    questionId: v.id("roleDiscoveryQuestions"),
+    optionIds: v.array(v.string()), // empty if isNotSure
+    isNotSure: v.boolean(),
+    answeredAt: v.number(),
+    responseMs: v.optional(v.number()),
+  })
+    .index("by_registration", ["registrationId"])
+    .index("by_question", ["questionId"])
+    .index("by_registration_and_question", ["registrationId", "questionId"]),
+
+  /**
+   * Role Recommendations — top3 with % + explanation + confidence
+   * New Feature §10/12: “These are possibilities, not labels.” High/Moderate/Low
+   */
+  roleRecommendations: defineTable({
+    registrationId: v.id("buildathonRegistrations"),
+    participantId: v.id("participants"),
+    rankedRoles: v.array(
+      v.object({
+        roleId: v.id("buildathonRoles"),
+        affinity: v.number(), // 0-100
+        explanationEn: v.string(),
+        explanationMy: v.string(),
+      })
+    ),
+    confidence: v.union(
+      v.literal("high"),
+      v.literal("moderate"),
+      v.literal("low")
+    ),
+    confidenceScore: v.number(), // 0-100 internal
+    assessmentVersion: v.string(),
+    calculatedAt: v.number(),
+  })
+    .index("by_registration", ["registrationId"])
+    .index("by_participant", ["participantId"])
+    .index("by_version", ["assessmentVersion"])
+    .index("by_confidence", ["confidence"]),
 });

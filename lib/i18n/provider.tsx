@@ -1,9 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 
 export type Locale = 'en' | 'my'
-type Dictionary = Record<string, any>
+type Dictionary = Record<string, unknown>
 
 interface I18nContextType {
   locale: Locale
@@ -20,55 +20,56 @@ interface I18nProviderProps {
   initialDictionary?: Dictionary
 }
 
-export function I18nProvider({ 
-  children, 
+export function I18nProvider({
+  children,
   initialLocale = 'en',
   initialDictionary = {}
 }: I18nProviderProps) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale)
   const [dictionary, setDictionary] = useState<Dictionary>(initialDictionary)
   const [isClient, setIsClient] = useState(false)
-  
+
+  const loadDictionary = useCallback(async (loc: Locale) => {
+    try {
+      const dict = await import(`@/dictionaries/${loc}.json`)
+      setDictionary(dict.default as Record<string, unknown>)
+    } catch (error) {
+      console.error(`Failed to load dictionary for locale: ${loc}`, error)
+    }
+  }, [])
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true)
-    
+
     // Load from localStorage on mount
     const savedLocale = localStorage.getItem('locale') as Locale | null
     if (savedLocale && (savedLocale === 'en' || savedLocale === 'my')) {
       setLocaleState(savedLocale)
       loadDictionary(savedLocale)
     }
-  }, [])
-  
-  const setLocale = async (newLocale: Locale) => {
+  }, [loadDictionary])
+
+  const setLocale = useCallback(async (newLocale: Locale) => {
     setLocaleState(newLocale)
     if (isClient) {
       localStorage.setItem('locale', newLocale)
     }
     await loadDictionary(newLocale)
-  }
-  
-  const loadDictionary = async (loc: Locale) => {
-    try {
-      const dict = await import(`@/dictionaries/${loc}.json`)
-      setDictionary(dict.default)
-    } catch (error) {
-      console.error(`Failed to load dictionary for locale: ${loc}`, error)
-    }
-  }
-  
+  }, [isClient, loadDictionary])
+
   const t = (key: string): string => {
     const keys = key.split('.')
-    let value: any = dictionary
-    
+    let value: unknown = dictionary
+
     for (const k of keys) {
-      value = value?.[k]
+      value = (value as Record<string, unknown>)?.[k]
       if (value === undefined) break
     }
-    
+
     return typeof value === 'string' ? value : key
   }
-  
+
   return (
     <I18nContext.Provider value={{ locale, setLocale, t, dictionary }}>
       {children}

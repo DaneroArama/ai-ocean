@@ -395,14 +395,14 @@ export function CharacterSection() {
           {/* LEFT SIDE - Character & Quote - full height on desktop */}
           <div 
             ref={leftBgRef}
-            className={`flex-none md:flex-1 md:h-full md:min-h-0 relative flex flex-col items-center justify-center p-6 md:p-8 cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out z-20 min-h-[420px] md:min-h-0`}
+            className={`flex-none md:flex-1 md:h-full md:min-h-0 relative flex flex-col items-center justify-center p-4 md:p-8 cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out z-20 min-h-[320px] md:min-h-0 py-20 md:py-0`}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragEnd}
             onTouchStart={handleDragStart}
             onTouchEnd={handleDragEnd}
           >
             {/* Event Title */}
-            <div className="absolute top-8 left-8">
+            <div className="absolute top-4 left-8">
               <Image
                 src={eventTitle}
                 alt="AI Ocean Into The"
@@ -415,7 +415,7 @@ export function CharacterSection() {
             {/* Quote Bubble - chatBubble.svg with bgRight stroke - on TOP of character */}
             <div 
               ref={quoteRef}
-              className="relative w-full max-w-sm md:max-w-[380px] flex items-center justify-center "
+              className="relative w-full max-w-[260px] md:max-w-[380px] flex items-center justify-center "
             >
               {/* Inline SVG so stroke can be dynamic bgRightColor - reflipped: tail naturally at bottom points down to character */}
               <svg
@@ -489,7 +489,7 @@ export function CharacterSection() {
                 alt={currentCharacter.name}
                 width={400}
                 height={400}
-                className="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-2xl"
+                className="w-44 h-44 md:w-96 md:h-96 object-contain drop-shadow-2xl"
                 draggable={false}
               />
             </div>
@@ -539,14 +539,14 @@ export function CharacterSection() {
               </linearGradient>
             </defs>
             <polygon
-              points="13,0 16,0 7.5,100 7,100"
+              points="13,0 16,0 8,100 7,100"
               fill={`url(#line-gradient-${currentCharacter.id})`}
               className="transition-all duration-700"
             />
           </svg>
 
           {/* RIGHT SIDE CONTENT - full height on desktop, auto on mobile */}
-          <div className="flex-none w-full md:w-[52%] lg:w-5/9 h-auto md:h-full md:min-h-0 md:self-stretch relative flex flex-col justify-center p-6 md:p-10 md:pl-14 lg:pl-20 z-20 shrink-0 rounded-t-[2rem] md:rounded-none -mt-6 md:mt-0">
+          <div className="flex-none w-full md:w-[52%] lg:w-5/9 h-auto md:h-full md:min-h-0 md:self-stretch relative flex flex-col justify-center p-6 md:p-10 md:pl-14 lg:pl-20 z-20 shrink-0 rounded-4xl md:rounded-none -mt-6 md:mt-0">
 
             {/* Character As Background */}
             <div ref={characterRef} className="absolute z-0 right-[-20%]">

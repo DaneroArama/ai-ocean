@@ -10,6 +10,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
+import { getParticipantByIdentity } from "./helpers";
 
 /**
  * Get all registrations for the current authenticated participant
@@ -19,19 +20,10 @@ export const getMyRegistrations = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthorized: Authentication required");
-    }
+    if (!identity) throw new Error("Unauthorized: Authentication required");
+    const participant = await getParticipantByIdentity(ctx, identity);
+    if (!participant) throw new Error("Participant not found — ensure profile created via participants:ensureCurrentParticipant");
     
-    // Get current participant
-    const participant = await ctx.db
-      .query("participants")
-      .withIndex("by_email", (q) => q.eq("email", identity.email!))
-      .first();
-    
-    if (!participant) {
-      throw new Error("Participant not found");
-    }
     
     // Return all registrations for this participant
     return await ctx.db
@@ -62,16 +54,8 @@ export const getRegistrationById = query({
       return null;
     }
     
-    // Get current participant
-    const participant = await ctx.db
-      .query("participants")
-      .withIndex("by_email", (q) => q.eq("email", identity.email!))
-      .first();
-    
-    if (!participant) {
-      throw new Error("Participant not found");
-    }
-    
+    const participant = await getParticipantByIdentity(ctx, identity);
+    if (!participant) throw new Error("Participant not found");
     // Authorization: own registration or admin
     const isOwner = registration.participantId === participant._id;
     const isAdmin = participant.role === "admin";
@@ -100,16 +84,8 @@ export const createRegistration = mutation({
       throw new Error("Unauthorized: Authentication required");
     }
     
-    // Get current participant
-    const participant = await ctx.db
-      .query("participants")
-      .withIndex("by_email", (q) => q.eq("email", identity.email!))
-      .first();
-    
-    if (!participant) {
-      throw new Error("Participant not found");
-    }
-    
+    const participant = await getParticipantByIdentity(ctx, identity);
+    if (!participant) throw new Error("Participant not found");
     // Check for duplicate registration (Requirement 4.5)
     const existingRegistration = await ctx.db
       .query("registrations")
@@ -175,15 +151,8 @@ export const updateRegistrationState = mutation({
       throw new Error("Unauthorized: Authentication required");
     }
     
-    // Get current participant (must be admin - Requirement 13.2)
-    const admin = await ctx.db
-      .query("participants")
-      .withIndex("by_email", (q) => q.eq("email", identity.email!))
-      .first();
-    
-    if (!admin) {
-      throw new Error("Participant not found");
-    }
+    const admin = await getParticipantByIdentity(ctx, identity);
+    if (!admin) throw new Error("Participant not found");
     
     if (admin.role !== "admin") {
       throw new Error("Unauthorized: Admin access required");

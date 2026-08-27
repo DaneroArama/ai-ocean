@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syncopate, Quicksand, Syne } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex/ConvexClientProvider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { I18nProvider } from "@/lib/i18n/provider";
 import enDict from "@/dictionaries/en.json";
 import { LenisProvider } from "@/components/providers/LenisProvider";
@@ -45,11 +46,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${syncopate.variable} ${quicksand.variable} ${syne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-quicksand">
-        <I18nProvider initialLocale="en" initialDictionary={enDict}>
-          <ConvexClientProvider>
-            <LenisProvider>{children}</LenisProvider>
-          </ConvexClientProvider>
-        </I18nProvider>
+        <ConvexAuthNextjsServerProvider>
+          <I18nProvider initialLocale="en" initialDictionary={enDict}>
+            <ConvexClientProvider>
+              <LenisProvider>{children}</LenisProvider>
+            </ConvexClientProvider>
+          </I18nProvider>
+        </ConvexAuthNextjsServerProvider>
       </body>
     </html>
   );

@@ -191,7 +191,7 @@ export function BentoSection() {
           className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 md:auto-rows-fr md:h-[520px] lg:h-[560px] md:min-h-0"
         >
           {/* CARD 1 */}
-          <div className="bento-card md:col-span-2 md:row-span-1 bg-[#18CBBC33] backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-colors duration-300">
+          <div className="bento-card md:col-span-2 md:row-span-1 bg-[#18CBBC33] backdrop-blur-sm rounded-4xl p-8 border border-white/20 transition-colors duration-300">
             <div className="flex flex-col items-center justify-center text-center space-y-4 h-full">
               <div className="w-20 h-20">
                 <Image src={starfish} alt="Event icon" width={80} height={80} className="object-contain drop-shadow-lg" />
@@ -204,7 +204,7 @@ export function BentoSection() {
           </div>
 
           {/* CARD 2 */}
-          <div className="bento-card md:col-span-1 md:row-span-1 bg-[#B8EBFF33] backdrop-blur-md rounded-2xl border border-white/20 hover:bg-white/15 transition-colors duration-300 p-8 flex items-center justify-center">
+          <div className="bento-card md:col-span-1 md:row-span-1 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl border border-white/20 transition-colors duration-300 p-8 flex items-center justify-center">
             <div className="flex flex-col items-center justify-center text-center space-y-3 h-full">
               <h3 className="font-syne text-5xl md:text-7xl font-bold text-white">10+</h3>
               <p className="font-syncopate text-xl md:text-4xl font-semibold text-white/90 tracking-wide">Mentors</p>
@@ -217,7 +217,7 @@ export function BentoSection() {
           </div>
 
           {/* CARD 3 */}
-          <div className="bento-card md:col-span-1 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-colors duration-300">
+          <div className="bento-card md:col-span-1 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-8 border border-white/20 transition-colors duration-300">
             <div className="flex flex-col h-full space-y-8">
               <p className="font-quicksand text-base md:text-lg text-white/90 leading-relaxed">
                 Rorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
@@ -235,14 +235,14 @@ export function BentoSection() {
           </div>
 
           {/* CARD 4 */}
-          <div className="bento-card md:col-span-1 md:row-span-1 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-colors duration-300 flex items-center justify-center">
+          <div className="bento-card md:col-span-1 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl p-8 border border-white/20 transition-colors duration-300 flex items-center justify-center">
             <div className="w-24 h-24 md:w-32 md:h-32">
               <Image src={eventLogo} alt="Event Logo" width={128} height={128} className="object-contain drop-shadow-xl" />
             </div>
           </div>
 
           {/* CARD 5 */}
-          <div className="bento-card md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-colors duration-300 relative overflow-hidden">
+          <div className="bento-card md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl p-8 border border-white/20 transition-colors duration-300 relative overflow-hidden">
             <div className="relative flex flex-col justify-between h-full z-10 space-y-4">
               <h3 className="font-syncopate text-4xl font-bold text-white uppercase tracking-wide">
                 October 2026<br />
