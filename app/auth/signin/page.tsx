@@ -38,7 +38,9 @@ function SignInInner() {
   const handle = async (provider: "google" | "github") => {
     setError(null);
     try {
-      await signIn(provider);
+      const dest = next.startsWith("/") ? next : "/dashboard";
+      const redirectTo = `${window.location.origin}${dest}`;
+      await signIn(provider, { redirectTo });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Sign-in failed");
     }

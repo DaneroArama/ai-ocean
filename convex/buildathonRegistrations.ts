@@ -96,3 +96,28 @@ export const submitRegistration = mutation({
     return { success: true };
   },
 });
+
+export const listAllRegistrations = query({
+  args: {},
+  handler: async (ctx) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw new Error("Unauthorized");
+    const admin = await getParticipantByIdentity(ctx, idt);
+    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+
+    const regs = await ctx.db.query("buildathonRegistrations").collect();
+    const results = await Promise.all(
+      regs.map(async (reg) => {
+        const participant = await ctx.db.get(reg.participantId);
+        const selectedRole = reg.selectedRoleId ? await ctx.db.get(reg.selectedRoleId) : null;
+        return {
+          ...reg,
+          participantEmail: participant?.email ?? "—",
+          participantRole: participant?.role ?? "—",
+          selectedRoleName: selectedRole?.nameEn ?? null,
+        };
+      })
+    );
+    return results.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});

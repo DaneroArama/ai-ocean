@@ -20,13 +20,16 @@ interface SeedScoring {
 }
 
 interface SeedQuestion {
+  phase: "pre-event" | "main-event";
   category: string;
-  type: "single" | "multiple" | "scenario" | "scale";
+  type: "single" | "multiple" | "scenario" | "scale" | "longtext" | "yesno" | "single-with-text";
   order: number;
   textEn: string;
   textMy: string;
   options: { id: string; labelEn: string; labelMy: string }[];
   scoring: SeedScoring[];
+  multiTextCount?: number;
+  multiTextPlaceholders?: string[];
 }
 
 // Seed Buildathon roles + 6 sample casual scenario questions (v1) — extend to 20-30 via admin UI
@@ -69,8 +72,52 @@ export const seed = mutation({
     }
 
     const sampleQs: SeedQuestion[] = [
+      // ── Pre-Event Questions ──
       {
-        category: "collaboration", type: "scenario", order: 0,
+        phase: "pre-event", category: "background", type: "yesno", order: 0,
+        textEn: "Have you participated in a buildathon or hackathon before?",
+        textMy: "Buildathon သို့မဟုတ် Hackathon တွင် ပါဝင်ဖူးပါသလား။",
+        options: [], scoring: [],
+      },
+      {
+        phase: "pre-event", category: "background", type: "single-with-text", order: 1,
+        textEn: "What is your current experience level?",
+        textMy: "သင့်အတွေ့အကြုံ အဆင့် ဘာလဲ။",
+        options: [
+          { id: "A", labelEn: "Beginner", labelMy: "အစပြု" },
+          { id: "B", labelEn: "Intermediate", labelMy: "အလယ်အလတ်" },
+          { id: "C", labelEn: "Advanced", labelMy: "အဆင့်မြင့်" },
+        ],
+        scoring: [],
+      },
+      {
+        phase: "pre-event", category: "interests", type: "multiple", order: 2,
+        textEn: "What topics are you most interested in? (type up to 4)",
+        textMy: "ဘယ်ခေါင်းစဉ်တွေကို စိတ်ဝင်စားပါသလဲ။",
+        options: [], scoring: [],
+        multiTextCount: 4, multiTextPlaceholders: ["Interest 1", "Interest 2", "Interest 3", "Interest 4"],
+      },
+      {
+        phase: "pre-event", category: "expectations", type: "longtext", order: 3,
+        textEn: "What are you hoping to learn or achieve at this buildathon?",
+        textMy: "ဒီ buildathon မှာ ဘာသင်ယူချင် သို့မဟုတ် ဘာအောင်မြင်ချင်ပါသလဲ။",
+        options: [], scoring: [],
+      },
+      {
+        phase: "pre-event", category: "expectations", type: "single", order: 4,
+        textEn: "How did you hear about this event?",
+        textMy: "ဒီပွဲကို ဘယ်လို သိရှိတာလဲ။",
+        options: [
+          { id: "A", labelEn: "Social media", labelMy: "လူမှုကွန်ရက်" },
+          { id: "B", labelEn: "Friend / colleague", labelMy: "မိတ်ဆွေ" },
+          { id: "C", labelEn: "University / school", labelMy: "ကျောင်း" },
+          { id: "D", labelEn: "Other", labelMy: "အခြား" },
+        ],
+        scoring: [],
+      },
+      // ── Main-Event Questions ──
+      {
+        phase: "main-event", category: "collaboration", type: "scenario", order: 0,
         textEn: "Your team has three different ideas but only enough time to build one. What would you naturally want to do?",
         textMy: "အသင်းတွင် အိုင်ဒီယာသုံးခုရှိသော်လည်း တစ်ခုသာ တည်ဆောက်နိုင်သည်။ သင်ဘာလုပ်ချင်သနည်း။",
         options: [
@@ -87,7 +134,7 @@ export const seed = mutation({
         ],
       },
       {
-        category: "product", type: "single", order: 1,
+        phase: "main-event", category: "product", type: "single", order: 1,
         textEn: "When you learn something new, what excites you most?",
         textMy: "အသစ်တစ်ခုသင်ယူသောအခါ ဘာက စိတ်လှုပ်ရှားစေသနည်း။",
         options: [
@@ -103,7 +150,7 @@ export const seed = mutation({
         ],
       },
       {
-        category: "engineering", type: "scenario", order: 2,
+        phase: "main-event", category: "engineering", type: "scenario", order: 2,
         textEn: "The demo is tomorrow and something broke. Where do you gravitate?",
         textMy: "မနက်ဖြန် demo ရှိသော်လည်း တစ်ခုပျက်နေသည်။",
         options: [
@@ -118,7 +165,7 @@ export const seed = mutation({
         ],
       },
       {
-        category: "design", type: "multiple", order: 3,
+        phase: "main-event", category: "design", type: "multiple", order: 3,
         textEn: "Which activities would you volunteer for first? (pick up to 2)",
         textMy: "ဘယ်လုပ်ဆောင်မှုကို ပထမဆုံး လုပ်ချင်သနည်း။",
         options: [
@@ -133,7 +180,7 @@ export const seed = mutation({
         ],
       },
       {
-        category: "research", type: "single", order: 4,
+        phase: "main-event", category: "research", type: "single", order: 4,
         textEn: "You have a free afternoon — what sounds most fun?",
         textMy: "အားလပ်ချိန်တွင် ဘာလုပ်ချင်သနည်း။",
         options: [
@@ -148,7 +195,7 @@ export const seed = mutation({
         ],
       },
       {
-        category: "product", type: "single", order: 5,
+        phase: "main-event", category: "product", type: "single", order: 5,
         textEn: "I'm not sure what I want yet is totally okay — how do you feel about exploring?",
         textMy: "သေချာမသိသေးခြင်းသည် အဆင်ပြေသည်",
         options: [
@@ -166,8 +213,9 @@ export const seed = mutation({
     for (const q of sampleQs) {
       const signals = q.scoring.map((s) => ({ optionId: s.optionId, roleId: roleIds[s.role], weight: s.w }));
       await ctx.db.insert("roleDiscoveryQuestions", {
-        phase: "main-event", category: q.category, type: q.type, textEn: q.textEn, textMy: q.textMy,
+        phase: q.phase, category: q.category, type: q.type, textEn: q.textEn, textMy: q.textMy,
         options: q.options, required: false, scoringSignals: signals,
+        multiTextCount: q.multiTextCount, multiTextPlaceholders: q.multiTextPlaceholders,
         order: q.order, isActive: true, version: "v1", allowNotSure: true, createdAt: now, updatedAt: now,
       });
       qCount++;
