@@ -71,7 +71,7 @@ export default function AdminQuestionsPage() {
   const openEdit = (q: Question) => {
     setEditing(q);
     setForm({
-      phase: q.phase, category: q.category, type: q.type, textEn: q.textEn, textMy: q.textMy,
+      phase: q.phase ?? "main-event", category: q.category, type: q.type, textEn: q.textEn, textMy: q.textMy,
       options: q.options, scoringSignals: q.scoringSignals ?? [],
       multiTextCount: q.multiTextCount ?? 4, multiTextPlaceholders: q.multiTextPlaceholders ?? ["", "", "", ""],
       order: q.order, version: q.version, allowNotSure: !!q.allowNotSure,
