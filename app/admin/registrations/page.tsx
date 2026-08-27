@@ -130,7 +130,7 @@ export default function AdminRegistrationsPage() {
 
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-        <div className="max-h-[60vh] overflow-auto">
+        <div className="max-h-[60vh] overflow-y-auto overscroll-contain" data-lenis-prevent>
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-gray-50 text-xs uppercase text-gray-500">
               <tr>

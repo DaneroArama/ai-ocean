@@ -210,7 +210,7 @@ function RegisterInner() {
           ) : preEventQuestions.length === 0 ? (
             <p className="mt-4 text-sm text-amber-700">No additional questions yet.</p>
           ) : (
-            <div className="mt-4 space-y-5 max-h-[52vh] overflow-auto pr-1">
+            <div className="mt-4 space-y-5 max-h-[52vh] overflow-y-auto overscroll-contain pr-1" data-lenis-prevent>
               {preEventQuestions.map((q) => (
                 <div key={q._id} className="rounded-xl border bg-gray-50 p-4">
                   <p className="mt-1 text-sm font-medium">{q.textEn}</p>

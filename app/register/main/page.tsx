@@ -201,7 +201,7 @@ function MainEventInner() {
               <h3 className="font-semibold">Role Discovery Assessment</h3>
               <p className="text-xs text-gray-500">Casual, situational — &ldquo;What would you naturally want to do?&rdquo; Not an exam. Shuffle keeps scoring hidden.</p>
               {!questions ? <p className="mt-4 text-sm text-gray-400">Loading questions… (seed 20–30 via admin)</p> : questions.length === 0 ? <p className="mt-4 text-sm text-amber-700">No questions yet — ask admin to seed Buildathon Role Discovery v1.</p> : (
-                <div className="mt-4 space-y-5 max-h-[52vh] overflow-auto pr-1">
+                <div className="mt-4 space-y-5 max-h-[52vh] overflow-y-auto overscroll-contain pr-1" data-lenis-prevent>
                   {questions.map((q) => {
                     const disabled = answers[q._id]?.isNotSure;
                     return (

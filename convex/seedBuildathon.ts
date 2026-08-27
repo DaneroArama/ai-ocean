@@ -32,7 +32,7 @@ interface SeedQuestion {
   multiTextPlaceholders?: string[];
 }
 
-// Seed Buildathon roles + 6 sample casual scenario questions (v1) — extend to 20-30 via admin UI
+// Seed Buildathon roles + sample questions (v1) — extend via admin UI
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {
@@ -41,34 +41,43 @@ export const seed = mutation({
     const caller = await getParticipantByIdentity(ctx, identity);
     if (!caller || caller.role !== "admin") throw new Error("Admin required");
 
+    const now = Date.now();
+
+    // ── Roles ──
     const existingRoles = await ctx.db.query("buildathonRoles").collect();
-    if (existingRoles.length > 0) {
-      return { skipped: true, reason: "roles already seeded", count: existingRoles.length };
+    let roleIds: Record<string, Id<"buildathonRoles">> = {};
+
+    if (existingRoles.length === 0) {
+      const rolesToCreate: SeedRole[] = [
+        { nameEn: "Product Manager", nameMy: "ထုတ်ကုန်မန်နေဂျာ", descriptionEn: "Connects ideas, users and team to decide what to build.", descriptionMy: "အိုင်ဒီယာနှင့် အသုံးပြုသူများကို ချိတ်ဆက်သည်။", category: "product", traitsEn: ["Curious","Decisive"], traitsMy: ["စူးစမ်းလိုစိတ်","ဆုံးဖြတ်နိုင်မှု"], priority: 1 },
+        { nameEn: "UX Researcher", nameMy: "UX သုတေသီ", descriptionEn: "Loves understanding problems and talking to users.", descriptionMy: "ပြဿနာများကို နားလည်လိုသည်။", category: "design", traitsEn: ["Empathetic","Analytical"], traitsMy: ["စာနာတတ်","ခွဲခြမ်းစိတ်ဖြာ"], priority: 2 },
+        { nameEn: "Product Designer", nameMy: "ထုတ်ကုန်ဒီဇိုင်နာ", descriptionEn: "Turns ideas into tangible flows and visuals.", descriptionMy: "အိုင်ဒီယာကို ပုံဖော်သည်။", category: "design", traitsEn: ["Visual","Systematic"], traitsMy: ["အမြင်ဆိုင်ရာ"], priority: 3 },
+        { nameEn: "Frontend Developer", nameMy: "Frontend Developer", descriptionEn: "Builds what users see and touch.", descriptionMy: "အသုံးပြုသူမြင်ရသည့်အပိုင်းကို တည်ဆောက်သည်။", category: "engineering", traitsEn: ["Crafty","Detail-oriented"], traitsMy: [], priority: 4 },
+        { nameEn: "Backend Developer", nameMy: "Backend Developer", descriptionEn: "Builds the engine behind the product.", descriptionMy: "နောက်ကွယ်စနစ်ကို တည်ဆောက်သည်။", category: "engineering", traitsEn: ["Logical"], traitsMy: [], priority: 5 },
+        { nameEn: "AI/ML Engineer", nameMy: "AI အင်ဂျင်နီယာ", descriptionEn: "Makes the product smart.", descriptionMy: "ထုတ်ကုန်ကို စမတ်ကျစေသည်။", category: "data", traitsEn: ["Curious","Math"], traitsMy: [], priority: 6 },
+        { nameEn: "Data Analyst", nameMy: "Data Analyst", descriptionEn: "Finds stories in numbers.", descriptionMy: "ကိန်းဂဏန်းများမှ ဇာတ်လမ်းရှာသည်။", category: "data", traitsEn: ["Analytical"], traitsMy: [], priority: 7 },
+        { nameEn: "Project Manager", nameMy: "စီမံကိန်းမန်နေဂျာ", descriptionEn: "Keeps the team in sync and moving.", descriptionMy: "အသင်းကို ညှိနှိုင်းသည်။", category: "team", traitsEn: ["Organized"], traitsMy: [], priority: 8 },
+        { nameEn: "Marketing", nameMy: "ဈေးကွက်ရှာဖွေရေး", descriptionEn: "Tells the story and grows the audience.", descriptionMy: "ဇာတ်လမ်းကို ပြောပြသည်။", category: "business", traitsEn: ["Communicative"], traitsMy: [], priority: 9 },
+        { nameEn: "Content Strategist", nameMy: "Content Strategist", descriptionEn: "Shapes message and tone.", descriptionMy: "မက်ဆေ့ချ်ကို ပုံဖော်သည်။", category: "business", traitsEn: [], traitsMy: [], priority: 10 },
+        { nameEn: "UI Designer", nameMy: "UI Designer", descriptionEn: "Crafts beautiful interfaces.", descriptionMy: "လှပသော မျက်နှာပြင်များ ဖန်တီးသည်။", category: "design", traitsEn: [], traitsMy: [], priority: 11 },
+        { nameEn: "DevOps Engineer", nameMy: "DevOps", descriptionEn: "Keeps the build running smoothly.", descriptionMy: "စနစ်လည်ပတ်မှုကို ထိန်းသိမ်းသည်။", category: "engineering", traitsEn: [], traitsMy: [], priority: 12 },
+      ];
+
+      for (const r of rolesToCreate) {
+        const id = await ctx.db.insert("buildathonRoles", {
+          nameEn: r.nameEn, nameMy: r.nameMy, descriptionEn: r.descriptionEn, descriptionMy: r.descriptionMy,
+          category: r.category, traitsEn: r.traitsEn, traitsMy: r.traitsMy, priority: r.priority, isActive: true, createdAt: now, updatedAt: now,
+        });
+        roleIds[r.nameEn] = id;
+      }
+    } else {
+      for (const r of existingRoles) roleIds[r.nameEn] = r._id;
     }
 
-    const now = Date.now();
-    const rolesToCreate: SeedRole[] = [
-      { nameEn: "Product Manager", nameMy: "ထုတ်ကုန်မန်နေဂျာ", descriptionEn: "Connects ideas, users and team to decide what to build.", descriptionMy: "အိုင်ဒီယာနှင့် အသုံးပြုသူများကို ချိတ်ဆက်သည်။", category: "product", traitsEn: ["Curious","Decisive"], traitsMy: ["စူးစမ်းလိုစိတ်","ဆုံးဖြတ်နိုင်မှု"], priority: 1 },
-      { nameEn: "UX Researcher", nameMy: "UX သုတေသီ", descriptionEn: "Loves understanding problems and talking to users.", descriptionMy: "ပြဿနာများကို နားလည်လိုသည်။", category: "design", traitsEn: ["Empathetic","Analytical"], traitsMy: ["စာနာတတ်","ခွဲခြမ်းစိတ်ဖြာ"], priority: 2 },
-      { nameEn: "Product Designer", nameMy: "ထုတ်ကုန်ဒီဇိုင်နာ", descriptionEn: "Turns ideas into tangible flows and visuals.", descriptionMy: "အိုင်ဒီယာကို ပုံဖော်သည်။", category: "design", traitsEn: ["Visual","Systematic"], traitsMy: ["အမြင်ဆိုင်ရာ"], priority: 3 },
-      { nameEn: "Frontend Developer", nameMy: "Frontend Developer", descriptionEn: "Builds what users see and touch.", descriptionMy: "အသုံးပြုသူမြင်ရသည့်အပိုင်းကို တည်ဆောက်သည်။", category: "engineering", traitsEn: ["Crafty","Detail-oriented"], traitsMy: [], priority: 4 },
-      { nameEn: "Backend Developer", nameMy: "Backend Developer", descriptionEn: "Builds the engine behind the product.", descriptionMy: "နောက်ကွယ်စနစ်ကို တည်ဆောက်သည်။", category: "engineering", traitsEn: ["Logical"], traitsMy: [], priority: 5 },
-      { nameEn: "AI/ML Engineer", nameMy: "AI အင်ဂျင်နီယာ", descriptionEn: "Makes the product smart.", descriptionMy: "ထုတ်ကုန်ကို စမတ်ကျစေသည်။", category: "data", traitsEn: ["Curious","Math"], traitsMy: [], priority: 6 },
-      { nameEn: "Data Analyst", nameMy: "Data Analyst", descriptionEn: "Finds stories in numbers.", descriptionMy: "ကိန်းဂဏန်းများမှ ဇာတ်လမ်းရှာသည်။", category: "data", traitsEn: ["Analytical"], traitsMy: [], priority: 7 },
-      { nameEn: "Project Manager", nameMy: "စီမံကိန်းမန်နေဂျာ", descriptionEn: "Keeps the team in sync and moving.", descriptionMy: "အသင်းကို ညှိနှိုင်းသည်။", category: "team", traitsEn: ["Organized"], traitsMy: [], priority: 8 },
-      { nameEn: "Marketing", nameMy: "ဈေးကွက်ရှာဖွေရေး", descriptionEn: "Tells the story and grows the audience.", descriptionMy: "ဇာတ်လမ်းကို ပြောပြသည်။", category: "business", traitsEn: ["Communicative"], traitsMy: [], priority: 9 },
-      { nameEn: "Content Strategist", nameMy: "Content Strategist", descriptionEn: "Shapes message and tone.", descriptionMy: "မက်ဆေ့ချ်ကို ပုံဖော်သည်။", category: "business", traitsEn: [], traitsMy: [], priority: 10 },
-      { nameEn: "UI Designer", nameMy: "UI Designer", descriptionEn: "Crafts beautiful interfaces.", descriptionMy: "လှပသော မျက်နှာပြင်များ ဖန်တီးသည်။", category: "design", traitsEn: [], traitsMy: [], priority: 11 },
-      { nameEn: "DevOps Engineer", nameMy: "DevOps", descriptionEn: "Keeps the build running smoothly.", descriptionMy: "စနစ်လည်ပတ်မှုကို ထိန်းသိမ်းသည်။", category: "engineering", traitsEn: [], traitsMy: [], priority: 12 },
-    ];
-
-    const roleIds: Record<string, Id<"buildathonRoles">> = {};
-    for (const r of rolesToCreate) {
-      const id = await ctx.db.insert("buildathonRoles", {
-        nameEn: r.nameEn, nameMy: r.nameMy, descriptionEn: r.descriptionEn, descriptionMy: r.descriptionMy,
-        category: r.category, traitsEn: r.traitsEn, traitsMy: r.traitsMy, priority: r.priority, isActive: true, createdAt: now, updatedAt: now,
-      });
-      roleIds[r.nameEn] = id;
+    // ── Questions ──
+    const existingQs = await ctx.db.query("roleDiscoveryQuestions").collect();
+    if (existingQs.length > 0) {
+      return { roles: Object.keys(roleIds).length, questions: 0, version: "v1", note: "roles + questions already seeded" };
     }
 
     const sampleQs: SeedQuestion[] = [

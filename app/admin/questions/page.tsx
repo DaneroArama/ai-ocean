@@ -158,7 +158,7 @@ export default function AdminQuestionsPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-        <div className="max-h-[64vh] overflow-auto">
+        <div className="max-h-[64vh] overflow-y-auto overscroll-contain" data-lenis-prevent>
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-gray-50 text-xs uppercase text-gray-500">
               <tr><th className="px-3 py-2 text-left">#</th><th className="px-3 py-2 text-left">Category / Type</th><th className="px-3 py-2 text-left">Question (EN)</th><th className="px-3 py-2 text-left">Options</th><th className="px-3 py-2 text-left">Active</th><th className="px-3 py-2 text-right">Actions</th></tr>
@@ -191,11 +191,12 @@ export default function AdminQuestionsPage() {
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-2xl bg-white text-ocean-medium p-6 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white text-ocean-medium shadow-xl">
+            <div className="flex items-center justify-between border-b px-6 py-4">
               <h3 className="font-syncopate text-lg font-bold">{editing ? "Edit Question" : "New Question"}</h3>
               <button onClick={() => setShowForm(false)} className="rounded-full border px-3 py-1 text-sm">✕</button>
             </div>
+            <div className="flex-1 overflow-y-auto overscroll-contain p-6" data-lenis-prevent>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <select value={form.phase} onChange={(e) => setForm({ ...form, phase: e.target.value as Phase })} className="rounded-lg border px-3 py-2 text-sm">
@@ -322,7 +323,9 @@ export default function AdminQuestionsPage() {
               </div>
             )}
 
-            <div className="mt-6 flex justify-end gap-2">
+            </div>
+
+            <div className="flex items-center justify-end gap-2 border-t px-6 py-4">
               <button onClick={()=>setShowForm(false)} className="rounded-xl border px-5 py-2 text-sm">Cancel</button>
               <button onClick={handleSave} className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white">{editing ? "Save" : "Create"}</button>
             </div>

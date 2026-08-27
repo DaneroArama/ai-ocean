@@ -571,7 +571,7 @@ export function CharacterSection() {
             </h2>
 
             {/* Bio - FIXED HEIGHT with single-line scrollbar */}
-            <div className="flex-none h-[190px] md:h-[220px] lg:h-[260px] relative mb-6 md:mb-8 flex">
+            <div className="flex-none h-[190px] md:h-[220px] lg:h-[260px] relative mb-6 md:mb-8 flex" data-lenis-prevent>
               <div 
                 ref={bioRef}
                 onScroll={handleBioScroll}
