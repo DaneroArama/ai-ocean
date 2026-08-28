@@ -400,4 +400,76 @@ export default defineSchema({
     .index("by_participant", ["participantId"])
     .index("by_version", ["assessmentVersion"])
     .index("by_confidence", ["confidence"]),
+
+  /**
+   * Ocean Archetypes — the 5 personality archetypes (O/C/E/A/N)
+   */
+  oceanArchetypes: defineTable({
+    letter: v.union(v.literal("O"), v.literal("C"), v.literal("E"), v.literal("A"), v.literal("N")),
+    name: v.string(), // "The Orchestrator"
+    character: v.string(), // "Otto"
+    animal: v.string(), // "Octopus"
+    emoji: v.string(), // "🐙"
+    traitsEn: v.array(v.string()),
+    traitsMy: v.array(v.string()),
+    mottoEn: v.string(),
+    mottoMy: v.string(),
+    descriptionEn: v.string(),
+    descriptionMy: v.string(),
+    wave: v.string(), // "Together"
+    tieBreakerStatementEn: v.string(),
+    tieBreakerStatementMy: v.string(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_letter", ["letter"])
+    .index("by_active", ["isActive"]),
+
+  /**
+   * Ocean Personality Test Questions — 15 statements (3 per archetype)
+   */
+  oceanQuestions: defineTable({
+    id: v.string(), // "O1", "C2", etc.
+    archetypeLetter: v.union(v.literal("O"), v.literal("C"), v.literal("E"), v.literal("A"), v.literal("N")),
+    statementEn: v.string(),
+    statementMy: v.string(),
+    order: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_archetype", ["archetypeLetter"])
+    .index("by_active", ["isActive"])
+    .index("by_order", ["order"]),
+
+  /**
+   * Ocean Test Results — stored per participant or guest session
+   */
+  oceanTestResults: defineTable({
+    userType: v.union(v.literal("REGISTERED"), v.literal("GUEST")),
+    participantId: v.optional(v.id("participants")),
+    sessionId: v.optional(v.string()), // anonymous session for guests
+    answers: v.array(v.object({
+      questionId: v.string(),
+      score: v.number(), // 1-5
+    })),
+    scores: v.object({
+      O: v.number(),
+      C: v.number(),
+      E: v.number(),
+      A: v.number(),
+      N: v.number(),
+    }),
+    finalArchetype: v.union(v.literal("O"), v.literal("C"), v.literal("E"), v.literal("A"), v.literal("N")),
+    wasTieBreaker: v.boolean(),
+    allSameAnswers: v.boolean(),
+    guestName: v.optional(v.string()),
+    guestEmail: v.optional(v.string()),
+    completedAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_participant", ["participantId"])
+    .index("by_session", ["sessionId"])
+    .index("by_userType", ["userType"]),
 });

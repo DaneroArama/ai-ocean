@@ -26,6 +26,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link href="/admin/registrations" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
                 Registrations
               </Link>
+              <Link href="/admin/personality" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
+                Personality
+              </Link>
             </nav>
           </div>
           <Link href="/" className="text-xs text-gray-500 hover:text-gray-700">
