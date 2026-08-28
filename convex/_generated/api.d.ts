@@ -14,12 +14,14 @@ import type * as buildathonRegistrations from "../buildathonRegistrations.js";
 import type * as buildathonRoles from "../buildathonRoles.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
+import type * as oceanTest from "../oceanTest.js";
 import type * as participants from "../participants.js";
 import type * as personalityTest from "../personalityTest.js";
 import type * as registrations from "../registrations.js";
 import type * as roleDiscoveryAnswers from "../roleDiscoveryAnswers.js";
 import type * as roleDiscoveryQuestions from "../roleDiscoveryQuestions.js";
 import type * as seedBuildathon from "../seedBuildathon.js";
+import type * as seedOceanTest from "../seedOceanTest.js";
 
 import type {
   ApiFromModules,
@@ -34,12 +36,14 @@ declare const fullApi: ApiFromModules<{
   buildathonRoles: typeof buildathonRoles;
   helpers: typeof helpers;
   http: typeof http;
+  oceanTest: typeof oceanTest;
   participants: typeof participants;
   personalityTest: typeof personalityTest;
   registrations: typeof registrations;
   roleDiscoveryAnswers: typeof roleDiscoveryAnswers;
   roleDiscoveryQuestions: typeof roleDiscoveryQuestions;
   seedBuildathon: typeof seedBuildathon;
+  seedOceanTest: typeof seedOceanTest;
 }>;
 
 /**
