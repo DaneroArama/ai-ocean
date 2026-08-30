@@ -5,43 +5,10 @@
  * Requirements: 3.2, 3.3, 3.7, 15.4, 26.3
  */
 
-import { v } from "convex/values";
-import { query, mutation, internalMutation, QueryCtx, MutationCtx } from "./_generated/server";
-import { Doc } from "./_generated/dataModel";
-
-/** Minimal identity shape from @convex-dev/auth */
-interface AuthIdentity {
-  email?: string;
-  emailAddress?: string;
-  subject?: string;
-  name?: string;
-  picture?: string;
-  image?: string;
-  tokenIdentifier?: string;
-}
-
-/** Resolve email from @convex-dev/auth identity — token often has no email, email lives in users table via subject */
-async function getEmailFromIdentity(ctx: QueryCtx | MutationCtx, identity: AuthIdentity): Promise<string | null> {
-  if (identity.email) return identity.email;
-  if (identity.emailAddress) return identity.emailAddress;
-  const rawSubject = identity.subject;
-  const userId = rawSubject?.split("|")[0];
-  if (!userId) return null;
-  try {
-    const authUser = await ctx.db.get(userId as Doc<"users">["_id"]);
-    if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
-      return (authUser as { email: string }).email;
-    }
-  } catch {}
-  try {
-    const users = await ctx.db.query("users").collect();
-    const match = users.find((u) => u._id === userId);
-    if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
-      return (match as { email: string }).email;
-    }
-  } catch {}
-  return null;
-}
+import {v} from "convex/values";
+import {internalMutation, mutation, query} from "./_generated/server";
+import {Doc} from "./_generated/dataModel";
+import {AuthIdentity, getEmailFromIdentity} from "./helpers";
 
 /**
  * Get the current authenticated participant's profile
@@ -55,8 +22,7 @@ export const getCurrentParticipant = query({
     if (!identity) return null;
     const email = await getEmailFromIdentity(ctx, identity as AuthIdentity);
     if (!email) return null;
-    const participant = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", email)).first();
-    return participant;
+    return await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", email)).first();
   },
 });
 
@@ -219,8 +185,6 @@ export const ensureCurrentParticipant = mutation({
 
     const idt = identity as AuthIdentity;
     let email: string | null = idt.email ?? idt.emailAddress ?? null;
-    let name: string | undefined = idt.name;
-    let image: string | undefined = idt.picture ?? idt.image;
 
     if (!email) {
       const rawSubject = idt.subject;
@@ -228,18 +192,14 @@ export const ensureCurrentParticipant = mutation({
       if (userId) {
         try {
           const authUser = await ctx.db.get(userId as Doc<"users">["_id"]);
-          if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
-            email = (authUser as { email: string }).email;
-            name = (authUser as { name?: string }).name ?? email?.split("@")[0] ?? name;
-            image = (authUser as { image?: string }).image ?? image;
-          } else {
-            const users = await ctx.db.query("users").collect();
-            const match = users.find((u) => u._id === userId || idt.tokenIdentifier?.includes(u._id));
-            if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
-              email = (match as { email: string }).email;
-              name = (match as { name?: string }).name ?? name;
-              image = (match as { image?: string }).image ?? image;
-            }
+            if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
+              email = (authUser as { email: string }).email;
+            } else {
+              const users = await ctx.db.query("users").collect();
+              const match = users.find((u) => u._id === userId || idt.tokenIdentifier?.includes(u._id));
+              if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
+                email = (match as { email: string }).email;
+              }
           }
         } catch (e) {
           console.log("users lookup failed", e);
@@ -265,7 +225,7 @@ export const ensureCurrentParticipant = mutation({
     const anyAdmin = await ctx.db.query("participants").withIndex("by_role", (q) => q.eq("role", "admin")).first();
     const role = anyAdmin ? "participant" : "admin";
     const now = Date.now();
-    const id = await ctx.db.insert("participants", {
+    return await ctx.db.insert("participants", {
       email: email,
       name: idt.name,
       image: idt.picture ?? idt.image,
@@ -274,7 +234,6 @@ export const ensureCurrentParticipant = mutation({
       createdAt: now,
       lastLoginAt: now,
     });
-    return id;
   },
 });
 

@@ -3,14 +3,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import Tuto from '@/app/assets/Mascots/Tuto.webp'
-import Shark from '@/app/assets/Mascots/Shark.webp'
-import Crabi from '@/app/assets/Mascots/Crabi.webp'
-import Octo from '@/app/assets/Mascots/Octo.webp'
-import Ali from '@/app/assets/Mascots/Ali.webp'
-import Coral from '@/app/assets/Coral.webp'
-import Fishes from '@/app/assets/Fishes.webp'
-import Waves from '@/app/assets/waves.webp'
+import Tuto from '@/app/assets/Mascots/Tuto.png'
+import Shark from '@/app/assets/Mascots/Shark.png'
+import Crabi from '@/app/assets/Mascots/Crabi.png'
+import Octo from '@/app/assets/Mascots/Octo.png'
+import Ali from '@/app/assets/Mascots/Ali.png'
+import Coral from '@/app/assets/Coral.png'
+import Fishes from '@/app/assets/FIshes.png'
+import Waves from '@/app/assets/waves.png'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 
 /**
@@ -44,7 +44,7 @@ export function PersonalityTestSection() {
         pop
       />
 
-      {/* Fishes - using Fishes.webp scattered */}
+      {/* Fishes - using Fishes.png scattered */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute left-[6%] top-[38%] w-14 md:w-16 opacity-90">
           <Image src={Fishes} alt="" width={64} height={32} className="object-contain" />
@@ -97,7 +97,7 @@ export function PersonalityTestSection() {
       </div>
 
       {/* Characters row - standing on white bar */}
-      <div className="absolute bottom-0 left-0 w-full z-[3] flex items-end justify-center gap-1 sm:gap-3 md:gap-6 lg:gap-8 xl:gap-10 px-2 sm:px-6 pointer-events-none">
+      <div className="absolute bottom-12 left-0 w-full z-[3] flex items-end justify-center gap-1 sm:gap-3 md:gap-6 lg:gap-8 xl:gap-10 px-2 sm:px-6 pointer-events-none">
         {/* Tuto - Turtle */}
         <div className="relative shrink-0 flex flex-col items-center -mb-1">
           <Image
@@ -105,7 +105,7 @@ export function PersonalityTestSection() {
             alt="Tuto"
             width={160}
             height={180}
-            className="w-[72px] sm:w-[92px] md:w-[122px] lg:w-[148px] h-auto object-contain drop-shadow-sm"
+            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain drop-shadow-sm"
             priority
           />
           <div className="absolute -left-2 md:-left-3 bottom-[18px] md:bottom-[22px] w-6 md:w-8 opacity-70">
@@ -135,7 +135,7 @@ export function PersonalityTestSection() {
             alt="Crabi"
             width={180}
             height={180}
-            className="w-[78px] sm:w-[108px] md:w-[144px] lg:w-[168px] h-auto object-contain"
+            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
         </div>
@@ -147,7 +147,7 @@ export function PersonalityTestSection() {
             alt="Octo"
             width={190}
             height={180}
-            className="w-[84px] sm:w-[114px] md:w-[152px] lg:w-[176px] h-auto object-contain"
+            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
         </div>
@@ -159,7 +159,7 @@ export function PersonalityTestSection() {
             alt="Ali"
             width={210}
             height={180}
-            className="w-[96px] sm:w-[132px] md:w-[176px] lg:w-[210px] h-auto object-contain"
+            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
           <div className="absolute -right-2 bottom-[18px] w-10 md:w-14 opacity-80 hidden md:block">

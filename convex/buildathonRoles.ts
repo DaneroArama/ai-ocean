@@ -3,16 +3,9 @@
  * New Feature §9: Product/Design/Engineering/Data/Business/Team extensible
  */
 import { v } from "convex/values";
-import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
-
-async function requireAdmin(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Unauthorized");
-  const p = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", identity.email ?? "")).first();
-  if (!p || p.role !== "admin") throw new Error("Admin required");
-  return p;
-}
+import { requireAdmin } from "./helpers";
 
 export const listRoles = query({
   args: { activeOnly: v.optional(v.boolean()) },

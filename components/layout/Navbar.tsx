@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n/provider'
 import { useState } from 'react'
-import eventTitle from "@/app/assets/Title.webp";
+import eventTitle from "@/app/assets/Title.png";
 import Image from "next/image";
 
 import uxmmLogo from "@/app/assets/uxmm_logo.svg"
@@ -77,7 +77,7 @@ export function Navbar() {
           <div className="hidden md:flex">
             <Link
               href="/register"
-              className="font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 bg-white/20 backdrop-blur-sm text-white border border-white/30 rounded-full hover:bg-white/30 transition-colors font-medium"
+              className="font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
             >
               Register
             </Link>
@@ -143,7 +143,7 @@ export function Navbar() {
               <Link
                 href="/register"
                 onClick={closeMobileMenu}
-                className="block w-full font-syncopate px-6 py-3 text-center bg-white/20 backdrop-blur-sm text-white border border-white/30 rounded-full hover:bg-white/30 transition-colors font-medium"
+                className="block w-full font-syncopate px-6 py-3 text-center text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
               >
                 Register
               </Link>

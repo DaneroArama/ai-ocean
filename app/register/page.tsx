@@ -41,7 +41,7 @@ function RegisterInner() {
   const [questionMultiTextResponses, setQuestionMultiTextResponses] = useState<Record<string, string[]>>({});
 
   const myRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
-  const preEventQuestions = useQuery(api.roleDiscoveryQuestions.getActiveQuestions, { phase: "pre-event" });
+  const preEventQuestions = useQuery(api.roleDiscoveryQuestions.getRoleDiscoveryActiveQuestions, { phase: "pre-event" });
 
   const createDraft = useMutation(api.buildathonRegistrations.createDraft);
   const updateReg = useMutation(api.buildathonRegistrations.updateRegistration);
@@ -223,7 +223,7 @@ function RegisterInner() {
                         const sel = questionAnswers[q._id]?.optionIds.includes(opt.id);
                         return (
                           <label key={opt.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm ${sel ? "border-ocean-primary bg-ocean-50" : ""}`}>
-                            <input type="radio" name={q._id} checked={!!sel} onChange={() => toggleQuestionAnswer(q._id, opt.id, q.type)} className="accent-ocean-primary" />
+                            <input type="radio" name={q._id} checked={sel} onChange={() => toggleQuestionAnswer(q._id, opt.id, q.type)} className="accent-ocean-primary" />
                             <span>{opt.labelEn} <span className="text-xs text-gray-400">/ {opt.labelMy}</span></span>
                           </label>
                         );
@@ -239,7 +239,7 @@ function RegisterInner() {
                         return (
                           <div key={opt.id}>
                             <label className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm ${sel ? "border-ocean-primary bg-ocean-50" : ""}`}>
-                              <input type="radio" name={q._id} checked={!!sel} onChange={() => toggleQuestionAnswer(q._id, opt.id, q.type)} className="accent-ocean-primary" />
+                              <input type="radio" name={q._id} checked={sel} onChange={() => toggleQuestionAnswer(q._id, opt.id, q.type)} className="accent-ocean-primary" />
                               <span>{opt.labelEn} <span className="text-xs text-gray-400">/ {opt.labelMy}</span></span>
                             </label>
                             {sel && (

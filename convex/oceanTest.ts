@@ -8,15 +8,6 @@ import { query, mutation } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { getParticipantByIdentity } from "./helpers";
 
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function calculateScores(answers: { questionId: string; score: number }[]) {
   const archetypeMap = { O: 0, C: 0, E: 0, A: 0, N: 0 } as Record<string, number>;
   for (const a of answers) {
@@ -64,7 +55,7 @@ export const getQuestions = query({
   args: {},
   handler: async (ctx) => {
     const questions = await ctx.db.query("oceanQuestions").withIndex("by_active", (q) => q.eq("isActive", true)).collect();
-    return shuffle(questions.sort((a, b) => a.order - b.order));
+    return questions.sort((a, b) => a.order - b.order);
   },
 });
 

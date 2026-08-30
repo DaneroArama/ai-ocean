@@ -1,18 +1,22 @@
 'use client'
 
-import { useI18n } from '@/lib/i18n/provider'
 import Image from 'next/image'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
 // Import mascot images
-import Shark from '@/app/assets/Mascots/Shark.webp'
-import Ali from '@/app/assets/Mascots/Ali.webp'
-import Crabi from '@/app/assets/Mascots/Crabi.webp'
-import Octo from '@/app/assets/Mascots/Octo.webp'
-import Tuto from '@/app/assets/Mascots/Tuto.webp'
-import eventTitle from '@/app/assets/Title.webp'
-import eventLogo from '@/app/assets/event_logo.webp'
+import Shark from '@/app/assets/Mascots/Shark.png'
+import Ali from '@/app/assets/Mascots/Ali.png'
+import Crabi from '@/app/assets/Mascots/Crabi.png'
+import Octo from '@/app/assets/Mascots/Octo.png'
+import Tuto from '@/app/assets/Mascots/Tuto.png'
+import eventTitle from '@/app/assets/Title.png'
+import eventLogo from '@/app/assets/event_logo.png'
 
 // Character data with unique background colors
 const characters = [
@@ -25,7 +29,6 @@ const characters = [
     traits: ['Bold', 'Driven', 'Decisive'],
     bgLeft: 'from-[#31C7FF] to-[#18AAE6]',
     bgRight: 'bg-[#2389B3]'
-
   },
   {
     id: 'ali',
@@ -69,116 +72,52 @@ const characters = [
   }
 ]
 
+// Helper to map Tailwind gradient classes to hex colors
+const colorMap: Record<string, [string, string]> = {
+  'from-[#31C7FF] to-[#18AAE6]': ['#31C7FF', '#18AAE6'],
+  'from-[#46D227] to-[#2D9A16]': ['#46D227', '#2D9A16'],
+  'from-[#F98156] to-[#D6420D]': ['#F98156', '#D6420D'],
+  'from-[#9928EA] to-[#7117B2]': ['#9928EA', '#7117B2'],
+  'from-[#94AD0F] to-[#67780E]': ['#94AD0F', '#67780E']
+}
+
+function extractHexColor(bgRight: string) {
+  const match = bgRight.match(/\[([^\]]+)\]/)
+  return match ? match[1] : '#2389B3'
+}
+
 /**
- * Character Introduction Section
- * 
- * Features:
- * - Draggable/swipeable character carousel
- * - Floating trapezium shape for right side
- * - Left: Event title, character image, animated quote bubble
- * - Right: Character name, bio with custom scrollbar, traits
- * - Smooth transitions with GSAP animations
+ * Single character slide - full viewport section
  */
-export function CharacterSection() {
-  const { t } = useI18n()
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollTop, setScrollTop] = useState(0)
-  
-  const characterRef = useRef<HTMLDivElement>(null)
-  const quoteRef = useRef<HTMLDivElement>(null)
-  const bioRef = useRef<HTMLDivElement>(null)
-  const scrollbarThumbRef = useRef<HTMLDivElement>(null)
-  const scrollbarTrackRef = useRef<HTMLDivElement>(null)
-  const leftBgRef = useRef<HTMLDivElement>(null)
-  const trapeziumRef = useRef<SVGSVGElement>(null)
+function CharacterSlide({ character }: { character: typeof characters[number] }) {
   const sectionRef = useRef<HTMLElement>(null)
+  const characterImageRef = useRef<HTMLDivElement>(null)
+  const quoteRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLHeadingElement>(null)
+  const bioRef = useRef<HTMLDivElement>(null)
   const bioContentRef = useRef<HTMLParagraphElement>(null)
   const traitsRef = useRef<HTMLDivElement>(null)
+  const trapeziumRef = useRef<SVGSVGElement>(null)
+  const leftBgRef = useRef<HTMLDivElement>(null)
+  const scrollbarThumbRef = useRef<HTMLDivElement>(null)
+  const scrollbarTrackRef = useRef<HTMLDivElement>(null)
   const isDraggingScrollbarRef = useRef(false)
+  const hasAnimatedRef = useRef(false)
+
+  const [scrollTop, setScrollTop] = useState(0)
   const [isScrollbarDragging, setIsScrollbarDragging] = useState(false)
-  
-  const currentCharacter = characters[currentIndex]
 
-  // Handle character change with animations
-  const changeCharacter = (newIndex: number) => {
-    if (newIndex < 0 || newIndex >= characters.length || newIndex === currentIndex) return
+  const bgRightColor = extractHexColor(character.bgRight)
+  const [startColor, endColor] = colorMap[character.bgLeft] || ['#02A4E3', '#0045A1']
 
-    const isNext = newIndex > currentIndex
+  // Animate in when scrolled into view
+  const animateIn = useCallback(() => {
+    if (hasAnimatedRef.current) return
+    hasAnimatedRef.current = true
 
-    // Animate out quote bubble
-    if (quoteRef.current) {
-      gsap.to(quoteRef.current, {
-        scale: 0,
-        opacity: 0,
-        duration: 0.3,
-        ease: 'back.in',
-      })
-    }
-
-    // Animate out character
-    if (characterRef.current) {
-      gsap.to(characterRef.current, {
-        x: isNext ? -100 : 100,
-        opacity: 0,
-        duration: 0.35,
-        ease: 'power2.inOut',
-      })
-    }
-
-    // Animate out right-side texts with gsap
-    if (nameRef.current) {
-      gsap.to(nameRef.current, {
-        y: -20,
-        opacity: 0,
-        duration: 0.25,
-        ease: 'power2.in',
-      })
-    }
-    if (bioContentRef.current) {
-      gsap.to(bioContentRef.current, {
-        y: -12,
-        opacity: 0,
-        duration: 0.25,
-        ease: 'power2.in',
-      })
-    }
-    if (traitsRef.current) {
-      gsap.to(traitsRef.current, {
-        y: 20,
-        opacity: 0,
-        duration: 0.25,
-        ease: 'power2.in',
-      })
-    }
-    // Animate out trapezium + left bg for bg colour transition
-    if (trapeziumRef.current) {
-      const mainPoly = trapeziumRef.current.querySelector('polygon[data-main]') as SVGPolygonElement | null
-      if (mainPoly) {
-        gsap.to(mainPoly, { opacity: 0, duration: 0.3, ease: 'power2.inOut' })
-      }
-    }
-    if (sectionRef.current) {
-      gsap.to(sectionRef.current, { opacity: 0.85, duration: 0.3, ease: 'power2.inOut' })
-    }
-
-    // Delay index change to let out-animations play
-    gsap.delayedCall(0.35, () => {
-      setCurrentIndex(newIndex)
-      setScrollTop(0)
-      if (bioRef.current) {
-        bioRef.current.scrollTop = 0
-      }
-    })
-  }
-
-  // Animate in on character change
-  useEffect(() => {
-    if (characterRef.current) {
+    if (characterImageRef.current) {
       gsap.fromTo(
-        characterRef.current,
+        characterImageRef.current,
         { x: 100, opacity: 0 },
         { x: 0, opacity: 1, duration: 0.55, ease: 'power3.out', overwrite: 'auto' }
       )
@@ -188,18 +127,10 @@ export function CharacterSection() {
       gsap.fromTo(
         quoteRef.current,
         { scale: 0, opacity: 0 },
-        { 
-          scale: 1, 
-          opacity: 1, 
-          duration: 0.5, 
-          delay: 0.25,
-          ease: 'back.out(1.7)',
-          overwrite: 'auto'
-        }
+        { scale: 1, opacity: 1, duration: 0.5, delay: 0.25, ease: 'back.out(1.7)', overwrite: 'auto' }
       )
     }
 
-    // Text changing animations - name / bio / traits
     if (nameRef.current) {
       gsap.fromTo(
         nameRef.current,
@@ -207,6 +138,7 @@ export function CharacterSection() {
         { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', delay: 0.15, overwrite: 'auto' }
       )
     }
+
     if (bioContentRef.current) {
       gsap.fromTo(
         bioContentRef.current,
@@ -214,6 +146,7 @@ export function CharacterSection() {
         { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.22, overwrite: 'auto' }
       )
     }
+
     if (traitsRef.current) {
       gsap.fromTo(
         traitsRef.current,
@@ -230,14 +163,6 @@ export function CharacterSection() {
       }
     }
 
-    // Bg colour transitions - left gradient + right trapezium
-    if (sectionRef.current) {
-      gsap.fromTo(
-        sectionRef.current,
-        { opacity: 0.85 },
-        { opacity: 1, duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' }
-      )
-    }
     if (trapeziumRef.current) {
       const mainPoly = trapeziumRef.current.querySelector('polygon[data-main]') as SVGPolygonElement | null
       if (mainPoly) {
@@ -248,9 +173,34 @@ export function CharacterSection() {
         gsap.fromTo(gradient, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.inOut', overwrite: 'auto' })
       }
     }
-  }, [currentIndex])
 
-  // Custom scroll handler
+    if (sectionRef.current) {
+      gsap.fromTo(
+        sectionRef.current,
+        { opacity: 0.85 },
+        { opacity: 1, duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' }
+      )
+    }
+  }, [])
+
+  // ScrollTrigger to animate on scroll into view
+  useEffect(() => {
+    const node = sectionRef.current
+    if (!node) return
+
+    const trigger = ScrollTrigger.create({
+      trigger: node,
+      start: 'top 80%',
+      once: true,
+      onEnter: () => animateIn(),
+    })
+
+    return () => {
+      trigger.kill()
+    }
+  }, [animateIn])
+
+  // Bio scrollbar handlers
   const handleBioScroll = (e: React.UIEvent<HTMLDivElement>) => {
     if (isDraggingScrollbarRef.current) return
     const target = e.currentTarget
@@ -259,7 +209,6 @@ export function CharacterSection() {
     setScrollTop(scrollPercentage)
   }
 
-  // Scrollbar draggable - sync thumb drag to bio scroll
   const updateBioScrollFromPosition = (clientY: number) => {
     const track = scrollbarTrackRef.current
     const bio = bioRef.current
@@ -287,7 +236,6 @@ export function CharacterSection() {
   }
 
   const handleScrollbarTrackMouseDown = (e: React.MouseEvent) => {
-    // click on track to jump - avoid when clicking thumb
     if (e.target === scrollbarThumbRef.current || scrollbarThumbRef.current?.contains(e.target as Node)) return
     updateBioScrollFromPosition(e.clientY)
     isDraggingScrollbarRef.current = true
@@ -300,7 +248,6 @@ export function CharacterSection() {
     setIsScrollbarDragging(true)
   }
 
-  // Global listeners for drag
   useEffect(() => {
     if (!isScrollbarDragging) return
 
@@ -323,7 +270,6 @@ export function CharacterSection() {
     window.addEventListener('touchmove', handleTouchMove, { passive: false })
     window.addEventListener('touchend', handleEnd)
 
-    // Prevent text selection while dragging
     document.body.style.userSelect = 'none'
     document.body.style.cursor = 'grabbing'
 
@@ -337,69 +283,18 @@ export function CharacterSection() {
     }
   }, [isScrollbarDragging])
 
-  // Drag handlers
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDragging(true)
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    setStartX(clientX)
-  }
-
-  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return
-    
-    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX
-    const diff = startX - clientX
-    
-    if (Math.abs(diff) > 50) {
-      if (diff > 0 && currentIndex < characters.length - 1) {
-        changeCharacter(currentIndex + 1)
-      } else if (diff < 0 && currentIndex > 0) {
-        changeCharacter(currentIndex - 1)
-      }
-    }
-    
-    setIsDragging(false)
-  }
-
-  // Get gradient colors based on character
-  const getGradientId = () => `gradient-${currentCharacter.id}`
-  const getGradientColors = () => {
-    const bgClass = currentCharacter.bgLeft
-    // Map the Tailwind classes to actual color values
-    const colorMap: Record<string, [string, string]> = {
-      'from-[#31C7FF] to-[#18AAE6]': ['#31C7FF', '#18AAE6'],
-      'from-[#46D227] to-[#2D9A16]': ['#46D227', '#2D9A16'],
-      'from-[#F98156] to-[#D6420D]': ['#F98156', '#D6420D'],
-      'from-[#9928EA] to-[#7117B2]': ['#9928EA', '#7117B2'],
-      'from-[#94AD0F] to-[#67780E]': ['#94AD0F', '#67780E']
-    }
-    return colorMap[bgClass] || ['#02A4E3', '#0045A1']
-  }
-
-  const [startColor, endColor] = getGradientColors()
-
-  const getBgRightColor = () => {
-    const match = currentCharacter.bgRight.match(/\[([^\]]+)\]/)
-    return match ? match[1] : '#2389B3'
-  }
-  const bgRightColor = getBgRightColor()
-
   return (
     <section
       ref={sectionRef}
-      className={`relative min-h-[100svh] md:h-screen md:min-h-screen bg-gradient-to-b ${currentCharacter.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
+      className={`relative min-h-[100svh] md:h-screen md:min-h-screen bg-gradient-to-b ${character.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
     >
       <div className="relative w-full h-auto md:h-full flex-1 md:flex-none flex items-center py-0 md:py-0 md:min-h-0">
         <div className="w-full h-auto md:h-full flex flex-col md:flex-row relative md:min-h-0">
-          
-          {/* LEFT SIDE - Character & Quote - full height on desktop */}
-          <div 
+
+          {/* LEFT SIDE - Character & Quote */}
+          <div
             ref={leftBgRef}
-            className={`flex-none md:flex-1 md:h-full md:min-h-0 relative flex flex-col items-center justify-center p-4 md:p-8 cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out z-20 min-h-[320px] md:min-h-0 py-20 md:py-0`}
-            onMouseDown={handleDragStart}
-            onMouseUp={handleDragEnd}
-            onTouchStart={handleDragStart}
-            onTouchEnd={handleDragEnd}
+            className={`flex-none md:flex-1 md:h-full md:min-h-0 relative flex flex-col items-center justify-center p-4 md:p-8 transition-all duration-700 ease-in-out z-20 min-h-[320px] md:min-h-0 py-20 md:py-0`}
           >
             {/* Event Title */}
             <div className="absolute top-4 left-8">
@@ -412,12 +307,11 @@ export function CharacterSection() {
               />
             </div>
 
-            {/* Quote Bubble - chatBubble.svg with bgRight stroke - on TOP of character */}
-            <div 
+            {/* Quote Bubble */}
+            <div
               ref={quoteRef}
-              className="relative w-full max-w-[260px] md:max-w-[380px] flex items-center justify-center "
+              className="relative w-full max-w-[260px] md:max-w-[380px] flex items-center justify-center"
             >
-              {/* Inline SVG so stroke can be dynamic bgRightColor - reflipped: tail naturally at bottom points down to character */}
               <svg
                 viewBox="0 0 349 149"
                 fill="none"
@@ -425,7 +319,6 @@ export function CharacterSection() {
                 className="w-full h-auto drop-shadow-2xl"
                 aria-hidden="true"
               >
-                {/* Back/shadow layer */}
                 <path
                   d="M324.159 16.2022C294.049 2.66519 68.666 -2.74082 27.6116 16.2022C-2.49852 30.0962 -1.58671 105.621 27.6116 118.09C47.1668 126.441 151.858 129.358 231.485 127.462C244.527 134.06 257.571 140.657 270.613 147.255C269.535 140.216 268.905 133.167 268.721 126.116C290.975 124.979 308.602 123.341 317.776 121.223C359.75 111.531 354.269 29.7402 324.159 16.2022Z"
                   fill={bgRightColor}
@@ -436,7 +329,6 @@ export function CharacterSection() {
                   strokeLinejoin="round"
                   className="transition-all duration-700"
                 />
-                {/* Front bubble */}
                 <path
                   d="M319.789 13.2632C289.679 -0.273779 64.2963 -5.67978 23.242 13.2632C-6.86815 27.1572 -5.95634 102.682 23.242 115.151C42.7972 123.502 147.488 126.419 227.115 124.523C240.157 131.121 253.202 137.719 266.244 144.316C265.165 137.277 264.535 130.228 264.351 123.177C286.603 122.04 304.232 120.402 313.407 118.284C355.383 108.593 349.902 26.8012 319.789 13.2632Z"
                   fill="#FDFFFA"
@@ -447,7 +339,6 @@ export function CharacterSection() {
                   strokeLinejoin="round"
                   className="transition-all duration-700"
                 />
-                {/* Highlight strokes */}
                 <path
                   d="M19.4683 32.3252C20.9307 29.2332 22.5034 26.1282 25.4309 23.1982C28.3584 20.2682 32.733 17.4972 38.9953 15.5202C45.7698 13.3812 54.2758 12.3002 62.5742 11.2622"
                   stroke={bgRightColor}
@@ -476,42 +367,25 @@ export function CharacterSection() {
                   className="transition-all duration-700"
                 />
               </svg>
-              {/* Centered quote text */}
               <p className="absolute inset-0 flex items-center justify-center px-8 md:px-10 pb-6 font-quicksand text-base md:text-lg text-gray-800 text-center font-medium leading-snug">
-                &#34;{currentCharacter.quote}&#34;
+                &#34;{character.quote}&#34;
               </p>
             </div>
 
-            {/* Character Image - below quote bubble */}
-            <div ref={characterRef} className="relative z-10">
+            {/* Character Image */}
+            <div ref={characterImageRef} className="relative z-10">
               <Image
-                src={currentCharacter.image}
-                alt={currentCharacter.name}
+                src={character.image}
+                alt={character.name}
                 width={400}
                 height={400}
                 className="w-44 h-44 md:w-96 md:h-96 object-contain drop-shadow-2xl"
                 draggable={false}
               />
             </div>
-
-            {/* Navigation Dots */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
-              {characters.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => changeCharacter(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex 
-                      ? 'bg-white w-8' 
-                      : 'bg-white/50 hover:bg-white/70'
-                  }`}
-                  aria-label={`Go to character ${index + 1}`}
-                />
-              ))}
-            </div>
           </div>
 
-          {/* FLOATING TRAPEZIUM SHAPE - Covers right side with both edges angled - hidden on mobile (stacked layout) */}
+          {/* FLOATING TRAPEZIUM SHAPE */}
           <svg
             ref={trapeziumRef}
             className="hidden md:block absolute top-0 right-0 h-full w-3/5 z-10 transition-all duration-700 ease-in-out"
@@ -519,40 +393,37 @@ export function CharacterSection() {
             preserveAspectRatio="none"
           >
             <defs>
-              <linearGradient id={getGradientId()} x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id={`gradient-${character.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor={startColor} />
                 <stop offset="100%" stopColor={endColor} />
               </linearGradient>
             </defs>
-            {/* Trapezium: both left edges angled - SOLID COLOR from bgRight */}
             <polygon
               data-main
               points="15,0 100,0 100,100 8,100"
               fill={bgRightColor}
               className="transition-all duration-700"
             />
-            {/* Tapered line - THICK at top, thin at bottom with gradient (opposite of left side) */}
             <defs>
-              <linearGradient id={`line-gradient-${currentCharacter.id}`} x1="0%" y1="100%" x2="0%" y2="0%">
+              <linearGradient id={`line-gradient-${character.id}`} x1="0%" y1="100%" x2="0%" y2="0%">
                 <stop offset="0%" stopColor={startColor} />
                 <stop offset="100%" stopColor={endColor} />
               </linearGradient>
             </defs>
             <polygon
               points="13,0 16,0 8,100 7,100"
-              fill={`url(#line-gradient-${currentCharacter.id})`}
+              fill={`url(#line-gradient-${character.id})`}
               className="transition-all duration-700"
             />
           </svg>
 
-          {/* RIGHT SIDE CONTENT - full height on desktop, auto on mobile */}
+          {/* RIGHT SIDE CONTENT */}
           <div className="flex-none w-full md:w-[52%] lg:w-5/9 h-auto md:h-full md:min-h-0 md:self-stretch relative flex flex-col justify-center p-6 md:p-10 md:pl-14 lg:pl-20 z-20 shrink-0 rounded-4xl md:rounded-none -mt-6 md:mt-0">
-
             {/* Character As Background */}
-            <div ref={characterRef} className="absolute z-0 right-[-20%]">
+            <div className="absolute z-0 right-[-20%]">
               <Image
-                src={currentCharacter.image}
-                alt={currentCharacter.name}
+                src={character.image}
+                alt={character.name}
                 width={400}
                 height={400}
                 className="w-64 h-64 md:w-full md:h-200 object-contain opacity-20 pointer-events-none"
@@ -560,19 +431,20 @@ export function CharacterSection() {
               />
             </div>
 
-            {/* Mobile solid bg to replace hidden trapezium */}
+            {/* Mobile solid bg */}
             <div className="absolute inset-0 md:hidden rounded-t-[2rem] -z-10 transition-colors duration-700" style={{ backgroundColor: bgRightColor }} aria-hidden="true" />
-            {/* Character Name - fixed height to prevent layout shift */}
+
+            {/* Character Name */}
             <h2
               ref={nameRef}
               className="font-syne text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase mb-6 md:mb-8 min-h-[48px] md:min-h-[72px] lg:min-h-[80px] flex items-center leading-tight"
             >
-              {currentCharacter.name}
+              {character.name}
             </h2>
 
-            {/* Bio - FIXED HEIGHT with single-line scrollbar */}
+            {/* Bio */}
             <div className="flex-none h-[190px] md:h-[220px] lg:h-[260px] relative mb-6 md:mb-8 flex" data-lenis-prevent>
-              <div 
+              <div
                 ref={bioRef}
                 onScroll={handleBioScroll}
                 className="flex-1 h-full overflow-y-auto pr-12 scrollbar-hide"
@@ -582,13 +454,12 @@ export function CharacterSection() {
                   ref={bioContentRef}
                   className="font-quicksand text-sm md:text-base lg:text-lg text-white/90 leading-relaxed whitespace-pre-line"
                 >
-                  {currentCharacter.bio}
+                  {character.bio}
                 </p>
               </div>
 
-              {/* Single-line Scrollbar - indicator is event logo - DRAGGABLE */}
+              {/* Single-line Scrollbar */}
               <div className="absolute top-0 right-0 w-8 h-full flex flex-col items-center py-1 select-none">
-                {/* Single vertical line track - click to jump */}
                 <div
                   ref={scrollbarTrackRef}
                   onMouseDown={handleScrollbarTrackMouseDown}
@@ -596,13 +467,12 @@ export function CharacterSection() {
                   className="flex-1 w-[20px] flex justify-center relative cursor-pointer touch-none"
                 >
                   <div className="w-[2px] h-full bg-white/30 rounded-full" />
-                  {/* Logo indicator - draggable */}
-                  <div 
+                  <div
                     ref={scrollbarThumbRef}
                     onMouseDown={handleScrollbarThumbMouseDown}
                     onTouchStart={handleScrollbarThumbTouchStart}
                     className={`absolute left-1/2 w-7 h-7 -ml-[14px] transition-none will-change-transform cursor-grab active:cursor-grabbing touch-none ${isScrollbarDragging ? 'scale-110' : 'hover:scale-105'} select-none`}
-                    style={{ 
+                    style={{
                       top: `${scrollTop * 100}%`,
                       transform: 'translateY(-50%)',
                     }}
@@ -620,24 +490,21 @@ export function CharacterSection() {
               </div>
             </div>
 
-            {/* Traits - FIXED HEIGHT */}
+            {/* Traits */}
             <div ref={traitsRef} className="relative flex-none h-[170px] md:h-[180px]">
-              {/* "Traits" Tab - rounded top, extends into container */}
               <div className="inline-block bg-white/20 backdrop-blur-sm rounded-t-2xl px-6 py-2 border-t border-l border-r border-white/30">
                 <h3 className="font-syne text-lg md:text-xl font-bold text-white uppercase">
                   Traits
                 </h3>
               </div>
-              
-              {/* Traits Container - darker semi-transparent with border */}
+
               <div className="bg-black/30 backdrop-blur-sm rounded-r-2xl rounded-bl-2xl p-6 border border-white/20 -mt-px">
                 <div className="flex flex-wrap gap-4">
-                  {currentCharacter.traits.map((trait, index) => (
-                    <div 
+                  {character.traits.map((trait, index) => (
+                    <div
                       key={index}
                       className="trait-item flex flex-col items-center gap-2"
                     >
-                      {/* Icon Circle */}
                       <div className="w-14 h-14 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/50">
                         {index === 0 && (
                           <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -655,8 +522,6 @@ export function CharacterSection() {
                           </svg>
                         )}
                       </div>
-                      
-                      {/* Trait Label */}
                       <span className="font-syne text-base font-semibold text-white">
                         {trait}
                       </span>
@@ -672,5 +537,29 @@ export function CharacterSection() {
       {/* Bottom wave decoration */}
       <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/10 to-transparent pointer-events-none"></div>
     </section>
+  )
+}
+
+/**
+ * Character Introduction Section
+ *
+ * Features:
+ * - Vertically scrollable full-viewport sections per character
+ * - Each section: left character + quote, right name + bio + traits
+ * - Scroll-triggered GSAP entrance animations
+ * - Floating trapezium shape on desktop
+ * - Custom scrollbar with draggable event logo indicator
+ */
+export function CharacterSection() {
+  useEffect(() => {
+    ScrollTrigger.refresh()
+  }, [])
+
+  return (
+    <>
+      {characters.map((character) => (
+        <CharacterSlide key={character.id} character={character} />
+      ))}
+    </>
   )
 }

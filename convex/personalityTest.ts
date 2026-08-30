@@ -8,43 +8,17 @@
  * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 12.4, 15.1, 22.1, 25.2
  */
 
-import { v } from "convex/values";
-import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
-import { Doc } from "./_generated/dataModel";
-
-/**
- * Helper function to get current participant and verify admin role
- * Requirement 12.4: Admin dashboard with authorization validation
- * Requirement 15.4: Role-based authorization
- */
-async function requireAdmin(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) {
-    throw new Error("Unauthorized: Authentication required");
-  }
-  
-  const participant = await ctx.db
-    .query("participants")
-    .withIndex("by_email", (q) => q.eq("email", identity.email!))
-    .first();
-  
-  if (!participant) {
-    throw new Error("Unauthorized: Participant not found");
-  }
-  
-  if (participant.role !== "admin") {
-    throw new Error("Unauthorized: Admin role required");
-  }
-  
-  return participant;
-}
+import {v} from "convex/values";
+import {mutation, query} from "./_generated/server";
+import {Doc} from "./_generated/dataModel";
+import {requireAdmin} from "./helpers";
 
 /**
  * Get all active personality questions ordered by orderIndex
  * Requirement 5.1: Question ordering that determines sequence presented to participants
  * Requirement 6.1: Present questions in participant's selected language
  */
-export const getActiveQuestions = query({
+export const getPersonalityActiveQuestions = query({
   args: {},
   handler: async (ctx) => {
     // No authentication required - questions are public for test-taking
@@ -63,7 +37,7 @@ export const getActiveQuestions = query({
  * Requirement 12.4: Admin dashboard - question management interfaces
  * Requirement 15.4: Server-side authorization validation
  */
-export const getQuestionById = query({
+export const getPersonalityQuestionById = query({
   args: {
     questionId: v.id("personalityQuestions"),
   },
@@ -90,7 +64,7 @@ export const getQuestionById = query({
  * Requirement 12.4: Admin dashboard - create question functionality
  * Requirement 25.2: Audit trail for admin question creation
  */
-export const createQuestion = mutation({
+export const createPersonalityQuestion = mutation({
   args: {
     textEn: v.string(),
     textMy: v.string(),
@@ -171,7 +145,7 @@ export const createQuestion = mutation({
  * Requirement 12.4: Admin dashboard - edit question functionality
  * Requirement 25.2: Audit trail for admin question modifications
  */
-export const updateQuestion = mutation({
+export const updatePersonalityQuestion = mutation({
   args: {
     questionId: v.id("personalityQuestions"),
     textEn: v.optional(v.string()),
@@ -270,7 +244,7 @@ export const updateQuestion = mutation({
  * Requirement 12.4: Admin dashboard - delete question functionality
  * Requirement 25.2: Audit trail for admin question deletions
  */
-export const deleteQuestion = mutation({
+export const deletePersonalityQuestion = mutation({
   args: {
     questionId: v.id("personalityQuestions"),
   },
@@ -321,7 +295,7 @@ export const deleteQuestion = mutation({
  * Requirement 12.4: Admin dashboard - question reorder functionality
  * Requirement 25.2: Audit trail for admin question reordering
  */
-export const reorderQuestions = mutation({
+export const reorderPersonalityQuestions = mutation({
   args: {
     questionOrders: v.array(
       v.object({
@@ -387,7 +361,7 @@ export const reorderQuestions = mutation({
  * Requirement 6.4: Validate each participant can only submit one answer per question per registration
  * Requirement 22.1: Persist all personality answers to database immediately upon submission
  */
-export const submitAnswer = mutation({
+export const submitPersonalityAnswer = mutation({
   args: {
     registrationId: v.id("registrations"),
     questionId: v.id("personalityQuestions"),
@@ -472,7 +446,7 @@ export const submitAnswer = mutation({
  * Requirement 6.6: Allow participants to view their submitted answers
  * Requirement 15.1: Participants can only access their own answers
  */
-export const getMyAnswers = query({
+export const getMyPersonalityAnswers = query({
   args: {
     registrationId: v.id("registrations"),
   },
@@ -503,12 +477,10 @@ export const getMyAnswers = query({
     }
     
     // Get all answers for this registration
-    const answers = await ctx.db
+    return await ctx.db
       .query("personalityAnswers")
       .withIndex("by_registration", (q) => q.eq("registrationId", args.registrationId))
       .collect();
-    
-    return answers;
   },
 });
 
@@ -516,7 +488,7 @@ export const getMyAnswers = query({
  * Get test progress for a specific registration
  * Requirement 6.5: Display test progress indicating completed and remaining questions
  */
-export const getTestProgress = query({
+export const getPersonalityTestProgress = query({
   args: {
     registrationId: v.id("registrations"),
   },

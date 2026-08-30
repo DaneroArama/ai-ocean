@@ -12,12 +12,12 @@ type QuestionType = "single" | "multiple" | "scenario" | "scale" | "longtext" | 
 type Phase = "pre-event" | "main-event";
 
 export default function AdminQuestionsPage() {
-  const questions = useQuery(api.roleDiscoveryQuestions.listQuestions);
+  const questions = useQuery(api.roleDiscoveryQuestions.listRoleDiscoveryQuestions);
   const roles = useQuery(api.buildathonRoles.listRoles, { activeOnly: false });
 
-  const createQ = useMutation(api.roleDiscoveryQuestions.createQuestion);
-  const updateQ = useMutation(api.roleDiscoveryQuestions.updateQuestion);
-  const reorder = useMutation(api.roleDiscoveryQuestions.reorderQuestions);
+  const createQ = useMutation(api.roleDiscoveryQuestions.createRoleDiscoveryQuestion);
+  const updateQ = useMutation(api.roleDiscoveryQuestions.updateRoleDiscoveryQuestion);
+  const reorder = useMutation(api.roleDiscoveryQuestions.reorderRoleDiscoveryQuestions);
 
   const [filterCat, setFilterCat] = useState<string>("all");
   const [filterPhase, setFilterPhase] = useState<Phase>("main-event");

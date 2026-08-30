@@ -3,25 +3,11 @@
  * New Feature §6-8: 20-30 casual scenario questions, scoringSignals hidden, shuffle identity-preserving
  */
 import { v } from "convex/values";
-import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
-import { getParticipantByIdentity } from "./helpers";
+import { requireAdmin, shuffle } from "./helpers";
 
-async function requireAdmin(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Unauthorized");
-  const p = await getParticipantByIdentity(ctx, identity);
-  if (!p || p.role !== "admin") throw new Error("Admin required");
-  return p;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-
-export const getActiveQuestions = query({
+export const getRoleDiscoveryActiveQuestions = query({
   args: {
     version: v.optional(v.string()),
     phase: v.optional(v.union(v.literal("pre-event"), v.literal("main-event"))),
@@ -43,7 +29,7 @@ export const getActiveQuestions = query({
   },
 });
 
-export const listQuestions = query({
+export const listRoleDiscoveryQuestions = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
@@ -55,7 +41,7 @@ export const listQuestions = query({
   },
 });
 
-export const createQuestion = mutation({
+export const createRoleDiscoveryQuestion = mutation({
   args: {
     phase: v.union(v.literal("pre-event"), v.literal("main-event")),
     category: v.string(),
@@ -88,7 +74,7 @@ export const createQuestion = mutation({
   },
 });
 
-export const updateQuestion = mutation({
+export const updateRoleDiscoveryQuestion = mutation({
   args: {
     questionId: v.id("roleDiscoveryQuestions"),
     phase: v.optional(v.union(v.literal("pre-event"), v.literal("main-event"))),
@@ -119,7 +105,7 @@ export const updateQuestion = mutation({
   },
 });
 
-export const reorderQuestions = mutation({
+export const reorderRoleDiscoveryQuestions = mutation({
   args: { orders: v.array(v.object({ questionId: v.id("roleDiscoveryQuestions"), order: v.number() })) },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);

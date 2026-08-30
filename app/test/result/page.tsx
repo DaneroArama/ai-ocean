@@ -6,9 +6,9 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import Image from "next/image";
 
-import Coral from "@/app/assets/Coral.webp";
-import Fishes from "@/app/assets/Fishes.webp";
-import Starfish from "@/app/assets/Starfish.webp";
+import Coral from "@/app/assets/Coral.png";
+import Fishes from "@/app/assets/Fishes.png";
+import Starfish from "@/app/assets/Starfish.png";
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";

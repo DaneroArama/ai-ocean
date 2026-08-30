@@ -40,14 +40,14 @@ function MainEventInner() {
 
   const myRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
   const roles = useQuery(api.buildathonRoles.listRoles, { activeOnly: false });
-  const questions = useQuery(api.roleDiscoveryQuestions.getActiveQuestions, { version: "v1" });
+  const questions = useQuery(api.roleDiscoveryQuestions.getRoleDiscoveryActiveQuestions, { version: "v1" });
   const recommendation = useQuery(
     api.roleDiscoveryAnswers.getRecommendation,
     regId ? { registrationId: regId as Id<"buildathonRegistrations"> } : "skip"
   );
 
   const updateReg = useMutation(api.buildathonRegistrations.updateRegistration);
-  const submitAnswer = useMutation(api.roleDiscoveryAnswers.submitAnswer);
+  const submitAnswer = useMutation(api.roleDiscoveryAnswers.submitRoleDiscoveryAnswer);
   const confirmRole = useMutation(api.buildathonRegistrations.confirmRoleSelection);
   const submitReg = useMutation(api.buildathonRegistrations.submitRegistration);
   const calculateRec = useMutation(api.roleDiscoveryAnswers.calculateRecommendations);
@@ -216,7 +216,7 @@ function MainEventInner() {
                               const sel = answers[q._id]?.optionIds.includes(opt.id);
                               return (
                                 <label key={opt.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm ${sel ? "border-ocean-primary bg-ocean-50" : ""} ${disabled ? "opacity-40" : ""}`}>
-                                  <input type={q.type === "multiple" ? "checkbox" : "radio"} name={q._id} checked={!!sel} disabled={!!disabled} onChange={() => toggleAnswer(q._id, opt.id, q.type, !!q.allowNotSure)} className="accent-ocean-primary" />
+                                  <input type={q.type === "multiple" ? "checkbox" : "radio"} name={q._id} checked={sel} disabled={disabled} onChange={() => toggleAnswer(q._id, opt.id, q.type, !!q.allowNotSure)} className="accent-ocean-primary" />
                                   <span>{opt.labelEn} <span className="text-xs text-gray-400">/ {opt.labelMy}</span></span>
                                 </label>
                               );
@@ -232,7 +232,7 @@ function MainEventInner() {
                               return (
                                 <div key={opt.id}>
                                   <label className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm ${sel ? "border-ocean-primary bg-ocean-50" : ""} ${disabled ? "opacity-40" : ""}`}>
-                                    <input type="radio" name={q._id} checked={!!sel} disabled={!!disabled} onChange={() => toggleAnswer(q._id, opt.id, q.type, !!q.allowNotSure)} className="accent-ocean-primary" />
+                                    <input type="radio" name={q._id} checked={sel} disabled={disabled} onChange={() => toggleAnswer(q._id, opt.id, q.type, !!q.allowNotSure)} className="accent-ocean-primary" />
                                     <span>{opt.labelEn} <span className="text-xs text-gray-400">/ {opt.labelMy}</span></span>
                                   </label>
                                   {sel && (
@@ -259,7 +259,7 @@ function MainEventInner() {
                                 <button
                                   key={opt}
                                   type="button"
-                                  disabled={!!disabled}
+                                  disabled={disabled}
                                   onClick={() => toggleAnswer(q._id, opt.toLowerCase(), q.type, !!q.allowNotSure)}
                                   className={`flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition ${sel ? "border-ocean-primary bg-ocean-50 text-ocean-deep" : "border-gray-200 bg-white hover:bg-gray-50"} ${disabled ? "opacity-40" : ""}`}
                                 >
@@ -276,7 +276,7 @@ function MainEventInner() {
                             placeholder="Type your response here..."
                             value={textResponses[q._id] ?? ""}
                             onChange={(e) => setTextResponse(q._id, e.target.value)}
-                            disabled={!!disabled}
+                            disabled={disabled}
                             className="mt-3 min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm disabled:opacity-40"
                           />
                         )}
@@ -290,7 +290,7 @@ function MainEventInner() {
                                 <button
                                   key={n}
                                   type="button"
-                                  disabled={!!disabled}
+                                  disabled={disabled}
                                   onClick={() => toggleAnswer(q._id, String(n), q.type, !!q.allowNotSure)}
                                   className={`flex-1 rounded-lg border px-3 py-3 text-sm font-medium transition ${sel ? "border-ocean-primary bg-ocean-50 text-ocean-deep" : "border-gray-200 bg-white hover:bg-gray-50"} ${disabled ? "opacity-40" : ""}`}
                                 >
@@ -311,7 +311,7 @@ function MainEventInner() {
                                 placeholder={q.multiTextPlaceholders?.[idx] ?? `Field ${idx + 1}`}
                                 value={multiTextResponses[q._id]?.[idx] ?? ""}
                                 onChange={(e) => setMultiTextResponse(q._id, idx, e.target.value)}
-                                disabled={!!disabled}
+                                disabled={disabled}
                                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm disabled:opacity-40"
                               />
                             ))}
@@ -321,7 +321,7 @@ function MainEventInner() {
                         {/* Allow not sure */}
                         {q.allowNotSure && (
                           <label className={`mt-2 flex cursor-pointer items-center gap-2 rounded-lg border-2 border-dashed px-3 py-2 text-sm ${answers[q._id]?.isNotSure ? "border-amber-400 bg-amber-50" : "bg-white"}`}>
-                            <input type="checkbox" checked={!!answers[q._id]?.isNotSure} onChange={() => toggleAnswer(q._id, "__NOT_SURE__", q.type, true)} /> I&apos;m not sure yet.
+                            <input type="checkbox" checked={answers[q._id]?.isNotSure} onChange={() => toggleAnswer(q._id, "__NOT_SURE__", q.type, true)} /> I&apos;m not sure yet.
                           </label>
                         )}
                       </div>
