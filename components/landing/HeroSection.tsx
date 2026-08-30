@@ -6,12 +6,12 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import eventTitle from '@/app/assets/Title.webp'
-import Shark from '@/app/assets/Mascots/Shark.webp'
-import Ali from '@/app/assets/Mascots/Ali.webp'
-import Crabi from '@/app/assets/Mascots/Crabi.webp'
-import Octo from '@/app/assets/Mascots/Octo.webp'
-import Tuto from '@/app/assets/Mascots/Tuto.webp'
+import eventTitle from '@/app/assets/Title.png'
+import Shark from '@/app/assets/Mascots/Shark.png'
+import Ali from '@/app/assets/Mascots/Ali.png'
+import Crabi from '@/app/assets/Mascots/Crabi.png'
+import Octo from '@/app/assets/Mascots/Octo.png'
+import Tuto from '@/app/assets/Mascots/Tuto.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -30,6 +30,8 @@ export function HeroSection() {
   const contentRef = useRef<HTMLDivElement>(null)
 
   const [currentMascotIndex, setCurrentMascotIndex] = useState(0)
+  const [displayedWord, setDisplayedWord] = useState('idea')
+  const hasSwappedRef = useRef(false)
 
   useLayoutEffect(() => {
     const hero = heroRef.current
@@ -72,6 +74,24 @@ export function HeroSection() {
         duration: 1.25,
         stagger: 0.22,
         ease: 'power3.out',
+      })
+
+      // One-time text swap: "idea" → "AI" after entrance
+      gsap.delayedCall(2.2, () => {
+        if (hasSwappedRef.current) return
+        hasSwappedRef.current = true
+        const wordEl = document.getElementById('hero-word-swap')
+        if (!wordEl) { setDisplayedWord('AI'); return }
+        gsap.to(wordEl, {
+          y: -20, opacity: 0, duration: 0.3, ease: 'power2.in',
+          onComplete: () => {
+            setDisplayedWord('AI')
+            gsap.fromTo(wordEl,
+              { y: 20, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.35, ease: 'power2.out' },
+            )
+          },
+        })
       })
 
       /*
@@ -218,7 +238,7 @@ export function HeroSection() {
 
           <div className="hero-animate flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
             <h2 className="font-syncopate text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
-              From idea to
+              From <span id="hero-word-swap" className="inline-block">{displayedWord}</span> to
             </h2>
 
             {/* =================================================

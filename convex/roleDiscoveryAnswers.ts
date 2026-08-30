@@ -5,9 +5,9 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
-import { calculateRoleAffinity, rankRoles, calculateConfidence } from "../lib/scoring/roleAffinity";
+import { calculateRoleAffinity, rankRoles, calculateConfidence } from "@/lib/scoring/roleAffinity";
 
-export const submitAnswer = mutation({
+export const submitRoleDiscoveryAnswer = mutation({
   args: {
     registrationId: v.id("buildathonRegistrations"),
     questionId: v.id("roleDiscoveryQuestions"),
@@ -26,7 +26,7 @@ export const submitAnswer = mutation({
   },
 });
 
-export const getMyAnswers = query({
+export const getMyRoleDiscoveryAnswers = query({
   args: { registrationId: v.id("buildathonRegistrations") },
   handler: async (ctx, args) => await ctx.db.query("roleDiscoveryAnswers").withIndex("by_registration", (q) => q.eq("registrationId", args.registrationId)).collect(),
 });

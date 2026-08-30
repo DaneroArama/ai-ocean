@@ -2,12 +2,18 @@
 
 import Image from 'next/image'
 
-import Waves from '@/app/assets/waves_2.webp'
-import N1 from '@/app/assets/num_icon_1.webp'
-import N2 from '@/app/assets/num_icon_2.webp'
-import N3 from '@/app/assets/num_icon_3.webp'
-import N4 from '@/app/assets/num_icon_4.webp'
-import Starfish from '@/app/assets/Starfish.webp'
+import Waves from '@/app/assets/waves_2.png'
+import N1 from '@/app/assets/num_icons_1.png'
+import N2 from '@/app/assets/num_icons_2.png'
+import N3 from '@/app/assets/num_icons_3.png'
+import N4 from '@/app/assets/num_icons_4.png'
+import A1 from '@/app/assets/about_event_1.png'
+import A2 from '@/app/assets/about_event_2.png'
+import A3 from '@/app/assets/about_event_3.png'
+import A4 from '@/app/assets/about_event_4.png'
+import A5 from '@/app/assets/about_event_5.png'
+
+import Starfish from '@/app/assets/Starfish.png'
 
 export function AboutSection() {
   return (
@@ -60,22 +66,22 @@ export function AboutSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-6 md:mt-8">
           {[
             {
-              icon: Starfish,
+              icon: A1,
               title: 'Access to Mentors & Experts',
               desc: 'Create opportunities for mentorship and industry engagement',
             },
             {
-              icon: N2,
+              icon: A2,
               title: 'Promoting Inclusive Collaboration',
               desc: 'Promote collaboration among every sector',
             },
             {
-              icon: N3,
+              icon: A3,
               title: 'Sparking Innovation with AI',
               desc: 'Encourage innovation and experimentation using AI tools',
             },
             {
-              icon: N4,
+              icon: A4,
               title: 'Real-World Impact',
               desc: 'Inspire participants to build real-world AI-powered solutions',
             },
@@ -98,7 +104,7 @@ export function AboutSection() {
 
           {/* Full width last card */}
           <div className="md:col-span-2 bg-[#F2F9FF] border border-[#D6EEFF] rounded-xl p-4 md:p-5 flex gap-3 md:gap-4 items-start">
-            <Image src={N1} alt="" width={24} height={24} className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+            <Image src={A5} alt="" width={24} height={24} className="w-5 h-5 md:w-12 md:h-12 object-contain" />
             <div>
               <div className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-[16px] lg:text-[17px] leading-tight">
                 Building Products with AI
@@ -112,11 +118,17 @@ export function AboutSection() {
       </div>
 
       {/* Bottom waves - scaled down to avoid overwhelming layout */}
-      <div className="relative w-full h-[70px] sm:h-[90px] md:h-[120px] lg:h-[160px] overflow-hidden leading-none">
+      <div className="relative w-full h-[120px] sm:h-[160px] md:h-[220px] lg:h-[500px]">
         <Image
           src={Waves}
           alt=""
-          className="absolute bottom-0 left-0 w-full h-full object-cover object-top"
+          className="absolute -bottom-5 left-[-15%] w-full h-[400px] object-contain"
+          priority
+        />
+        <Image
+          src={Waves}
+          alt=""
+          className="absolute -bottom-5 right-[-32%] w-full h-[200px] object-contain"
           priority
         />
       </div>

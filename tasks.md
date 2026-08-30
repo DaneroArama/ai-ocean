@@ -196,7 +196,7 @@ This implementation plan converts the Event Platform design into actionable Type
   - [ ] 5.3 Build sections 3-7 with narrative content
     - Create `components/public/Section3.tsx` through `Section7.tsx` as client components
     - Implement content blocks matching screenshot layouts
-    - Add numbered icons (num_icon_1.webp through num_icon_4.webp) where applicable
+    - Add numbered icons (num_icon_1.png through num_icon_4.png) where applicable
     - Add mascot placeholders for animation (Ali, Crabi positions)
     - Use decorative elements (coral, starfish, fishes) from assets
     - Implement responsive layouts for all sections
@@ -207,7 +207,7 @@ This implementation plan converts the Event Platform design into actionable Type
     - Implement content layouts matching screenshots
     - Add hover states for interactive elements
     - Position mascot placeholders strategically
-    - Use title images (Title.webp, Title_white.webp) where applicable
+    - Use title images (Title.png, Title_white.png) where applicable
     - _Requirements: 1.1, 1.2, 17.4_
   
   - [ ] 5.5 Build section 13 and assemble homepage

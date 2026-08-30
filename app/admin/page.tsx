@@ -19,10 +19,9 @@ export default function AdminOverviewPage() {
   const { participant } = useAuth();
 
   const participants = useQuery(api.admin.listParticipants, { limit: 100 });
-  const myRegs = useQuery(api.registrations.getMyRegistrations);
   const buildathonRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
   const roles = useQuery(api.buildathonRoles.listRoles, { activeOnly: false });
-  const questions = useQuery(api.roleDiscoveryQuestions.listQuestions, {});
+  const questions = useQuery(api.roleDiscoveryQuestions.listRoleDiscoveryQuestions, {});
 
   const totalParticipants = participants?.length ?? "—";
   const totalBuildathon = Array.isArray(buildathonRegs) ? buildathonRegs.length : "—";

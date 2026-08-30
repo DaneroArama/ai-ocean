@@ -6,15 +6,15 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import Image from "next/image";
 
-import Title from "@/app/assets/Title.webp";
-import Shark from "@/app/assets/Mascots/Shark.webp";
-import Octo from "@/app/assets/Mascots/Octo.webp";
-import Crabi from "@/app/assets/Mascots/Crabi.webp";
-import Tuto from "@/app/assets/Mascots/Tuto.webp";
-import Ali from "@/app/assets/Mascots/Ali.webp";
-import Coral from "@/app/assets/Coral.webp";
-import Fishes from "@/app/assets/Fishes.webp";
-import Starfish from "@/app/assets/Starfish.webp";
+import Title from "@/app/assets/Title.png";
+import Shark from "@/app/assets/Mascots/Shark.png";
+import Octo from "@/app/assets/Mascots/Octo.png";
+import Crabi from "@/app/assets/Mascots/Crabi.png";
+import Tuto from "@/app/assets/Mascots/Tuto.png";
+import Ali from "@/app/assets/Mascots/Ali.png";
+import Coral from "@/app/assets/Coral.png";
+import Fishes from "@/app/assets/Fishes.png";
+import Starfish from "@/app/assets/Starfish.png";
 
 const RATING_LABELS = [
   "Not like me at all",
@@ -46,11 +46,25 @@ function getOrCreateSessionId(): string {
 }
 
 function TestInner() {
-  const questions = useQuery(api.oceanTest.getQuestions);
+  const rawQuestions = useQuery(api.oceanTest.getQuestions);
   const archetypes = useQuery(api.oceanTest.getArchetypes);
   const registeredResult = useQuery(api.oceanTest.getResult);
   const submitTest = useMutation(api.oceanTest.submitTest);
   const saveGuestResult = useMutation(api.oceanTest.saveGuestResult);
+
+  // Shuffle questions on the client (Convex queries must be deterministic)
+  const [questions, setQuestions] = useState<typeof rawQuestions>(undefined);
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (rawQuestions && !questions) {
+      const a = [...rawQuestions];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      setQuestions(a);
+    }
+  }, [rawQuestions, questions]);
 
   const [sessionId, setSessionId] = useState("");
   const guestResult = useQuery(
