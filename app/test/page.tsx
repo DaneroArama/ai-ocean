@@ -334,6 +334,9 @@ function TestInner() {
                     Result saved! You can retrieve it with your email.
                   </p>
                 )}
+                <Link href="/test/result" className="block w-full rounded-xl bg-ocean-primary px-6 py-3 font-bold text-white hover:bg-ocean-deep">
+                  View Full Result →
+                </Link>
                 <Link href="/auth/signin" className="block w-full rounded-xl border-2 border-ocean-primary px-6 py-3 font-bold text-ocean-deep hover:bg-ocean-50">
                   Already have an account? Sign in
                 </Link>
@@ -377,6 +380,23 @@ function TestInner() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#0CB6FF] via-[#1ABEFF] to-[#2BD3FF]">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      </div>
+    );
+  }
+
+  // Submitting
+  if (submitting) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#D6EEFF] via-[#E8F6FF] to-[#C5E8FF]">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute left-[5%] top-[20%] w-16 opacity-20 md:w-24"><Image src={Coral} alt="" width={80} height={60} className="object-contain" /></div>
+          <div className="absolute right-[8%] top-[12%] w-14 opacity-15 md:w-20"><Image src={Starfish} alt="" width={64} height={64} className="object-contain" /></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <Image src={Logo} alt="" width={64} height={64} className="mx-auto mb-4 h-16 w-16 animate-bounce object-contain" />
+          <h2 className="font-dynapuff text-2xl font-bold text-[#0A3D62]">Calculating your archetype...</h2>
+          <p className="mt-2 text-[#0A3D62]/70">Hang tight, riding the wave!</p>
+        </div>
       </div>
     );
   }
