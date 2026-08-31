@@ -157,6 +157,10 @@
   font-family: var(--font-family-quicksand) !important;
 }
 
+.font-dynapuff {
+  font-family: var(--font-dynapuff), "Comic Sans MS", "Marker Felt", cursive !important;
+}
+
 /* Z-index utilities */
 .z-sticky {
   z-index: var(--z-sticky);
@@ -403,8 +407,8 @@ html.lenis body {
   content: '';
   position: absolute;
   pointer-events: none;
-  width: 80px;
-  height: 80px;
+  width: 220px;
+  height: 180px;
 }
 .glass-corners::before {
   top: 0;

@@ -33,6 +33,9 @@ export function HeroSection() {
   const [displayedWord, setDisplayedWord] = useState('idea')
   const hasSwappedRef = useRef(false)
 
+  /* ================================================================
+   * MAIN GSAP ENTRANCE & SCROLL ANIMATIONS
+   * ================================================================ */
   useLayoutEffect(() => {
     const hero = heroRef.current
     const content = contentRef.current
@@ -42,111 +45,88 @@ export function HeroSection() {
     const ctx = gsap.context(() => {
       const animatedElements = gsap.utils.toArray<HTMLElement>('.hero-animate')
 
-      /*
-       * ============================================================
-       * HERO INITIAL STATE
-       * ============================================================
-       *
-       * Everything starts below the final position.
-       * Rotation + scale + blur gives it that underwater/swirl feeling.
-       */
-
+      // Set starting state
       gsap.set(animatedElements, {
         opacity: 0,
-        y: 90,
-        scale: 0.88,
-        rotation: -5,
-        filter: 'blur(10px)',
+        y: 30,
+        scale: 0.96,
+        rotation: -2,
       })
 
-      /*
-       * ============================================================
-       * HERO ENTRANCE
-       * ============================================================
-       */
-
+      // HERO ENTRANCE
       gsap.to(animatedElements, {
         opacity: 1,
         y: 0,
         scale: 1,
         rotation: 0,
-        filter: 'blur(0px)',
-        duration: 1.25,
-        stagger: 0.22,
-        ease: 'power3.out',
+        duration: 1.2,
+        stagger: 0.18,
+        delay: 0.3,
+        ease: 'power2.out',
       })
 
-      // One-time text swap: "idea" → "AI" after entrance
-      gsap.delayedCall(2.2, () => {
+      // WORD SWAP: "idea" → "AI"
+      gsap.delayedCall(0.3 + 1.2, () => {
         if (hasSwappedRef.current) return
         hasSwappedRef.current = true
         const wordEl = document.getElementById('hero-word-swap')
-        if (!wordEl) { setDisplayedWord('AI'); return }
+        if (!wordEl) {
+          setDisplayedWord('AI')
+          return
+        }
+
         gsap.to(wordEl, {
-          y: -20, opacity: 0, duration: 0.3, ease: 'power2.in',
+          y: -12,
+          opacity: 0,
+          duration: 0.25,
+          ease: 'power1.in',
           onComplete: () => {
             setDisplayedWord('AI')
-            gsap.fromTo(wordEl,
-              { y: 20, opacity: 0 },
-              { y: 0, opacity: 1, duration: 0.35, ease: 'power2.out' },
+            gsap.fromTo(
+              wordEl,
+              { y: 12, opacity: 0, filter: 'blur(3px)' },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.3,
+                ease: 'power1.out',
+                onComplete: () => gsap.set(wordEl, { clearProps: 'filter' }),
+              },
             )
           },
         })
       })
 
-      /*
-       * ============================================================
-       * MASCOT ENTRANCE
-       * ============================================================
-       */
-
+      // MASCOT ENTRANCE
       gsap.fromTo(
-        '.hero-mascot',
+        '.hero-mascot-container',
         {
           opacity: 0,
-          scale: 0.65,
-          rotation: -25,
-          y: 40,
-          filter: 'blur(8px)',
+          scale: 0.7,
+          rotation: -15,
+          y: 25,
+          filter: 'blur(4px)',
         },
         {
           opacity: 1,
           scale: 1,
           rotation: 0,
           y: 0,
-          filter: 'blur(0px)',
-          duration: 1.4,
-          delay: 0.45,
-          ease: 'back.out(1.4)',
+          duration: 1.2,
+          delay: 0.3 + 0.3,
+          ease: 'back.out(1.2)',
+          onComplete: () => {
+            gsap.set('.hero-mascot-container', { clearProps: 'filter' })
+          },
         },
       )
 
-      /*
-       * ============================================================
-       * HERO → NEXT SECTION (PINNED & SCROLL-DRIVEN)
-       * ============================================================
-       *
-       * As the user scrolls away:
-       * - smaller
-       * - fades
-       * - rotates
-       * - moves upward
-       *
-       * The 'pin: true' property holds the section in place for
-       * the equivalent of 1 screen height (end: '+=100%').
-       */
-
-      /*
-       * ============================================================
-       * HERO → NEXT SECTION (PINNED & SCROLL-DRIVEN)
-       * ============================================================
-       */
-
+      // HERO EXIT ON SCROLL
       gsap.to(content, {
         scrollTrigger: {
           trigger: hero,
           start: 'top top',
-          end: '+=100%', // Determines how long the animation takes
+          end: '+=100%',
           scrub: 1,
           pin: true,
           pinSpacing: false,
@@ -156,23 +136,17 @@ export function HeroSection() {
         opacity: 0,
         y: -100,
         rotation: 6,
-        filter: 'blur(8px)',
         transformOrigin: '50% 50%',
         ease: 'none',
       })
     }, hero)
 
-    return () => {
-      ctx.revert()
-    }
+    return () => ctx.revert()
   }, [])
 
-  /*
-   * ================================================================
-   * MASCOT ROTATION
-   * ================================================================
-   */
-
+  /* ================================================================
+   * MASCOT ROTATION TIMER
+   * ================================================================ */
   useLayoutEffect(() => {
     const mascotTimer = window.setInterval(() => {
       setCurrentMascotIndex((prev) => (prev + 1) % MASCOTS.length)
@@ -183,13 +157,11 @@ export function HeroSection() {
     }
   }, [])
 
-  /*
-   * Animate mascot whenever the image changes.
-   */
-
+  /* ================================================================
+   * ANIMATE MASCOT SWITCH
+   * ================================================================ */
   useLayoutEffect(() => {
     const element = document.querySelector('.hero-mascot-image')
-
     if (!element) return
 
     gsap.fromTo(
@@ -213,15 +185,16 @@ export function HeroSection() {
 
   return (
     <section ref={heroRef} className="relative z-10 min-h-screen bg-ocean-primary overflow-hidden">
-      <div ref={contentRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 min-h-screen flex items-center justify-center">
-
+      <div
+        ref={contentRef}
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 min-h-screen flex items-center justify-center"
+      >
         <div className="text-center space-y-8 w-full flex flex-col justify-center items-center">
 
           {/* =====================================================
               EVENT TITLE
           ====================================================== */}
-
-          <div className="hero-animate space-y-2">
+          <div className="hero-animate opacity-0 will-change-[transform,filter] space-y-2">
             <Image
               src={eventTitle}
               alt="Event title"
@@ -235,17 +208,22 @@ export function HeroSection() {
           {/* =====================================================
               MAIN TITLE
           ====================================================== */}
-
-          <div className="hero-animate flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+          <div className="hero-animate opacity-0 will-change-[transform,filter] flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
             <h2 className="font-syncopate text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
-              From <span id="hero-word-swap" className="inline-block">{displayedWord}</span> to
+              From{' '}
+              <span
+                id="hero-word-swap"
+                className="inline-flex justify-center min-w-[2.5ch] text-center will-change-[transform,filter]"
+              >
+                {displayedWord}
+              </span>{' '}
+              to
             </h2>
 
             {/* =================================================
                 MASCOT
             ================================================== */}
-
-            <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="hero-mascot-container shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full flex items-center justify-center shadow-lg overflow-hidden will-change-[transform,filter]">
               <div className="relative w-full h-full border-[5px] border-white rounded-full bg-[#FFF2CC] overflow-hidden">
                 <Image
                   key={MASCOTS[currentMascotIndex].name}
@@ -266,8 +244,7 @@ export function HeroSection() {
           {/* =====================================================
               TAGLINE
           ====================================================== */}
-
-          <div className="hero-animate">
+          <div className="hero-animate opacity-0 will-change-[transform,filter]">
             <p className="font-quicksand text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-wide">
               Transforming Lives Through Giving
             </p>

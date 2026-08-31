@@ -82,7 +82,7 @@ function SignInInner() {
       <div className="mt-8 w-full space-y-3">
         <button
           onClick={() => handle("google")}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold shadow-sm transition hover:bg-gray-50"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-ocean-primary shadow-sm transition hover:bg-gray-50"
         >
           <span className="text-lg">🔵</span> Continue with Google
         </button>

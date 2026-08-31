@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useI18n } from '@/lib/i18n/provider'
-import { useState } from 'react'
+import {useI18n} from '@/lib/i18n/provider'
+import {useState} from 'react'
 import eventTitle from "@/app/assets/Title.png";
 import Image from "next/image";
 
@@ -10,7 +10,7 @@ import uxmmLogo from "@/app/assets/uxmm_logo.svg"
 
 /**
  * Navbar Component
- * 
+ *
  * Matches the design from the image with:
  * - Blue gradient background
  * - UX mm logo on the left
@@ -19,7 +19,7 @@ import uxmmLogo from "@/app/assets/uxmm_logo.svg"
  * - Responsive mobile menu
  */
 export function Navbar() {
-  const { t } = useI18n()
+  const {t} = useI18n()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const toggleMobileMenu = () => {
@@ -31,76 +31,78 @@ export function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-[1030] bg-white/10 backdrop-blur-sm">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Image
-              src={uxmmLogo}
-              alt="UXMM Logo"
-              width={50}
-              height={50}
-              className="h-full w-12"
-            />
-          </div>
+    <nav className="fixed z-[1030] w-full">
+      <div className="bg-ocean-primary/30 backdrop-blur-sm">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Image
+                src={uxmmLogo}
+                alt="UXMM Logo"
+                width={50}
+                height={50}
+                className="h-full w-12"
+              />
+            </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              href="/event"
-              className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-            >
-              Event
-            </Link>
-            <Link
-              href="/characters"
-              className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-            >
-              Characters
-            </Link>
-            <Link
-              href="/speaker"
-              className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-            >
-              Speaker
-            </Link>
-          </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link
+                href="/"
+                className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                href="/event"
+                className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+              >
+                Event
+              </Link>
+              <Link
+                href="/characters"
+                className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+              >
+                Characters
+              </Link>
+              <Link
+                href="/speaker"
+                className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+              >
+                Speaker
+              </Link>
+            </div>
 
-          {/* Desktop Register Button */}
-          <div className="hidden md:flex">
-            <Link
-              href="/register"
-              className="font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
-            >
-              Register
-            </Link>
-          </div>
+            {/* Desktop Register Button */}
+            <div className="hidden md:flex">
+              <Link
+                href="/register"
+                className="font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
+              >
+                Register
+              </Link>
+            </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
+                aria-label="Toggle menu"
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
