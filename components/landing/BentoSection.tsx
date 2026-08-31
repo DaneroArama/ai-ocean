@@ -57,7 +57,6 @@ export function BentoSection() {
           y: d.y,
           rotation: d.rotation,
           scale: 0.75,
-          filter: 'blur(12px)',
         })
       })
 
@@ -67,7 +66,6 @@ export function BentoSection() {
         y: 0,
         rotation: 0,
         scale: 1,
-        filter: 'blur(0px)',
         stagger: 0.08,
         ease: 'power1.out',
         scrollTrigger: {
@@ -84,16 +82,15 @@ export function BentoSection() {
         opacity: 0,
         y: -50,
         rotation: 5,
-        filter: 'blur(10px)',
         transformOrigin: '50% 50%',
-        ease: 'none',
+        ease: 'power1.inOut',
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=85%',
+          end: '+=100%',
           pin: true,
-          pinSpacing: true, // <-- was false → caused overlap / missing scroll space
-          scrub: 1,
+          pinSpacing: true,
+          scrub: 1.2,
           invalidateOnRefresh: true,
           anticipatePin: 1,
         },
@@ -115,7 +112,6 @@ export function BentoSection() {
           y: d.y * 0.55,
           rotation: d.rotation * 0.6,
           scale: 0.82,
-          filter: 'blur(10px)',
         })
       })
 
@@ -126,7 +122,6 @@ export function BentoSection() {
         y: 0,
         rotation: 0,
         scale: 1,
-        filter: 'blur(0px)',
         stagger: 0.06,
         ease: 'power1.out',
         scrollTrigger: {
@@ -143,7 +138,6 @@ export function BentoSection() {
         opacity: 0.0,
         scale: 0.94,
         y: -32,
-        filter: 'blur(6px)',
         ease: 'none',
         scrollTrigger: {
           trigger: grid,
@@ -173,7 +167,7 @@ export function BentoSection() {
       {/* ======================================================
           BENTO CONTENT
       ======================================================= */}
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8 pt-0 pb-6 md:pt-0 md:pb-10">
         <div
           ref={gridRef}
           className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 md:auto-rows-fr md:h-[520px] lg:h-[560px] md:min-h-0"
@@ -230,8 +224,8 @@ export function BentoSection() {
           </div>
 
           {/* CARD 5 */}
-          <div className="bento-card md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl p-8 transition-colors duration-300 relative overflow-hidden glass-corners">
-            <div className="relative flex flex-col justify-between h-full z-10 space-y-4">
+          <div className="bento-card relative md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl transition-colors duration-300 relative overflow-hidden glass-corners">
+            <div className="flex flex-col justify-between h-full z-10 space-y-4 p-8">
               <h3 className="font-syncopate text-4xl font-bold text-white uppercase tracking-wide">
                 October 2026<br />
                 2-Day Event
@@ -245,8 +239,8 @@ export function BentoSection() {
                 </div>
               </div>
             </div>
-            <div className="absolute bottom-0 right-0 w-48 h-24 opacity-30">
-              <Image src={waves} alt="" width={192} height={96} className="object-contain" />
+            <div className="absolute bottom-0 right-0">
+              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[400px] h-full" />
             </div>
           </div>
         </div>

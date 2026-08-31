@@ -19,7 +19,7 @@ export default function Home() {
         {/* BUBBLES — floating to top + pop */}
         <FloatingBubbles
           count={64}
-          className="inset-x-0 top-0 h-full z-[15]"
+          className="inset-x-0 top-0 h-full z-15"
           sizeRange={[9, 38]}
           durationRange={[5.5, 11]}
           opacityRange={[0.28, 0.6]}
