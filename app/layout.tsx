@@ -71,7 +71,7 @@ export const metadata: Metadata = {
       "Discover your role in the team through AI-powered personality assessment. Join the Buildathon and find where you truly belong.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/assets/img.png",
         width: 1200,
         height: 630,
         alt: "AI OCEAN — Personality Buildathon",
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     title: "AI OCEAN — Personality Buildathon",
     description:
       "Discover your role in the team through AI-powered personality assessment.",
-    images: ["/og-image.png"],
+    images: ["/assets/img.png"],
   },
   icons: {
     icon: [
