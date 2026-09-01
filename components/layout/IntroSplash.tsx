@@ -13,11 +13,11 @@ import Shark from '@/app/assets/Mascots/Shark.png'
 import Tuto from '@/app/assets/Mascots/Tuto.png'
 
 const FLOATERS = [
-  { name: 'Ali', src: Ali, className: 'left-[3%] top-[55%] w-14 md:w-36' },
-  { name: 'Crabi', src: Crabi, className: 'right-[4%] top-[58%] w-12 md:w-36' },
-  { name: 'Octo', src: Octo, className: 'left-[8%] top-[10%] w-12 md:w-36' },
-  { name: 'Shark', src: Shark, className: 'right-[7%] top-[10%] w-14 md:w-36' },
-  { name: 'Tuto', src: Tuto, className: 'left-[46%] bottom-[2%] w-12 md:w-36' },
+  { name: 'Ali', src: Ali, className: 'left-[2%] top-[58%] w-24 md:w-36' },
+  { name: 'Crabi', src: Crabi, className: 'right-[2%] top-[60%] w-24 md:w-36' },
+  { name: 'Octo', src: Octo, className: 'left-[5%] top-[8%] w-24 md:w-36' },
+  { name: 'Shark', src: Shark, className: 'right-[5%] top-[8%] w-24 md:w-36' },
+  { name: 'Tuto', src: Tuto, className: 'left-[42%] bottom-[4%] w-24 md:w-36' },
 ]
 
 const BUBBLES = [

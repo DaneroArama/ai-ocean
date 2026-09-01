@@ -20,9 +20,7 @@ export function Footer() {
               />
             </div>
             <p className="text-[13px] leading-[1.5] text-white/90 max-w-[320px] font-medium">
-              Gorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-              vulputate libero et velit interdum, ac aliquet odio mattis. Class
-              a
+              A community-driven initiative by UXMM, bringing together designers, developers, and AI enthusiasts to explore the intersection of human creativity and artificial intelligence.
             </p>
           </div>
 

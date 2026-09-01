@@ -394,7 +394,7 @@ function TestQuestion() {
           setSubmitting(false);
           return;
         }
-        router.push("/test/result");
+        router.push("/archetype/result");
       } catch (e: unknown) {
         console.error(e);
       }
@@ -470,7 +470,7 @@ function TestQuestion() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (existingResult) {
-      router.replace("/test/result");
+      router.replace("/archetype/result");
     }
   }, [existingResult, router]);
 

@@ -187,14 +187,9 @@ export function BentoSection() {
 
           {/* CARD 2 */}
           <div className="bento-card md:col-span-1 md:row-span-1 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl transition-colors duration-300 p-8 flex items-center justify-center glass-corners">
-            <div className="flex flex-col items-center justify-center text-center space-y-3 h-full">
+            <div className="flex flex-col items-center justify-center text-center space-y-2 h-full">
               <h3 className="font-syne text-5xl md:text-7xl font-bold text-white">10+</h3>
               <p className="font-syncopate text-xl md:text-4xl font-semibold text-white/90 tracking-wide">Mentors</p>
-              <div className="flex -space-x-2 mt-2">
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-              </div>
             </div>
           </div>
 
@@ -202,13 +197,8 @@ export function BentoSection() {
           <div className="bento-card md:col-span-1 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-8 transition-colors duration-300 glass-corners">
             <div className="flex flex-col h-full space-y-8">
               <p className="font-quicksand text-base md:text-lg text-white/90 leading-relaxed">
-                Rorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
+                Industry experts and practitioners sharing real-world insights on AI, design, and the future of human-AI collaboration.
               </p>
-              <div className="flex -space-x-2">
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-                <div className="w-12 h-12 rounded-full bg-white/30 border-2 border-white" />
-              </div>
               <p className="font-syncopate text-2xl md:text-3xl font-bold text-white uppercase tracking-wide">
                 Speakers<br />
                 <span className="text-5xl">4+</span>

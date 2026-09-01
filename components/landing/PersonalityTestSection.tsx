@@ -70,7 +70,7 @@ export function PersonalityTestSection() {
         </h2>
 
         <Link
-          href="/test"
+          href="/archetype"
           className="group inline-flex items-center gap-2 bg-gradient-to-b from-[#FFD15A] to-[#FFA726] hover:from-[#FFD86B] hover:to-[#FFB02E] text-white font-quicksand font-semibold text-sm md:text-base px-7 md:px-8 py-3 rounded-full border border-white shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
           Let&apos;s test
