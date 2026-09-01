@@ -224,8 +224,11 @@ export function BentoSection() {
           </div>
 
           {/* CARD 5 */}
-          <div className="bento-card relative md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl transition-colors duration-300 relative overflow-hidden glass-corners">
-            <div className="flex flex-col justify-between h-full z-10 space-y-4 p-8">
+          <div className="bento-card relative md:col-span-2 md:row-span-1 bg-white/10 backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden glass-corners">
+            <div className="absolute bottom-0 right-0 z-0">
+              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[400px] h-full" />
+            </div>
+            <div className="relative z-10 flex flex-col justify-between h-full space-y-4 p-8">
               <h3 className="font-syncopate text-4xl font-bold text-white uppercase tracking-wide">
                 October 2026<br />
                 2-Day Event
@@ -238,9 +241,6 @@ export function BentoSection() {
                   </svg>
                 </div>
               </div>
-            </div>
-            <div className="absolute bottom-0 right-0">
-              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[400px] h-full" />
             </div>
           </div>
         </div>

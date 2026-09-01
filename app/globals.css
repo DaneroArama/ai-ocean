@@ -336,8 +336,8 @@
 }
 
 /* ===== BASE STYLES ===== */
-body {
-  background: var(--background);
+html, body {
+  background: #D6EEFF;
   color: var(--foreground);
   font-family: var(--font-family-body);
   -webkit-font-smoothing: antialiased;
@@ -425,20 +425,24 @@ html.lenis body {
   border-bottom-right-radius: inherit;
 }
 
-/* Radial gradient + monotone noise for buttons */
-.btn-radial-noise {
-  position: relative;
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 30%, rgba(2,164,227,0.6) 70%, rgba(0,69,161,0.8) 100%);
-  overflow: hidden;
+
+/* Underwater spotlight — slow rotation */
+.hero-spotlight {
+  animation: spotlightDrift 12s ease-in-out infinite alternate;
 }
-.btn-radial-noise::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-  background-size: 128px 128px;
-  opacity: 0.5;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  border-radius: inherit;
+@keyframes spotlightDrift {
+  0%   { transform: translateX(-50%) rotate(-3deg) scale(1); }
+  50%  { transform: translateX(-48%) rotate(2deg) scale(1.04); }
+  100% { transform: translateX(-52%) rotate(-1deg) scale(0.98); }
+}
+
+/* Caustics — gentle sway */
+.hero-caustics {
+  animation: causticsSway 8s ease-in-out infinite alternate;
+}
+@keyframes causticsSway {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(12px, -8px) scale(1.03); }
+  66%  { transform: translate(-8px, 6px) scale(0.97); }
+  100% { transform: translate(4px, -4px) scale(1.01); }
 }

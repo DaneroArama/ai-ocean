@@ -78,7 +78,7 @@ export function Navbar() {
             <div className="hidden md:flex">
               <Link
                 href="/register"
-                className="font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
+                className="bg-white/20 font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium"
               >
                 Register
               </Link>
@@ -145,7 +145,7 @@ export function Navbar() {
               <Link
                 href="/register"
                 onClick={closeMobileMenu}
-                className="block w-full font-syncopate px-6 py-3 text-center text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium btn-radial-noise"
+                className="bg-white/20 block w-full font-syncopate px-6 py-3 text-center text-white border border-white/30 rounded-full hover:brightness-110 transition-all font-medium"
               >
                 Register
               </Link>

@@ -53,7 +53,7 @@ export function HeroSection() {
         rotation: -2,
       })
 
-      // HERO ENTRANCE
+      // HERO ENTRANCE — delay 4.5s to wait for intro splash
       gsap.to(animatedElements, {
         opacity: 1,
         y: 0,
@@ -61,12 +61,12 @@ export function HeroSection() {
         rotation: 0,
         duration: 1.2,
         stagger: 0.18,
-        delay: 0.3,
+        delay: 4.5,
         ease: 'power2.out',
       })
 
       // WORD SWAP: "idea" → "AI"
-      gsap.delayedCall(0.3 + 1.2, () => {
+      gsap.delayedCall(4.5 + 0.3 + 1.2, () => {
         if (hasSwappedRef.current) return
         hasSwappedRef.current = true
         const wordEl = document.getElementById('hero-word-swap')
@@ -113,7 +113,7 @@ export function HeroSection() {
           rotation: 0,
           y: 0,
           duration: 1.2,
-          delay: 0.3 + 0.3,
+          delay: 4.5 + 0.3,
           ease: 'back.out(1.2)',
           onComplete: () => {
             gsap.set('.hero-mascot-container', { clearProps: 'filter' })
@@ -185,6 +185,67 @@ export function HeroSection() {
 
   return (
     <section ref={heroRef} className="relative z-10 min-h-screen bg-ocean-primary overflow-hidden">
+      {/* Underwater spotlight / light rays */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+        {/* White glow ellipse at top */}
+        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] md:w-[900px] md:h-[400px] rounded-full bg-white/50 blur-[80px] md:blur-[200px]" />
+
+        <div className="hero-spotlight absolute top-[-20%] left-1/2 -translate-x-1/2 w-[140%] h-[130%] opacity-[0.12]"
+          style={{
+            background: `
+              conic-gradient(from 200deg at 50% 0%,
+                transparent 0deg,
+                rgba(255,255,255,0.7) 8deg,
+                transparent 16deg,
+                transparent 30deg,
+                rgba(255,255,255,0.5) 38deg,
+                transparent 46deg,
+                transparent 60deg,
+                rgba(255,255,255,0.6) 66deg,
+                transparent 74deg,
+                transparent 90deg,
+                rgba(255,255,255,0.4) 97deg,
+                transparent 105deg,
+                transparent 120deg,
+                rgba(255,255,255,0.55) 127deg,
+                transparent 135deg,
+                transparent 150deg,
+                rgba(255,255,255,0.45) 158deg,
+                transparent 166deg,
+                transparent 180deg,
+                rgba(255,255,255,0.6) 186deg,
+                transparent 194deg,
+                transparent 210deg,
+                rgba(255,255,255,0.35) 218deg,
+                transparent 226deg,
+                transparent 240deg,
+                rgba(255,255,255,0.5) 248deg,
+                transparent 256deg,
+                transparent 270deg,
+                rgba(255,255,255,0.4) 278deg,
+                transparent 286deg,
+                transparent 300deg,
+                rgba(255,255,255,0.55) 308deg,
+                transparent 316deg,
+                transparent 360deg
+              )
+            `,
+            filter: 'blur(18px)',
+          }}
+        />
+        <div className="hero-caustics absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255,255,255,0.8) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 35% at 70% 35%, rgba(255,255,255,0.6) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 50% at 50% 60%, rgba(255,255,255,0.5) 0%, transparent 70%),
+              radial-gradient(ellipse 55% 30% at 20% 70%, rgba(255,255,255,0.4) 0%, transparent 70%),
+              radial-gradient(ellipse 45% 45% at 80% 80%, rgba(255,255,255,0.6) 0%, transparent 70%)
+            `,
+            filter: 'blur(30px)',
+          }}
+        />
+      </div>
       <div
         ref={contentRef}
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 min-h-screen flex items-center justify-center"

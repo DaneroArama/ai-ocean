@@ -118,7 +118,7 @@ export function AboutSection() {
       </div>
 
       {/* Bottom waves - scaled down to avoid overwhelming layout */}
-      <div className="relative w-full h-[120px] sm:h-[160px] md:h-[220px] lg:h-[500px]">
+      <div className="relative w-full h-[300px] lg:h-[500px]">
         <Image
           src={Waves}
           alt=""

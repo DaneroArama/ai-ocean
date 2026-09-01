@@ -144,7 +144,7 @@ export function EventCTASection() {
         </p>
 
         <Link
-          href="#register"
+          href="/register"
           className="inline-flex items-center gap-2 bg-[#FFA726] hover:bg-[#FF9800] text-white font-syne font-semibold text-sm md:text-[14px] px-6 md:px-7 py-2.5 rounded-full shadow-sm transition-colors duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
           Register Now
