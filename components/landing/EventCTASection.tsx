@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 import Title from '@/app/assets/Title_coloured.png'
@@ -13,6 +12,59 @@ import Octo from '@/app/assets/Mascots/Octo.png'
 import Ali from '@/app/assets/Mascots/Ali.png'
 
 const mascots = [Tuto, Shark, Crabi, Octo, Ali]
+const popupMascots = [Shark, Crabi, Octo, Ali, Tuto]
+
+function ComingSoonPopup({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return
+    const tl = gsap.timeline()
+    tl.fromTo('.ecs-backdrop', { opacity: 0 }, { opacity: 1, duration: 0.25 })
+    tl.fromTo('.ecs-card', { scale: 0.6, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.1')
+  }, [open])
+
+  const handleClose = () => {
+    const tl = gsap.timeline({ onComplete: onClose })
+    tl.to('.ecs-card', { scale: 0.85, opacity: 0, y: 20, duration: 0.3, ease: 'power2.in' })
+    tl.to('.ecs-backdrop', { opacity: 0, duration: 0.2 }, '-=0.1')
+  }
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center" onClick={handleClose}>
+      <div className="ecs-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className="ecs-card relative z-10 bg-gradient-to-br from-[#FFA726] via-[#FF9800] to-[#F57C00] rounded-3xl p-8 md:p-10 max-w-md mx-4 text-center shadow-2xl border border-white/20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 select-none">
+          <Image src={Crabi} alt="Crabi mascot" width={80} height={80} className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg mx-auto" />
+        </div>
+        <h2 className="font-syne text-2xl md:text-3xl font-bold text-white mb-3">
+          Whoa, slow down, crab!
+        </h2>
+        <p className="font-quicksand text-white/90 text-sm md:text-base leading-relaxed">
+          Registration is cooking like a deep-sea treasure.
+          <br />
+          It&apos;ll be worth the wait — pinky promise!
+        </p>
+        <div className="flex justify-center gap-3 pt-3">
+          {popupMascots.map((src, i) => (
+            <div key={i}>
+              <Image src={src} alt="" width={36} height={36} className="w-9 h-9 object-contain" />
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={handleClose}
+          className="mt-6 px-6 py-2 bg-white/20 hover:bg-white/30 text-white font-syne font-semibold rounded-full border border-white/30 transition-colors"
+        >
+          Awesome!
+        </button>
+      </div>
+    </div>
+  )
+}
 
 // Build row sequences like design — shuffled patterns
 const row1 = [Shark, Tuto, Crabi, Octo, Ali, Crabi, Octo, Crabi, Ali, Shark, Octo, Tuto, Crabi, Ali]
@@ -61,6 +113,7 @@ export function EventCTASection() {
   const row2Ref = useRef<HTMLDivElement>(null)
   const row3Ref = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const [showPopup, setShowPopup] = useState(false)
 
   useEffect(() => {
     const rows = [row1Ref.current, row2Ref.current, row3Ref.current]
@@ -121,6 +174,7 @@ export function EventCTASection() {
   }, [])
 
   return (
+    <>
     <section
       ref={sectionRef}
       className="relative bg-white overflow-hidden py-12 md:py-16 lg:py-20 w-full"
@@ -143,13 +197,13 @@ export function EventCTASection() {
           ideation and cross-sector development to a secure, localized launch
         </p>
 
-        <Link
-          href="/register"
+        <button
+          onClick={() => setShowPopup(true)}
           className="inline-flex items-center gap-2 bg-[#FFA726] hover:bg-[#FF9800] text-white font-syne font-semibold text-sm md:text-[14px] px-6 md:px-7 py-2.5 rounded-full shadow-sm transition-colors duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
           Register Now
           <span aria-hidden>→</span>
-        </Link>
+        </button>
       </div>
 
       {/* Marquee rows - w-full overflow-hidden to not affect CTA width */}
@@ -168,5 +222,8 @@ export function EventCTASection() {
         </div>
       </div>
     </section>
+
+    <ComingSoonPopup open={showPopup} onClose={() => setShowPopup(false)} />
+    </>
   )
 }

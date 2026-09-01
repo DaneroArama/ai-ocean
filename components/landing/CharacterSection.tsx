@@ -22,7 +22,7 @@ import eventLogo from '@/app/assets/event_logo.png'
 const characters = [
   {
     id: 'shark',
-    name: 'Sharkie the Catalyst',
+    name: 'Sharkie (The Catalyst)',
     image: Shark,
     quote: 'Progress comes from action.',
     bio: 'Sharkie wants to see things move.\n\nSharkie learns by doing, trying things out, and adjusting along the way. By the time a discussion reaches a conclusion, Sharkie is usually a step past it.\n\nNot every path is clear from the beginning, but Sharkie knows that waiting forever means missing the moment.\n\nWhen a team feels stuck, Sharkie gets things moving, makes decisions, and helps everyone ride the wave forward.',
@@ -31,42 +31,42 @@ const characters = [
     bgRight: 'bg-[#2389B3]'
   },
   {
+    id: 'octo',
+    name: 'Otto (The Orchestrator)',
+    image: Octo,
+    quote: 'Nothing moves without people.',
+    bio: 'Otto is happiest around people.\n\nOtto reads the room more than the task. Who has gone quiet, who is holding back, who hasn\'t really agreed yet. Otto would rather keep several things going at once than disappear into one, because staying close to everything is how nothing gets lost.\n\nNot everyone says what they\'re thinking, but Otto usually knows anyway.\n\nWhen a team starts to drift apart, Otto brings people back together, makes sure everyone is heard, and helps everyone ride the wave together.',
+    traits: ['Empathetic', 'Perceptive', 'Versatile'],
+    bgLeft: 'from-[#9928EA] to-[#7117B2]',
+    bgRight: 'bg-[#43096B]'
+  },
+  {
     id: 'ali',
-    name: 'Ali the Architect',
+    name: 'Croco (The Evaluator)',
     image: Ali,
-    quote: 'Structure enables creativity.',
-    bio: 'Ali believes in building strong foundations.\n\nAli designs systems that scale, plans ahead, and thinks about long-term impact. Every decision is measured, every structure is intentional.\n\nWhen complexity grows, Ali brings clarity through careful architecture and thoughtful design.\n\nAli helps teams build things that last, with systems that can evolve and adapt over time.',
-    traits: ['Strategic', 'Thoughtful', 'Systematic'],
+    quote: 'Certainty is worth the time.',
+    bio: 'Croco sees what could go wrong.\n\nEvery plan has a version where it fails, and that is the one Croco is looking at. The step that gets skipped, the case nobody thought of, the small mistake that survived the last check. Croco goes back over things more times than most people would.\n\nIt takes longer. Croco does it anyway.\n\nWhen a team is about to miss something, Croco spots it, speaks up, and helps everyone ride the wave safely.',
+    traits: ['Vigilant', 'Protective', 'Thorough'],
     bgLeft: 'from-[#46D227] to-[#2D9A16]',
     bgRight: 'bg-[#21750F]'
   },
   {
     id: 'crabi',
-    name: 'Crabi the Guardian',
+    name: 'Crabbi (The Artisan)',
     image: Crabi,
-    quote: 'Protection is my priority.',
-    bio: 'Crabi keeps everything safe and secure.\n\nCrabi thinks about edge cases, potential risks, and what could go wrong. When others move fast, Crabi asks the hard questions.\n\nSecurity, reliability, and stability are not just features—they are foundations.\n\nWhen the team needs protection from mistakes or vulnerabilities, Crabi is there with strong defenses and careful testing.',
-    traits: ['Protective', 'Cautious', 'Reliable'],
+    quote: 'Always curious. Always creating.',
+    bio: 'Crabbi shapes things until they feel right.\n\nCrabbi looks for a fresh approach instead of taking the usual one, then keeps making small changes most people would never notice, guided by a sense that something is slightly off long before there are words for why.\n\nNobody asked for those last few changes. Crabbi makes them anyway.\n\nWhen a team wants something that feels right, Crabbi shapes it, adjusts it, and helps everyone ride the wave gracefully.',
+    traits: ['Creative', 'Curious', 'Discerning'],
     bgLeft: 'from-[#F98156] to-[#D6420D]',
     bgRight: 'bg-[#7D280A]'
   },
   {
-    id: 'octo',
-    name: 'Octo the Orchestrator',
-    image: Octo,
-    quote: 'Everything works better together.',
-    bio: 'Octo connects all the pieces.\n\nOcto sees how things fit together, manages multiple streams at once, and ensures nothing falls through the cracks.\n\nWith eight arms, Octo can handle complexity, coordinate teams, and keep everything synchronized.\n\nWhen projects get complicated, Octo brings order, coordination, and makes sure everyone is moving in harmony.',
-    traits: ['Organized', 'Coordinated', 'Efficient'],
-    bgLeft: 'from-[#9928EA] to-[#7117B2]',
-    bgRight: 'bg-[#43096B]'
-  },
-  {
     id: 'tuto',
-    name: 'Tuto the Mentor',
+    name: 'Turty (The Navigator)',
     image: Tuto,
-    quote: 'Knowledge grows when shared.',
-    bio: 'Tuto loves teaching and helping others learn.\n\nTuto breaks down complex concepts, shares wisdom, and guides newcomers through their journey.\n\nExperience is valuable, but passing it on is even more powerful.\n\nWhen someone is stuck, Tuto provides guidance with patience, clarity, and encouragement. Learning never stops, and neither does Tuto.',
-    traits: ['Wise', 'Patient', 'Supportive'],
+    quote: 'Steady is its own kind of fast.',
+    bio: 'Turty wants to know how things work.\n\nBefore starting, Turty wants to see how the parts fit together, because building on something you do not understand tends to cost more later. Turty keeps a steady pace rather than working in bursts, and once deep in a problem, coming back from an interruption takes a long time.\n\nIt looks slower from the outside. It usually is not.\n\nWhen a team needs something that will hold, Turty works it out from the ground up and helps everyone ride the wave steadily.',
+    traits: ['Steady', 'Systematic', 'Deep'],
     bgLeft: 'from-[#94AD0F] to-[#67780E]',
     bgRight: 'bg-[#4B5808]'
   }
@@ -432,14 +432,17 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
             </div>
 
             {/* Mobile solid bg */}
-            <div className="absolute inset-0 md:hidden rounded-t-[2rem] -z-10 transition-colors duration-700" style={{ backgroundColor: bgRightColor }} aria-hidden="true" />
+            <div className="absolute inset-0 md:hidden rounded-[2rem] -z-10 transition-colors duration-700" style={{ backgroundColor: bgRightColor }} aria-hidden="true" />
 
             {/* Character Name */}
             <h2
               ref={nameRef}
-              className="font-syne text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase mb-6 md:mb-8 min-h-[48px] md:min-h-[72px] lg:min-h-[80px] flex items-center leading-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 md:mb-8 min-h-[48px] md:min-h-[72px] lg:min-h-[80px] flex items-center leading-tight"
             >
-              {character.name}
+              <span className="font-syncopate">{character.name.split(' (')[0]}</span>
+              <span className="font-quicksand font-medium ml-4 text-xl md:text-2xl lg:text-3xl">
+                ({character.name.match(/\((.+)\)/)?.[1]})
+              </span>
             </h2>
 
             {/* Bio */}
@@ -452,7 +455,7 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
               >
                 <p
                   ref={bioContentRef}
-                  className="font-quicksand text-sm md:text-base lg:text-lg text-white/90 leading-relaxed whitespace-pre-line"
+                  className="font-quicksand font-semibold text-sm md:text-base lg:text-lg text-white/90 leading-relaxed whitespace-pre-line"
                 >
                   {character.bio}
                 </p>

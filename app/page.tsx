@@ -27,17 +27,17 @@ export default function Home() {
         />
 
         {/* Hero Section - Section 1 */}
-        <HeroSection/>
+        <div id="hero"><HeroSection/></div>
 
         {/* About OCEAN Test - Section 2 */}
-        <BentoSection/>
+        <div id="event"><BentoSection/></div>
       </div>
 
       {/* Personality Test - Section 4 */}
       <PersonalityTestSection/>
 
       {/* Character Introduction - Section 3 */}
-      <CharacterSection/>
+      <div id="characters"><CharacterSection/></div>
 
       {/* Event CTA + Marquee - Section 5 */}
       <EventCTASection/>
