@@ -525,22 +525,23 @@ function TestQuestion() {
   if (tieBreakerMode) {
     const tiedData = archetypes.filter((a) => tiedArchetypes.includes(a.letter));
     return (
-      <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#0CB6FF] via-[#1ABEFF] to-[#2BD3FF]">
+      <div className={`relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b ${BG_COLORS[bgIdx]}`}>
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute inset-0 flex items-center justify-center">
-            <Image src={Logo} alt="" width={800} height={800} className="h-[60vh] w-auto opacity-[0.06] object-contain" />
+            <Image src={Logo} alt="" width={800} height={800} className="h-[65vh] w-auto opacity-[0.06] object-contain" />
           </div>
-          <div className="absolute left-[2%] top-[20%] w-20 opacity-20"><Image src={Coral} alt="" width={80} height={60} className="object-contain" /></div>
-          <div className="absolute right-[4%] top-[15%] w-16 opacity-15"><Image src={Starfish} alt="" width={64} height={64} className="object-contain" /></div>
-          <div className="absolute left-[50%] top-[60%] w-14 opacity-10"><Image src={Fishes} alt="" width={64} height={32} className="object-contain" /></div>
-          <div className="absolute bottom-[20%] right-[8%] w-16 opacity-15"><Image src={Coral} alt="" width={80} height={60} className="object-contain scale-x-[-1]" /></div>
+          <div className="absolute left-[5%] top-[20%] w-16 opacity-20 md:w-24"><Image src={Coral} alt="" width={80} height={60} className="object-contain" /></div>
+          <div className="absolute right-[8%] top-[12%] w-14 opacity-15 md:w-20"><Image src={Starfish} alt="" width={64} height={64} className="object-contain" /></div>
+          <div className="absolute left-[40%] top-[65%] w-12 opacity-10"><Image src={Fishes} alt="" width={64} height={32} className="object-contain" /></div>
+          <div className="absolute bottom-[20%] right-[5%] w-14 opacity-15"><Image src={Coral} alt="" width={80} height={60} className="object-contain scale-x-[-1]" /></div>
+          <div className="absolute bottom-[10%] left-[10%] w-10 opacity-10"><Image src={Fishes} alt="" width={64} height={32} className="object-contain scale-x-[-1]" /></div>
         </div>
 
         <div className="relative z-10 flex items-center justify-center px-4 py-3 md:px-8">
           <Link href="/"><Image src={BlueTitle} alt="AI OCEAN" width={160} height={48} className="h-10 w-auto object-contain" priority /></Link>
         </div>
         <div className="relative z-10 h-1 bg-white/30">
-          <div className="h-full bg-[#FFD15A] transition-all" style={{ width: `${((currentIdx + 1) / totalQuestions) * 100}%` }} />
+          <div className="h-full bg-[#FFD15A] transition-all" style={{ width: "100%" }} />
         </div>
         <div className="relative z-10 px-4 py-2 md:px-8">
           <p className="text-xs font-semibold text-white/70">Wave 1</p>
@@ -550,38 +551,30 @@ function TestQuestion() {
         </div>
 
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-4 w-full max-w-7xl">
-          <div className="mb-6 flex items-end gap-3">
-            <div className="w-20 shrink-0 md:w-24">
-              <Image src={MascotComponent} alt="" width={120} height={120} className="h-auto w-full object-contain drop-shadow-lg" />
-            </div>
-            <div className="relative max-w-md rounded-2xl bg-[#90E0EF]/80 px-6 py-4 shadow-lg backdrop-blur-sm">
-              <p className="font-dynapuff text-sm font-bold text-ocean-deep">Almost done. Which of these sounds most like you at work?</p>
-              <div className="absolute -bottom-2 left-6 h-0 w-0 border-l-[8px] border-l-transparent border-t-[10px] border-t-[#90E0EF]/80 border-r-[8px] border-r-transparent" />
-            </div>
-          </div>
-          <div className="w-full max-w-lg space-y-3">
-            {tiedData.map((a, idx) => (
-              <button key={a.letter} onClick={() => handleAnswer(idx + 1)}
-                className={`flex w-full items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left transition ${answers["TIE"] === idx + 1 ? "border-[#FFD15A] bg-white shadow-lg" : "border-white/40 bg-white/80 hover:bg-white"}`}>
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${answers["TIE"] === idx + 1 ? "bg-[#FFD15A] text-white" : "bg-gray-100 text-gray-500"}`}>
-                  {idx + 1}
-                </span>
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{a.emoji}</span>
-                  <div>
-                    <p className="font-bold text-ocean-deep">{a.character}</p>
-                    <p className="text-sm text-gray-600">{a.tieBreakerStatementEn}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
+          <p className="mb-8 max-w-lg text-center font-dynapuff text-xl font-bold text-ocean-deep leading-relaxed md:text-2xl"
+            style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.06)" }}>
+            One last one. Which of these sounds most like you at work?
+          </p>
+          <div className="w-full max-w-md space-y-3">
+            {tiedData.map((a, idx) => {
+              const isSelected = answers["TIE"] === idx + 1;
+              return (
+                <button key={a.letter} onClick={() => handleAnswer(idx + 1)}
+                  className={`w-full rounded-full border-[2.5px] px-6 py-3.5 text-center font-dynapuff text-sm font-semibold transition-all active:translate-y-[2px] active:shadow-none ${
+                    isSelected
+                      ? "border-[#0A3D62] bg-[#0A3D62] text-white shadow-none translate-y-[2px] scale-[1.02]"
+                      : "border-[#0A3D62]/60 bg-white text-[#0A3D62] shadow-[0_4px_0_#0A3D62]/25 hover:shadow-[0_6px_0_#0A3D62]/35 hover:translate-y-[-2px] hover:scale-[1.01] hover:bg-[#0A3D62]/5"
+                  }`}>
+                  {a.tieBreakerStatementEn}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center justify-between px-4 py-4 md:px-8">
-          <div className="w-10" />
+        <div className="relative z-10 flex items-center justify-end px-6 py-5 md:px-8">
           <button onClick={() => handleNext()} disabled={answers["TIE"] === undefined || submitting}
-            className="rounded-full bg-white px-6 py-2.5 text-sm font-bold text-ocean-deep shadow-lg hover:bg-gray-100 disabled:opacity-40">
+            className="rounded-full bg-[#0A3D62] px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-[#0A3D62]/80 disabled:opacity-40">
             {submitting ? "Calculating…" : "Finish →"}
           </button>
         </div>
