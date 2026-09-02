@@ -1,10 +1,11 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {useQuery, useMutation} from "convex/react";
 import {api} from "@/convex/_generated/api";
 import Link from "next/link";
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 import Title from "@/app/assets/Title_white.png";
 import Logo from "@/app/assets/event_logo.png";
@@ -94,9 +95,11 @@ function getOrCreateSessionId(): string {
 }
 
 function ResultInner() {
+  const router = useRouter();
   const registeredResult = useQuery(api.oceanTest.getResult);
   const archetypes = useQuery(api.oceanTest.getArchetypes);
   const saveGuestResult = useMutation(api.oceanTest.saveGuestResult);
+  const retakeTest = useMutation(api.oceanTest.retakeTest);
 
   const [sessionId, setSessionId] = useState("");
   const guestResult = useQuery(
@@ -115,6 +118,18 @@ function ResultInner() {
   useEffect(() => {
     setSessionId(getOrCreateSessionId());
   }, []);
+
+  const handleRetake = useCallback(async () => {
+    try {
+      const res = await retakeTest({ sessionId: sessionId || undefined });
+      if (res.type === "anonymous_guest") {
+        localStorage.removeItem("ocean_test_session");
+      }
+      router.push("/archetype");
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }, [retakeTest, sessionId, router]);
 
   const result = registeredResult ?? guestResult;
 
@@ -438,6 +453,17 @@ function ResultInner() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                   </svg>
                   Download Result
+                </button>
+              </div>
+
+              {/* Retake button */}
+              <div className="flex justify-center pb-4">
+                <button onClick={handleRetake}
+                        className="flex items-center gap-2 rounded-full bg-[#0A3D62] px-6 py-3 border-[1.5px] border-black text-white font-dynapuff font-bold shadow-[3px_2px_0_0_#000] transition-all hover:translate-y-[-1px] hover:shadow-[4px_3px_0_0_#000] active:translate-y-[1px] active:shadow-[1px_1px_0_0_#000]">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                  Retake Test
                 </button>
               </div>
             </div>

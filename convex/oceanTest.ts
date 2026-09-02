@@ -317,7 +317,116 @@ export const reorderQuestions = mutation({
   },
 });
 
-// ── Admin Analytics ──
+// ── Retake ──
+
+export const retakeTest = mutation({
+  args: {
+    sessionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const idt = await ctx.auth.getUserIdentity();
+    const isRegistered = !!idt;
+
+    if (isRegistered) {
+      // Registered user: delete ALL their old results
+      const p = await getParticipantByIdentity(ctx, idt!);
+      if (p) {
+        const old = await ctx.db.query("oceanTestResults")
+          .withIndex("by_participant", (q) => q.eq("participantId", p._id))
+          .collect();
+        for (const r of old) {
+          await ctx.db.delete(r._id);
+        }
+      }
+      return { cleaned: true, type: "registered" };
+    }
+
+    if (args.sessionId) {
+      // Guest with session: check if they have name/email (converted guest)
+      const results = await ctx.db.query("oceanTestResults")
+        .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+        .collect();
+      const lastResult = results[results.length - 1];
+
+      if (lastResult && (lastResult.guestName || lastResult.guestEmail)) {
+        // Named guest: delete their old results
+        for (const r of results) {
+          await ctx.db.delete(r._id);
+        }
+        return { cleaned: true, type: "named_guest" };
+      }
+
+      // Anonymous guest: just return new session needed
+      return { cleaned: false, type: "anonymous_guest" };
+    }
+
+    return { cleaned: false, type: "unknown" };
+  },
+});
+
+
+
+
+export const listAllResults = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+
+    const all = await ctx.db.query("oceanTestResults").collect();
+
+    // Enrich with participant info for registered users
+    const results = await Promise.all(all.map(async (r) => {
+      let participantName: string | undefined;
+      let participantEmail: string | undefined;
+
+      if (r.participantId) {
+        const p = await ctx.db.get(r.participantId);
+        if (p) {
+          participantName = p.name || p.firstName;
+          participantEmail = p.email;
+        }
+      }
+
+      return {
+        _id: r._id,
+        userType: r.userType,
+        finalArchetype: r.finalArchetype,
+        wasTieBreaker: r.wasTieBreaker,
+        allSameAnswers: r.allSameAnswers,
+        guestName: r.guestName,
+        guestEmail: r.guestEmail,
+        participantName,
+        participantEmail,
+        completedAt: r.completedAt,
+        // Determine display name/email — prefer registered, fallback to guest
+        displayName: participantName || r.guestName,
+        displayEmail: participantEmail || r.guestEmail,
+        scores: r.scores,
+      };
+    }));
+
+    // Detect email collisions — registered and guest with same email
+    const emailMap = new Map<string, string[]>();
+    for (const r of results) {
+      if (r.displayEmail) {
+        const existing = emailMap.get(r.displayEmail) ?? [];
+        existing.push(r._id);
+        emailMap.set(r.displayEmail, existing);
+      }
+    }
+    const duplicateEmails = Array.from(emailMap.entries())
+      .filter(([, ids]) => ids.length > 1)
+      .map(([email]) => email);
+
+    return {
+      results: results.sort((a, b) => b.completedAt - a.completedAt),
+      duplicateEmails,
+    };
+  },
+});
 
 export const getAnalytics = query({
   args: {},
