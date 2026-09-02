@@ -110,6 +110,21 @@ export const submitTest = mutation({
     const scores = calculateScores(args.answers);
     const allSame = new Set(args.answers.map((a) => a.score)).size === 1;
     const tied = detectTie(scores);
+
+    // If tie and no TIE answer yet → return tied list, don't save
+    if (tied.length > 1 && !args.answers.find((a) => a.questionId === "TIE")) {
+      return {
+        resultId: null,
+        scores,
+        finalArchetype: tied[0] as "O" | "C" | "E" | "A" | "N",
+        wasTieBreaker: false,
+        allSame,
+        tied,
+        userType: isRegistered ? "REGISTERED" as const : "GUEST" as const,
+        needsTieBreaker: true,
+      };
+    }
+
     const { finalArchetype, wasTieBreaker } = resolveFinalArchetype(tied, args.answers);
 
     const now = Date.now();
@@ -134,7 +149,79 @@ export const submitTest = mutation({
       allSame,
       tied,
       userType,
+      needsTieBreaker: false,
     };
+  },
+});
+
+export const submitTieBreaker = mutation({
+  args: {
+    tied: v.array(v.string()),
+    tieAnswer: v.number(),
+    answers: v.array(v.object({ questionId: v.string(), score: v.number() })),
+    sessionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { finalArchetype, wasTieBreaker } = resolveFinalArchetype(args.tied, [{ questionId: "TIE", score: args.tieAnswer }]);
+
+    // Find existing result to update
+    const identity = await ctx.auth.getUserIdentity();
+    const isRegistered = !!identity;
+    let resultId: string | null = null;
+
+    if (isRegistered && identity) {
+      const participant = await getParticipantByIdentity(ctx, identity);
+      if (participant) {
+        const existing = await ctx.db
+          .query("oceanTestResults")
+          .withIndex("by_participant", (q) => q.eq("participantId", participant._id))
+          .order("desc")
+          .first();
+        if (existing) {
+          await ctx.db.patch(existing._id, {
+            finalArchetype,
+            wasTieBreaker,
+          });
+          resultId = existing._id;
+        }
+      }
+    }
+
+    if (!resultId && args.sessionId) {
+      const existing = await ctx.db
+        .query("oceanTestResults")
+        .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+        .order("desc")
+        .first();
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          finalArchetype,
+          wasTieBreaker,
+        });
+        resultId = existing._id;
+      }
+    }
+
+    // If no existing result found, create one
+    if (!resultId) {
+      const scores = calculateScores(args.answers);
+      const allSame = new Set(args.answers.map((a) => a.score)).size === 1;
+      const now = Date.now();
+      resultId = await ctx.db.insert("oceanTestResults", {
+        userType: isRegistered ? "REGISTERED" : "GUEST",
+        participantId: undefined,
+        sessionId: args.sessionId,
+        answers: args.answers,
+        scores: scores as { O: number; C: number; E: number; A: number; N: number },
+        finalArchetype,
+        wasTieBreaker: true,
+        allSameAnswers: allSame,
+        completedAt: now,
+        createdAt: now,
+      });
+    }
+
+    return { resultId, finalArchetype, wasTieBreaker };
   },
 });
 

@@ -42,7 +42,7 @@ const ARCHETYPE_THEMES: Record<string, {
   resultCard: typeof SharkResult;
 }> = {
   C: {
-    cardBg: "bg-[#9cc5d8]",
+    cardBg: "bg-linear-to-r from-[#70AAC2] to-[#4586A1]",
     text: "text-white",
     subtitle: "text-white/80",
     mascot: SharkImg,
@@ -50,7 +50,7 @@ const ARCHETYPE_THEMES: Record<string, {
     resultCard: SharkResult,
   },
   O: {
-    cardBg: "bg-[#b08fc4]",
+    cardBg: "bg-linear-to-r from-[#A676FD] to-[#7C36FC]",
     text: "text-white",
     subtitle: "text-white/80",
     mascot: OctoImg,
@@ -58,7 +58,7 @@ const ARCHETYPE_THEMES: Record<string, {
     resultCard: OctoResult,
   },
   E: {
-    cardBg: "bg-[#6E9868]",
+    cardBg: "bg-linear-to-r from-[#6E9868] to-[#587953]",
     text: "text-white",
     subtitle: "text-white/80",
     mascot: AliImg,
@@ -66,7 +66,7 @@ const ARCHETYPE_THEMES: Record<string, {
     resultCard: AliResult,
   },
   A: {
-    cardBg: "bg-[#d4a574]",
+    cardBg: "bg-linear-to-r from-[#F66835] to-[#F5531A]",
     text: "text-white",
     subtitle: "text-white/80",
     mascot: CrabiImg,
@@ -74,7 +74,7 @@ const ARCHETYPE_THEMES: Record<string, {
     resultCard: CrabiResult,
   },
   N: {
-    cardBg: "bg-[#587953]",
+    cardBg: "bg-linear-to-r from-[#6E9868] to-[#587953]",
     text: "text-white",
     subtitle: "text-white/80",
     mascot: TutoImg,
@@ -111,7 +111,6 @@ function ResultInner() {
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [saving, setSaving] = useState(false);
-  const [debugArchetype, setDebugArchetype] = useState<string | null>(null);
   const [expandedDesc, setExpandedDesc] = useState(false);
 
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -141,7 +140,7 @@ function ResultInner() {
     );
   }
 
-  const activeLetter = debugArchetype ?? result.finalArchetype;
+  const activeLetter = result.finalArchetype;
   const archetype = archetypes.find((a) => a.letter === activeLetter);
   if (!archetype) return null;
 
@@ -236,17 +235,6 @@ function ResultInner() {
         <div className="pointer-events-none absolute top-10 left-0 right-0 flex items-center justify-center"
              aria-hidden="true">
           <Image src={Logo} alt="" width={800} height={800} className="h-[70vh] w-auto opacity-20 object-contain"/>
-        </div>
-
-        {/* Home button */}
-        <div className="absolute top-12 left-2 md:left-10 flex justify-center pb-6">
-          <Link href="/"
-                className="flex px-6 py-3 items-center justify-center rounded-full bg-[#0A3D62] text-white shadow-[3px_3px_0_0_rgba(0,0,0,0.2)] transition-all hover:translate-y-[-2px] hover:shadow-[4px_5px_0_0_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-[1px_1px_0_0_rgba(0,0,0,0.2)]">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-          </Link>
         </div>
 
         {/* Decorative background elements */}

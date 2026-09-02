@@ -292,6 +292,7 @@ function TestQuestion() {
   const archetypes = useQuery(api.oceanTest.getArchetypes);
   const registeredResult = useQuery(api.oceanTest.getResult);
   const submitTest = useMutation(api.oceanTest.submitTest);
+  const submitTieBreaker = useMutation(api.oceanTest.submitTieBreaker);
   const router = useRouter();
 
   const [questions, setQuestions] = useState<typeof rawQuestions>(undefined);
@@ -322,6 +323,7 @@ function TestQuestion() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const [tieBreakerMode, setTieBreakerMode] = useState(false);
+  const tieBreakerModeRef = useRef(false);
   const [tiedArchetypes, setTiedArchetypes] = useState<string[]>([]);
   const [lang, setLang] = useState<"en" | "my">("en");
   const [animDir, setAnimDir] = useState<"next" | "prev">("next");
@@ -336,6 +338,11 @@ function TestQuestion() {
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    tieBreakerModeRef.current = tieBreakerMode;
+  }, [tieBreakerMode]);
 
   // Change bg color on question change — no 2 in a row
   useEffect(() => {
@@ -366,18 +373,39 @@ function TestQuestion() {
   const isLastQuestion = currentIdx >= totalQuestions - 1;
 
   const handleNext = useCallback(async (overrideScore?: number) => {
-    // Use ref for always-fresh answers (avoids stale closures)
+    // Use refs for always-fresh values (avoids stale closures)
     const latestAnswers = answersRef.current;
+    const inTieBreaker = tieBreakerModeRef.current;
     const hasAnswer = overrideScore !== undefined
       ? true
-      : tieBreakerMode
+      : inTieBreaker
         ? latestAnswers["TIE"] !== undefined
         : questions?.[currentIdx]
           ? latestAnswers[questions[currentIdx].id] !== undefined
           : false;
     if (!hasAnswer) return;
 
-    if (isLastQuestion && !tieBreakerMode) {
+    if (inTieBreaker && currentIdx >= 15) {
+      setSubmitting(true);
+      try {
+        const answerArray = Object.entries(latestAnswers)
+          .filter(([k]) => k === "TIE")
+          .map(([questionId, score]) => ({ questionId, score }));
+        await submitTieBreaker({
+          tied: tiedArchetypes,
+          tieAnswer: overrideScore ?? latestAnswers["TIE"] ?? 1,
+          answers: answerArray,
+          sessionId: sessionId || undefined,
+        });
+        router.push("/archetype/result");
+      } catch (e: unknown) {
+        console.error(e);
+      }
+      setSubmitting(false);
+      return;
+    }
+
+    if (!inTieBreaker && currentIdx >= (questions?.length ?? 15) - 1) {
       setSubmitting(true);
       try {
         const answerArray = Object.entries(latestAnswers)
@@ -387,9 +415,10 @@ function TestQuestion() {
           answers: answerArray,
           sessionId: sessionId || undefined,
         });
-        if (res.tied.length > 1 && !res.wasTieBreaker) {
+        if (res.needsTieBreaker) {
           setTiedArchetypes(res.tied);
           setTieBreakerMode(true);
+          tieBreakerModeRef.current = true;
           setCurrentIdx(15);
           setSubmitting(false);
           return;
@@ -402,27 +431,8 @@ function TestQuestion() {
       return;
     }
 
-    if (tieBreakerMode && isLastQuestion) {
-      setSubmitting(true);
-      try {
-        const answerArray = Object.entries(latestAnswers)
-          .filter(([k]) => k !== "TIE")
-          .map(([questionId, score]) => ({ questionId, score }));
-        answerArray.push({ questionId: "TIE", score: overrideScore ?? latestAnswers["TIE"] ?? 1 });
-        await submitTest({
-          answers: answerArray,
-          sessionId: sessionId || undefined,
-        });
-        router.push("/test/result");
-      } catch (e: unknown) {
-        console.error(e);
-      }
-      setSubmitting(false);
-      return;
-    }
-
     setCurrentIdx((i) => i + 1);
-  }, [tieBreakerMode, isLastQuestion, currentIdx, questions, submitTest, sessionId, router]);
+  }, [currentIdx, questions, submitTest, submitTieBreaker, sessionId, router, tiedArchetypes]);
 
   const handleBack = useCallback(() => {
     setAnimDir("prev");
@@ -430,7 +440,7 @@ function TestQuestion() {
   }, []);
 
   const handleAnswer = useCallback((score: number) => {
-    if (tieBreakerMode) {
+    if (tieBreakerModeRef.current) {
       const next = { ...answersRef.current, TIE: score };
       setAnswers(next);
       answersRef.current = next;
@@ -439,7 +449,7 @@ function TestQuestion() {
       setAnswers(next);
       answersRef.current = next;
     }
-  }, [tieBreakerMode, questions, currentIdx]);
+  }, [questions, currentIdx]);
 
   const handleAnswerAndAdvance = useCallback((score: number) => {
     handleAnswer(score);
@@ -648,10 +658,7 @@ function TestQuestion() {
       </div>
 
       {/* Bottom nav */}
-      <div className="relative z-10 flex items-center justify-between px-6 py-5 md:px-8">
-        <Link href="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0A3D62] text-white shadow-lg transition-all hover:bg-[#0A3D62]/80 active:scale-95">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-        </Link>
+      <div className="relative z-10 flex items-center justify-end px-6 py-5 md:px-8">
         <button onClick={handleBack} disabled={currentIdx === 0}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0A3D62] text-white shadow-lg transition-all hover:bg-[#0A3D62]/80 active:scale-95 disabled:opacity-40">
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
