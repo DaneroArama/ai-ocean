@@ -156,6 +156,167 @@ export const saveGuestResult = mutation({
   },
 });
 
+// ── Admin Queries ──
+
+export const listAllArchetypes = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    return await ctx.db.query("oceanArchetypes").collect();
+  },
+});
+
+export const listAllQuestions = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    return await ctx.db.query("oceanQuestions").collect();
+  },
+});
+
+// ── Admin Mutations ──
+
+export const createArchetype = mutation({
+  args: {
+    letter: v.string(),
+    name: v.string(),
+    character: v.string(),
+    animal: v.string(),
+    emoji: v.string(),
+    traitsEn: v.array(v.string()),
+    traitsMy: v.array(v.string()),
+    mottoEn: v.string(),
+    mottoMy: v.string(),
+    descriptionEn: v.string(),
+    descriptionMy: v.string(),
+    wave: v.string(),
+    tieBreakerStatementEn: v.string(),
+    tieBreakerStatementMy: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    const now = Date.now();
+    const id = await ctx.db.insert("oceanArchetypes", {
+      ...args, letter: args.letter as "O" | "C" | "E" | "A" | "N",
+      isActive: true, createdAt: now, updatedAt: now,
+    });
+    return { id };
+  },
+});
+
+export const updateArchetype = mutation({
+  args: {
+    archetypeId: v.id("oceanArchetypes"),
+    name: v.optional(v.string()),
+    character: v.optional(v.string()),
+    animal: v.optional(v.string()),
+    emoji: v.optional(v.string()),
+    traitsEn: v.optional(v.array(v.string())),
+    traitsMy: v.optional(v.array(v.string())),
+    mottoEn: v.optional(v.string()),
+    mottoMy: v.optional(v.string()),
+    descriptionEn: v.optional(v.string()),
+    descriptionMy: v.optional(v.string()),
+    wave: v.optional(v.string()),
+    tieBreakerStatementEn: v.optional(v.string()),
+    tieBreakerStatementMy: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    const { archetypeId, ...updates } = args;
+    await ctx.db.patch(archetypeId, { ...updates, updatedAt: Date.now() });
+    return { success: true };
+  },
+});
+
+export const createQuestion = mutation({
+  args: {
+    id: v.string(),
+    archetypeLetter: v.string(),
+    statementEn: v.string(),
+    statementMy: v.string(),
+    order: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    const now = Date.now();
+    const qId = await ctx.db.insert("oceanQuestions", {
+      id: args.id,
+      archetypeLetter: args.archetypeLetter as "O" | "C" | "E" | "A" | "N",
+      statementEn: args.statementEn,
+      statementMy: args.statementMy,
+      order: args.order,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return { id: qId };
+  },
+});
+
+export const updateQuestion = mutation({
+  args: {
+    questionId: v.id("oceanQuestions"),
+    statementEn: v.optional(v.string()),
+    statementMy: v.optional(v.string()),
+    order: v.optional(v.number()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    const { questionId, ...updates } = args;
+    await ctx.db.patch(questionId, { ...updates, updatedAt: Date.now() });
+    return { success: true };
+  },
+});
+
+export const deleteQuestion = mutation({
+  args: { questionId: v.id("oceanQuestions") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    await ctx.db.delete(args.questionId);
+    return { success: true };
+  },
+});
+
+export const reorderQuestions = mutation({
+  args: {
+    orders: v.array(v.object({ questionId: v.id("oceanQuestions"), order: v.number() })),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+    const caller = await getParticipantByIdentity(ctx, identity);
+    if (!caller || caller.role !== "admin") throw new Error("Admin required");
+    for (const o of args.orders) {
+      await ctx.db.patch(o.questionId, { order: o.order, updatedAt: Date.now() });
+    }
+    return { success: true };
+  },
+});
+
 // ── Admin Analytics ──
 
 export const getAnalytics = query({
