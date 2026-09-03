@@ -1,11 +1,12 @@
 "use client";
 
-import {useState, useEffect, useCallback} from "react";
+import {useState, useEffect, useCallback, useRef} from "react";
 import {useQuery, useMutation} from "convex/react";
 import {api} from "@/convex/_generated/api";
 import Link from "next/link";
 import Image from "next/image";
 import {useRouter} from "next/navigation";
+import gsap from "gsap";
 
 import Title from "@/app/assets/Title_white.png";
 import Logo from "@/app/assets/event_logo.png";
@@ -113,6 +114,15 @@ function ResultInner() {
   const [saving, setSaving] = useState(false);
   const [expandedDesc, setExpandedDesc] = useState(false);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const mottoRef = useRef<HTMLParagraphElement>(null);
+  const descRef = useRef<HTMLDivElement>(null);
+  const traitsRef = useRef<HTMLDivElement>(null);
+  const logosRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
+  const mascotRef = useRef<HTMLDivElement>(null);
+
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setSessionId(getOrCreateSessionId());
@@ -131,6 +141,30 @@ function ResultInner() {
   }, [retakeTest, sessionId, router]);
 
   const result = registeredResult ?? guestResult;
+
+  // GSAP entrance animations
+  useEffect(() => {
+    if (!archetypes) return;
+    const activeResult = registeredResult ?? guestResult;
+    if (!activeResult) return;
+    const arch = archetypes.find((a) => a.letter === activeResult.finalArchetype);
+    if (!arch) return;
+    const ctx = gsap.context(() => {
+      gsap.set([headerRef.current, cardRef.current, mascotRef.current, mottoRef.current, descRef.current, traitsRef.current, logosRef.current, shareRef.current], {opacity: 0, y: 30});
+      gsap.set(mascotRef.current, {y: 120});
+      gsap.set(cardRef.current, {scale: 0.95});
+      const tl = gsap.timeline({defaults: {ease: "power3.out"}});
+      tl.to(headerRef.current, {opacity: 1, y: 0, duration: 0.6})
+        .to(cardRef.current, {opacity: 1, y: 0, scale: 1, duration: 0.7}, "-=0.3")
+        .to(mascotRef.current, {opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.4)"}, "-=0.4")
+        .to(mottoRef.current, {opacity: 1, y: 0, duration: 0.5}, "-=0.4")
+        .to(descRef.current, {opacity: 1, y: 0, duration: 0.5}, "-=0.2")
+        .to(traitsRef.current, {opacity: 1, y: 0, duration: 0.5}, "-=0.2")
+        .to(logosRef.current, {opacity: 1, y: 0, duration: 0.4}, "-=0.2")
+        .to(shareRef.current, {opacity: 1, y: 0, duration: 0.5}, "-=0.2");
+    });
+    return () => ctx.revert();
+  }, [archetypes, registeredResult, guestResult]);
 
   if (!result || !archetypes) {
     return (
@@ -278,7 +312,7 @@ function ResultInner() {
 
         <div className="relative z-10 mx-auto max-w-lg space-y-5">
           {/* Header */}
-          <div className="text-center">
+          <div ref={headerRef} className="text-center opacity-0">
             <Link href="/">
               <Image src={Title} alt="AI OCEAN" width={160} height={48} className="mx-auto h-10 w-auto object-contain"
                      priority/>
@@ -286,7 +320,7 @@ function ResultInner() {
           </div>
 
           {/* Character card — text left, mascot right */}
-          <div className={`${theme.cardBg} relative flex items-center rounded-3xl pb-0 shadow-xl mt-20`}
+          <div ref={cardRef} className={`${theme.cardBg} relative flex items-center rounded-3xl pb-0 shadow-xl mt-20 opacity-0`}
                style={{clipPath: 'inset(-100px -100px 0 0 round 1.5rem)'}}>
 
             {/* Text content — left side */}
@@ -321,22 +355,26 @@ function ResultInner() {
                     style={{objectPosition: 'center'}}
                   />
                 )}
-
-                <Image
-                  src={theme.mascot}
-                  alt={archetype.character}
-                  width={192}
-                  height={192}
-                  className="object-contain absolute -right-5 md:-right-15 -top-10 md:-top-20 h-50 md:h-80 w-auto z-10"
-                  priority
-                />
               </div>
+            </div>
+
+            {/* Mascot — animated separately */}
+            <div ref={mascotRef} className="absolute inset-0 flex justify-center opacity-0">
+              <Image
+                src={theme.mascot}
+                alt={archetype.character}
+                width={192}
+                height={192}
+                className="object-contain absolute -right-5 md:-right-15 -top-10 md:-top-20 h-50 md:h-80 w-auto z-10"
+                priority
+              />
             </div>
           </div>
 
           {/* Motto */}
           <p
-            className="text-left font-syne text-lg font-bold text-white"
+            ref={mottoRef}
+            className="text-left font-syne text-lg font-bold text-white opacity-0"
             style={{
               WebkitTextStroke: "0.5px rgba(0,0,0,0.1)",
               paintOrder: "stroke fill",
@@ -347,7 +385,7 @@ function ResultInner() {
           </p>
 
           {/* Description */}
-          <div className="space-y-3 text-sm font-semibold leading-relaxed text-white/90"
+          <div ref={descRef} className="space-y-3 text-sm font-semibold leading-relaxed text-white/90 opacity-0"
                style={{textShadow: "1px 1px 0 rgba(0,0,0,0.5)"}}>
             {expandedDesc ? (
               <p>{archetype.descriptionEn}</p>
@@ -375,7 +413,7 @@ function ResultInner() {
           </div>
 
           {/* Traits — CharacterSection style */}
-          <div className="relative">
+          <div ref={traitsRef} className="relative opacity-0">
             {/* Tab label */}
             <div
               className="inline-block rounded-t-2xl border-t border-l border-r border-white/30 bg-white/20 px-10 py-2 backdrop-blur-sm shadow-[inset_0px_0px_10px_2px_rgba(255,255,255,2)]">
@@ -423,13 +461,13 @@ function ResultInner() {
           </div>
 
           {/* Logos */}
-          <div className="flex items-center justify-center gap-4 pt-2">
+          <div ref={logosRef} className="flex items-center justify-center gap-4 pt-2 opacity-0">
             <Image src={UxmmLogo} alt="UXmm" width={60} height={30} className="h-8 w-auto"/>
             <Image src={HubLogo} alt="Hub" width={50} height={30} className="h-8 w-auto"/>
           </div>
 
           {/* Share section */}
-          <div>
+          <div ref={shareRef} className="opacity-0">
             <h3 className="font-dynapuff text-center text-base font-bold text-white mb-4"
                 style={{textShadow: "2px 2px 0 rgba(0,0,0,0.15)"}}>Share your OCEAN Archetype</h3>
             <div className="flex justify-center items-center gap-3">

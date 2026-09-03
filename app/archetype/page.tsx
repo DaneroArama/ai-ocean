@@ -537,23 +537,29 @@ function TestQuestion() {
           <div className="absolute bottom-[10%] left-[10%] w-10 opacity-10"><Image src={Fishes} alt="" width={64} height={32} className="object-contain scale-x-[-1]" /></div>
         </div>
 
-        <div className="relative z-10 flex items-center justify-center px-4 py-3 md:px-8">
+        <div className="relative z-10 flex items-center justify-between px-4 py-3 md:px-8">
           <Link href="/"><Image src={BlueTitle} alt="AI OCEAN" width={160} height={48} className="h-10 w-auto object-contain" priority /></Link>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setLang(lang === "en" ? "my" : "en")}
+              className="rounded-full border-2 border-[#0A3D62]/30 bg-white/80 px-3 py-1 font-syne text-xs font-bold text-[#0A3D62] transition-all hover:bg-[#0A3D62] hover:text-white active:scale-95">
+              {lang === "en" ? "မြန်မာ" : "ENG"}
+            </button>
+            <div className="flex items-center gap-2 rounded-full bg-[#0A3D62] px-3 py-1.5">
+              <Image src={Logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+              <span className="font-dynapuff text-sm font-bold text-white">{currentIdx + 1}/{totalQuestions}</span>
+            </div>
+          </div>
         </div>
         <div className="relative z-10 h-1 bg-white/30">
           <div className="h-full bg-[#FFD15A] transition-all" style={{ width: "100%" }} />
         </div>
-        <div className="relative z-10 px-4 py-2 md:px-8">
-          <p className="text-xs font-semibold text-white/70">Wave 1</p>
-          <p className="font-dynapuff text-lg font-bold text-white">
-            {String(currentIdx + 1).padStart(2, "0")} / {String(totalQuestions).padStart(2, "0")}
-          </p>
-        </div>
 
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-4 w-full max-w-7xl">
-          <p className="mb-8 max-w-lg text-center font-dynapuff text-xl font-bold text-ocean-deep leading-relaxed md:text-2xl"
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-4 w-full max-w-7xl mx-auto">
+          <p className="mb-8 max-w-lg text-center font-dynapuff text-xl font-bold text-ocean-deep leading-relaxed md:text-2xl mx-auto"
             style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.06)" }}>
-            One last one. Which of these sounds most like you at work?
+            {lang === "en"
+              ? "One last one. Which of these sounds most like you at work?"
+              : "ပြီးခါနီးပြီနော်။ အလုပ်ခွင်မှာ ဘယ်တစ်ခုက သင်နဲ့ အတူဆုံးလဲ။?"}
           </p>
           <div className="w-full max-w-md space-y-3">
             {tiedData.map((a, idx) => {
@@ -565,7 +571,7 @@ function TestQuestion() {
                       ? "border-[#0A3D62] bg-[#0A3D62] text-white shadow-none translate-y-[2px] scale-[1.02]"
                       : "border-[#0A3D62]/60 bg-white text-[#0A3D62] shadow-[0_4px_0_#0A3D62]/25 hover:shadow-[0_6px_0_#0A3D62]/35 hover:translate-y-[-2px] hover:scale-[1.01] hover:bg-[#0A3D62]/5"
                   }`}>
-                  {a.tieBreakerStatementEn}
+                  {lang === "en" ? a.tieBreakerStatementEn : a.tieBreakerStatementMy}
                 </button>
               );
             })}
