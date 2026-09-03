@@ -320,6 +320,7 @@ function TestQuestion() {
   }, []);
 
   const [currentIdx, setCurrentIdx] = useState(0);
+  const currentIdxRef = useRef(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const [tieBreakerMode, setTieBreakerMode] = useState(false);
@@ -343,6 +344,11 @@ function TestQuestion() {
   useEffect(() => {
     tieBreakerModeRef.current = tieBreakerMode;
   }, [tieBreakerMode]);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    currentIdxRef.current = currentIdx;
+  }, [currentIdx]);
 
   // Change bg color on question change — no 2 in a row
   useEffect(() => {
@@ -388,13 +394,14 @@ function TestQuestion() {
     if (inTieBreaker && currentIdx >= 15) {
       setSubmitting(true);
       try {
-        const answerArray = Object.entries(latestAnswers)
-          .filter(([k]) => k === "TIE")
+        const allAnswerArray = Object.entries(latestAnswers)
+          .filter(([k]) => k !== "TIE")
           .map(([questionId, score]) => ({ questionId, score }));
         await submitTieBreaker({
           tied: tiedArchetypes,
           tieAnswer: overrideScore ?? latestAnswers["TIE"] ?? 1,
-          answers: answerArray,
+          answers: [{ questionId: "TIE", score: overrideScore ?? latestAnswers["TIE"] ?? 1 }],
+          allAnswers: allAnswerArray,
           sessionId: sessionId || undefined,
         });
         router.push("/archetype/result");
@@ -440,20 +447,23 @@ function TestQuestion() {
   }, []);
 
   const handleAnswer = useCallback((score: number) => {
+    const idx = currentIdxRef.current;
     if (tieBreakerModeRef.current) {
       const next = { ...answersRef.current, TIE: score };
       setAnswers(next);
       answersRef.current = next;
-    } else if (questions?.[currentIdx]) {
-      const next = { ...answersRef.current, [questions[currentIdx].id]: score };
+    } else if (questions?.[idx]) {
+      const next = { ...answersRef.current, [questions[idx].id]: score };
       setAnswers(next);
       answersRef.current = next;
     }
-  }, [questions, currentIdx]);
+  }, [questions]);
 
   const handleAnswerAndAdvance = useCallback((score: number) => {
     handleAnswer(score);
-    if (isLastQuestion) {
+    const idx = currentIdxRef.current;
+    const total = tieBreakerModeRef.current ? 16 : (questions?.length ?? 15);
+    if (idx >= total - 1) {
       handleNext(score);
     } else {
       setAnimDir("next");
@@ -461,7 +471,7 @@ function TestQuestion() {
         setCurrentIdx((i) => i + 1);
       }, 300);
     }
-  }, [handleAnswer, isLastQuestion, handleNext]);
+  }, [handleAnswer, handleNext, questions]);
 
   const getMascotForQuestion = (idx: number) => {
     if (tieBreakerMode) {

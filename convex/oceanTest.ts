@@ -159,12 +159,12 @@ export const submitTieBreaker = mutation({
     tied: v.array(v.string()),
     tieAnswer: v.number(),
     answers: v.array(v.object({ questionId: v.string(), score: v.number() })),
+    allAnswers: v.array(v.object({ questionId: v.string(), score: v.number() })),
     sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { finalArchetype, wasTieBreaker } = resolveFinalArchetype(args.tied, [{ questionId: "TIE", score: args.tieAnswer }]);
 
-    // Find existing result to update
     const identity = await ctx.auth.getUserIdentity();
     const isRegistered = !!identity;
     let resultId: string | null = null;
@@ -202,16 +202,16 @@ export const submitTieBreaker = mutation({
       }
     }
 
-    // If no existing result found, create one
+    // If no existing result found, create one with ALL answers
     if (!resultId) {
-      const scores = calculateScores(args.answers);
-      const allSame = new Set(args.answers.map((a) => a.score)).size === 1;
+      const scores = calculateScores(args.allAnswers);
+      const allSame = new Set(args.allAnswers.map((a) => a.score)).size === 1;
       const now = Date.now();
       resultId = await ctx.db.insert("oceanTestResults", {
         userType: isRegistered ? "REGISTERED" : "GUEST",
         participantId: undefined,
         sessionId: args.sessionId,
-        answers: args.answers,
+        answers: args.allAnswers,
         scores: scores as { O: number; C: number; E: number; A: number; N: number },
         finalArchetype,
         wasTieBreaker: true,
@@ -233,7 +233,7 @@ export const saveGuestResult = mutation({
   },
   handler: async (ctx, args) => {
     const results = await ctx.db.query("oceanTestResults").withIndex("by_session", (q) => q.eq("sessionId", args.sessionId)).collect();
-    if (results.length === 0) throw new Error("No result found for this session");
+    if (results.length === 0) return { success: true };
     const result = results[results.length - 1];
     await ctx.db.patch(result._id, {
       guestName: args.name,
