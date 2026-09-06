@@ -9,14 +9,55 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-// Import mascot images
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Tuto from '@/app/assets/Mascots/Tuto.png'
+// Import mascot images (animated GIFs)
+import Shark from '@/app/assets/Mascots GIF/Sharkie.gif'
+import Ali from '@/app/assets/Mascots GIF/Croco.gif'
+import Crabi from '@/app/assets/Mascots GIF/Crabbi.gif'
+import Octo from '@/app/assets/Mascots GIF/Octo.gif'
+import Tuto from '@/app/assets/Mascots GIF/Turtle.gif'
 import eventTitle from '@/app/assets/Title.png'
 import eventLogo from '@/app/assets/event_logo.png'
+
+import BoldIcon from '@/app/assets/Icons/Bold.svg'
+import CreativeIcon from '@/app/assets/Icons/Creative.svg'
+import CuriousIcon from '@/app/assets/Icons/Curious.svg'
+import DecisiveIcon from '@/app/assets/Icons/Decisive.svg'
+import DeepIcon from '@/app/assets/Icons/Deep.svg'
+import DiscerningIcon from '@/app/assets/Icons/Discerning.svg'
+import DrivenIcon from '@/app/assets/Icons/Driven.svg'
+import EmpatheticIcon from '@/app/assets/Icons/Empathetic.svg'
+import PerceptiveIcon from '@/app/assets/Icons/Perceptive.svg'
+import ProtectiveIcon from '@/app/assets/Icons/Protective.svg'
+import SteadyIcon from '@/app/assets/Icons/Steady.svg'
+import SystematicIcon from '@/app/assets/Icons/Systematic.svg'
+import ThoroughIcon from '@/app/assets/Icons/Thorough.svg'
+import VersatileIcon from '@/app/assets/Icons/Versatile.svg'
+import VigilantIcon from '@/app/assets/Icons/Vigilant.svg'
+
+const TRAIT_ICONS: Record<string, typeof BoldIcon> = {
+  Bold: BoldIcon,
+  Creative: CreativeIcon,
+  Curious: CuriousIcon,
+  Decisive: DecisiveIcon,
+  Deep: DeepIcon,
+  Discerning: DiscerningIcon,
+  Driven: DrivenIcon,
+  Empathetic: EmpatheticIcon,
+  Perceptive: PerceptiveIcon,
+  Protective: ProtectiveIcon,
+  Steady: SteadyIcon,
+  Systematic: SystematicIcon,
+  Thorough: ThoroughIcon,
+  Versatile: VersatileIcon,
+  Vigilant: VigilantIcon,
+}
+
+// How much vertical scroll (in viewport-heights) each slide transition takes.
+// This is deliberately based on viewport HEIGHT, not the pixel width of the
+// slides — on wide/ultrawide monitors the slides are much wider than they
+// are tall, so tying scroll length to width made this section take an
+// unreasonably long scroll to get through. Lower = snappier.
+const SCROLL_VH_PER_SLIDE = 1
 
 // Character data with unique background colors
 const characters = [
@@ -89,8 +130,19 @@ function extractHexColor(bgRight: string) {
 /**
  * Single character slide - full viewport section
  */
-function CharacterSlide({ character }: { character: typeof characters[number] }) {
+function CharacterSlide({
+  character,
+  scrollTween,
+  index,
+  enterCallbacksRef,
+}: {
+  character: typeof characters[number]
+  scrollTween: gsap.core.Tween | null
+  index: number
+  enterCallbacksRef: React.MutableRefObject<Map<number, () => void>>
+}) {
   const sectionRef = useRef<HTMLElement>(null)
+  const slideContentRef = useRef<HTMLDivElement>(null)
   const characterImageRef = useRef<HTMLDivElement>(null)
   const quoteRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLHeadingElement>(null)
@@ -183,8 +235,10 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
     }
   }, [])
 
-  // ScrollTrigger to animate on scroll into view
+  // Mobile fallback: no horizontal tween exists, so this is the original
+  // vertical "scrolled into view, play once" trigger.
   useEffect(() => {
+    if (scrollTween) return // desktop uses the scrub timeline below instead
     const node = sectionRef.current
     if (!node) return
 
@@ -198,7 +252,84 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
     return () => {
       trigger.kill()
     }
-  }, [animateIn])
+  }, [animateIn, scrollTween])
+
+  // Desktop: one cohesive enter + exit timeline per slide, entirely driven by
+  // scroll position via containerAnimation. Everything — the content scale,
+  // the quote pop, the name/bio/traits reveal — lives in the SAME scrubbed
+  // timeline, so there's no separate "playing" state that can lag behind
+  // where the slide actually is. If you scroll fast, things simply jump to
+  // the correct in-between state instead of looking unfinished; if you
+  // scroll back, it reverses cleanly.
+  useEffect(() => {
+    if (!scrollTween) return
+    const node = sectionRef.current
+    if (!node) return
+
+    const ctx = gsap.context(() => {
+      const traitItems = traitsRef.current ? traitsRef.current.querySelectorAll('.trait-item') : []
+      const mainPoly = trapeziumRef.current?.querySelector('polygon[data-main]') as SVGPolygonElement | null
+      const gradientEl = trapeziumRef.current?.querySelector('linearGradient')
+
+      const playEnter = () => {
+        gsap.to(characterImageRef.current, { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' })
+        gsap.to(nameRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.05 })
+        gsap.to(quoteRef.current, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)', delay: 0.1 })
+        gsap.to(bioContentRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.15 })
+        gsap.to(traitsRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.2 })
+        if (traitItems.length) gsap.to(traitItems, { scale: 1, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.4)', delay: 0.25 })
+        if (mainPoly) gsap.to(mainPoly, { opacity: 1, duration: 0.8, ease: 'power2.out' })
+        if (gradientEl) gsap.to(gradientEl, { opacity: 1, duration: 0.8, ease: 'power2.out' })
+      }
+
+      // Set initial hidden state for ALL slides
+      gsap.set(characterImageRef.current, { x: 50, opacity: 0.4 })
+      gsap.set(nameRef.current, { y: -20, opacity: 0 })
+      gsap.set(quoteRef.current, { scale: 0.6, opacity: 0 })
+      gsap.set(bioContentRef.current, { y: 16, opacity: 0 })
+      gsap.set(traitsRef.current, { y: 20, opacity: 0 })
+      if (traitItems.length) gsap.set(traitItems, { scale: 0.8, opacity: 0 })
+      if (mainPoly) gsap.set(mainPoly, { opacity: 0.3 })
+      if (gradientEl) gsap.set(gradientEl, { opacity: 0.3 })
+
+      if (index === 0) {
+        // First slide: visible immediately, play micro animations on viewport entry
+        gsap.set(slideContentRef.current, { scale: 1, opacity: 1 })
+        ScrollTrigger.create({
+          trigger: node,
+          start: 'top 80%',
+          once: true,
+          onEnter: playEnter,
+        })
+      } else {
+        // Slides 1-4: hidden, register enter callback for tween progress
+        gsap.set(slideContentRef.current, { scale: 0.85, opacity: 0.3 })
+        enterCallbacksRef.current.set(index, playEnter)
+      }
+
+      // EXIT — fade out as the slide scrolls off to the left
+      gsap.fromTo(
+        slideContentRef.current,
+        { scale: 1, opacity: 1 },
+        {
+          scale: 0.85,
+          opacity: 0.3,
+          duration: 1,
+          ease: 'power2.in',
+          scrollTrigger: {
+            trigger: node,
+            containerAnimation: scrollTween,
+            horizontal: true,
+            start: 'center left',
+            end: 'right left',
+            scrub: 1,
+          },
+        }
+      )
+    })
+
+    return () => ctx.revert()
+  }, [scrollTween, index])
 
   // Bio scrollbar handlers
   const handleBioScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -286,9 +417,9 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
   return (
     <section
       ref={sectionRef}
-      className={`relative min-h-[100svh] md:h-screen md:min-h-screen bg-gradient-to-b ${character.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
+      className={`relative min-h-[100svh] md:h-screen md:min-h-screen md:w-screen md:flex-none bg-gradient-to-b ${character.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
     >
-      <div className="relative w-full h-auto md:h-full flex-1 md:flex-none flex items-center py-0 md:py-0 md:min-h-0">
+      <div ref={slideContentRef} className="relative w-full h-auto md:h-full flex-1 md:flex-none flex items-center py-0 md:py-0 md:min-h-0">
         <div className="w-full h-auto md:h-full flex flex-col md:flex-row relative md:min-h-0">
 
           {/* LEFT SIDE - Character & Quote */}
@@ -502,34 +633,29 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
               </div>
 
               <div className="bg-black/30 backdrop-blur-sm rounded-r-2xl rounded-bl-2xl p-6 border border-white/20 -mt-px">
-                <div className="flex flex-wrap gap-4">
-                  {character.traits.map((trait, index) => (
-                    <div
-                      key={index}
-                      className="trait-item flex flex-col items-center gap-2"
-                    >
-                      <div className="w-14 h-14 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/50">
-                        {index === 0 && (
-                          <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        )}
-                        {index === 1 && (
-                          <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                        {index === 2 && (
-                          <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        )}
+                <div className="grid grid-cols-3 gap-4">
+                  {character.traits.map((trait, index) => {
+                    const Icon = TRAIT_ICONS[trait]
+                    return (
+                      <div
+                        key={index}
+                        className="trait-item flex flex-col items-center gap-2"
+                      >
+                        <div className="flex items-center justify-center">
+                          {Icon ? (
+                            <Image src={Icon} alt={trait} width={32} height={32} className="h-10 w-10 object-contain" />
+                          ) : (
+                            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="font-quicksand text-base font-semibold text-white">
+                          {trait}
+                        </span>
                       </div>
-                      <span className="font-syne text-base font-semibold text-white">
-                        {trait}
-                      </span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -547,22 +673,122 @@ function CharacterSlide({ character }: { character: typeof characters[number] })
  * Character Introduction Section
  *
  * Features:
- * - Vertically scrollable full-viewport sections per character
- * - Each section: left character + quote, right name + bio + traits
+ * - Desktop (>=768px): horizontal scroll — the track pins in place and
+ *   translates left as the user scrolls down, snapping one character per
+ *   "screen" of scroll, with a scale/opacity transition as each slide
+ *   crosses in and out of view.
+ * - Mobile (<768px): unchanged, natural vertical stack.
+ * - Each slide: left character + quote, right name + bio + traits
  * - Scroll-triggered GSAP entrance animations
  * - Floating trapezium shape on desktop
  * - Custom scrollbar with draggable event logo indicator
  */
 export function CharacterSection() {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [scrollTween, setScrollTween] = useState<gsap.core.Tween | null>(null)
+  const enterCallbacksRef = useRef<Map<number, () => void>>(new Map())
+  const enteredRef = useRef<Set<number>>(new Set())
+  const totalSlides = characters.length
+
   useEffect(() => {
-    ScrollTrigger.refresh()
+    const mm = gsap.matchMedia()
+
+    mm.add('(min-width: 768px)', () => {
+      const outer = outerRef.current
+      const track = trackRef.current
+      if (!outer || !track) return
+
+      const getTranslateX = () => track.scrollWidth - outer.clientWidth
+
+      const tween = gsap.to(track, {
+        x: () => -getTranslateX(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: outer,
+          start: 'center',
+          end: 'bottom',
+          scrub: 1,
+          invalidateOnRefresh: true,
+          snap: {
+            snapTo: 1 / (characters.length - 1),
+            duration: { min: 0.2, max: 0.6 },
+            ease: 'power1.inOut',
+          },
+        },
+      })
+
+      setScrollTween(tween)
+
+      // Simple scroll listener — triggers slide enter animations based on
+      // how far the outer container has scrolled into view
+      const onScroll = () => {
+        const outerRect = outer.getBoundingClientRect()
+        const viewportH = window.innerHeight
+        // How far the outer's top has scrolled past the viewport top (0 = just entered)
+        const scrolled = -outerRect.top
+        const scrollable = outerRect.height - viewportH
+        if (scrollable <= 0) return
+        const progress = Math.max(0, Math.min(1, scrolled / scrollable))
+
+        for (let i = 1; i < totalSlides; i++) {
+          const threshold = (i - 1) / (totalSlides - 1)
+          if (progress >= threshold && !enteredRef.current.has(i)) {
+            enteredRef.current.add(i)
+            enterCallbacksRef.current.get(i)?.()
+          }
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      // Defer initial check so children have time to register their callbacks
+      const rafId = requestAnimationFrame(onScroll)
+
+      return () => {
+        cancelAnimationFrame(rafId)
+        window.removeEventListener('scroll', onScroll)
+        tween.scrollTrigger?.kill()
+        tween.kill()
+        setScrollTween(null)
+        enterCallbacksRef.current.clear()
+        enteredRef.current.clear()
+      }
+    })
+
+    mm.add('(max-width: 767px)', () => {
+      if (trackRef.current) gsap.set(trackRef.current, { clearProps: 'x' })
+      setScrollTween(null)
+    })
+
+    const refreshId = requestAnimationFrame(() => ScrollTrigger.refresh())
+
+    return () => {
+      cancelAnimationFrame(refreshId)
+      enterCallbacksRef.current.clear()
+      enteredRef.current.clear()
+      mm.revert()
+    }
   }, [])
 
   return (
     <>
-      {characters.map((character) => (
-        <CharacterSlide key={character.id} character={character} />
-      ))}
+      {/* Desktop: tall container + sticky horizontal scroll */}
+      <div ref={outerRef} className="relative hidden md:block" style={{ height: `${totalSlides * 60}vh` }}>
+        <div className="sticky top-0 h-screen overflow-hidden">
+          <div ref={trackRef} className="flex h-screen will-change-transform">
+            {characters.map((character, i) => (
+              <CharacterSlide key={character.id} character={character} scrollTween={scrollTween} index={i} enterCallbacksRef={enterCallbacksRef} />
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* Mobile: normal vertical flow */}
+      <div className="md:hidden">
+        <div className="flex flex-col">
+          {characters.map((character, i) => (
+            <CharacterSlide key={character.id} character={character} scrollTween={null} index={i} enterCallbacksRef={enterCallbacksRef} />
+          ))}
+        </div>
+      </div>
     </>
   )
 }

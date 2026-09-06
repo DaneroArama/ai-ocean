@@ -66,7 +66,7 @@ export function HeroSection() {
       })
 
       // WORD SWAP: "idea" → "AI"
-      gsap.delayedCall(4.5 + 0.3 + 1.2, () => {
+      gsap.delayedCall(4.5 + 0.3 + 3, () => {
         if (hasSwappedRef.current) return
         hasSwappedRef.current = true
         const wordEl = document.getElementById('hero-word-swap')
@@ -88,7 +88,7 @@ export function HeroSection() {
               {
                 y: 0,
                 opacity: 1,
-                duration: 0.3,
+                duration: 0.8,
                 ease: 'power1.out',
                 onComplete: () => gsap.set(wordEl, { clearProps: 'filter' }),
               },

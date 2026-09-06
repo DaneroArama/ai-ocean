@@ -33,11 +33,13 @@ export default function Home() {
         <div id="event"><BentoSection/></div>
       </div>
 
+      {/* Character Introduction - Section 3 */}
+      <div id="characters">
+        <CharacterSection/>
+      </div>
+
       {/* Personality Test - Section 4 */}
       <PersonalityTestSection/>
-
-      {/* Character Introduction - Section 3 */}
-      <div id="characters"><CharacterSection/></div>
 
       {/* Event CTA + Marquee - Section 5 */}
       <EventCTASection/>

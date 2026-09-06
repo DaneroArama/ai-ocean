@@ -16,11 +16,11 @@ import Coral from "@/app/assets/Coral.png";
 import Fishes from "@/app/assets/FIshes.png";
 import Starfish from "@/app/assets/Starfish.png";
 
-import SharkImg from "@/app/assets/Mascots/Shark.png";
-import OctoImg from "@/app/assets/Mascots/Octo.png";
-import CrabiImg from "@/app/assets/Mascots/Crabi.png";
-import TutoImg from "@/app/assets/Mascots/Tuto.png";
-import AliImg from "@/app/assets/Mascots/Ali.png";
+import SharkImg from "@/app/assets/Mascots GIF/Sharkie.gif";
+import OctoImg from "@/app/assets/Mascots GIF/Octo.gif";
+import CrabiImg from "@/app/assets/Mascots GIF/Crabbi.gif";
+import TutoImg from "@/app/assets/Mascots GIF/Turtle.gif";
+import AliImg from "@/app/assets/Mascots GIF/Croco.gif";
 
 import SharkPattern from "@/app/assets/Mascots/Sharkie pattern.png";
 import OctoPattern from "@/app/assets/Mascots/Otto Pattern.png";
@@ -33,6 +33,40 @@ import OctoResult from "@/app/assets/Mascots/Otto Result.png";
 import CrabiResult from "@/app/assets/Mascots/Crabbi Result.png";
 import TutoResult from "@/app/assets/Mascots/Tuto Result.png";
 import AliResult from "@/app/assets/Mascots/Croco Result.png";
+
+import BoldIcon from "@/app/assets/Icons/Bold.svg";
+import CreativeIcon from "@/app/assets/Icons/Creative.svg";
+import CuriousIcon from "@/app/assets/Icons/Curious.svg";
+import DecisiveIcon from "@/app/assets/Icons/Decisive.svg";
+import DeepIcon from "@/app/assets/Icons/Deep.svg";
+import DiscerningIcon from "@/app/assets/Icons/Discerning.svg";
+import DrivenIcon from "@/app/assets/Icons/Driven.svg";
+import EmpatheticIcon from "@/app/assets/Icons/Empathetic.svg";
+import PerceptiveIcon from "@/app/assets/Icons/Perceptive.svg";
+import ProtectiveIcon from "@/app/assets/Icons/Protective.svg";
+import SteadyIcon from "@/app/assets/Icons/Steady.svg";
+import SystematicIcon from "@/app/assets/Icons/Systematic.svg";
+import ThoroughIcon from "@/app/assets/Icons/Thorough.svg";
+import VersatileIcon from "@/app/assets/Icons/Versatile.svg";
+import VigilantIcon from "@/app/assets/Icons/Vigilant.svg";
+
+const TRAIT_ICONS: Record<string, typeof BoldIcon> = {
+  Bold: BoldIcon,
+  Creative: CreativeIcon,
+  Curious: CuriousIcon,
+  Decisive: DecisiveIcon,
+  Deep: DeepIcon,
+  Discerning: DiscerningIcon,
+  Driven: DrivenIcon,
+  Empathetic: EmpatheticIcon,
+  Perceptive: PerceptiveIcon,
+  Protective: ProtectiveIcon,
+  Steady: SteadyIcon,
+  Systematic: SystematicIcon,
+  Thorough: ThoroughIcon,
+  Versatile: VersatileIcon,
+  Vigilant: VigilantIcon,
+};
 
 const ARCHETYPE_THEMES: Record<string, {
   cardBg: string;
@@ -426,35 +460,24 @@ function ResultInner() {
               <div
                 className="rounded-r-2xl rounded-bl-2xl bg-white/5 p-5 shadow-[inset_0px_0px_10px_0px_rgba(255,255,255,3)]">
                 <div className="grid grid-cols-3 gap-4">
-                  {archetype.traitsEn.map((t, idx) => (
-                    <div key={t} className="flex flex-col items-center gap-2">
-                      <div
-                        className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/50 bg-white/30 backdrop-blur-sm">
-                        {idx === 0 && (
-                          <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                          </svg>
-                        )}
-                        {idx === 1 && (
-                          <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd"
-                                  d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                                  clipRule="evenodd"/>
-                          </svg>
-                        )}
-                        {idx === 2 && (
-                          <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"/>
-                          </svg>
-                        )}
+                  {archetype.traitsEn.map((t) => {
+                    const Icon = TRAIT_ICONS[t];
+                    return (
+                      <div key={t} className="flex flex-col items-center gap-2">
+                        <div className="flex items-center justify-center">
+                          {Icon ? (
+                            <Image src={Icon} alt={t} width={32} height={32} className="h-10 w-10 object-contain" />
+                          ) : (
+                            <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                            </svg>
+                          )}
+                        </div>
+                        <span className="font-quicksand text-sm font-semibold text-white text-center"
+                              style={{textShadow: "1px 1px 0 rgba(0,0,0,0.15)"}}>{t}</span>
                       </div>
-                      <span className="font-syne text-sm font-semibold text-white text-center"
-                            style={{textShadow: "1px 1px 0 rgba(0,0,0,0.15)"}}>{t}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
