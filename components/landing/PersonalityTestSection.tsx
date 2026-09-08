@@ -97,7 +97,7 @@ export function PersonalityTestSection() {
       </div>
 
       {/* Characters row - standing on white bar */}
-      <div className="absolute bottom-12 left-0 w-full z-[3] flex items-end justify-center gap-1 sm:gap-3 md:gap-6 lg:gap-8 xl:gap-10 px-2 sm:px-6 pointer-events-none">
+      <div className="absolute bottom-12 left-0 w-full z-[3] flex items-end justify-center gap-0 sm:gap-0 md:gap-6 lg:gap-8 xl:gap-10 px-2 sm:px-6 pointer-events-none">
         {/* Tuto - Turtle */}
         <div className="relative shrink-0 flex flex-col items-center -mb-1">
           <Image
@@ -105,7 +105,7 @@ export function PersonalityTestSection() {
             alt="Tuto"
             width={160}
             height={180}
-            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain drop-shadow-sm"
+            className="w-[80px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain drop-shadow-sm"
             priority
           />
           <div className="absolute -left-2 md:-left-3 bottom-[18px] md:bottom-[22px] w-6 md:w-8 opacity-70">
@@ -120,7 +120,7 @@ export function PersonalityTestSection() {
             alt="Sharkie"
             width={220}
             height={200}
-            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain drop-shadow-sm"
+            className="w-[80px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain drop-shadow-sm"
             priority
           />
           <div className="absolute -right-1 bottom-[20px] w-6 md:w-8 opacity-70 hidden sm:block">
@@ -135,7 +135,7 @@ export function PersonalityTestSection() {
             alt="Crabi"
             width={180}
             height={180}
-            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
+            className="w-[80px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
         </div>
@@ -147,7 +147,7 @@ export function PersonalityTestSection() {
             alt="Octo"
             width={190}
             height={180}
-            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
+            className="w-[80px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
         </div>
@@ -159,7 +159,7 @@ export function PersonalityTestSection() {
             alt="Ali"
             width={210}
             height={180}
-            className="w-[92px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
+            className="w-[80px] sm:w-[124px] md:w-[168px] lg:w-[200px] h-auto object-contain"
             priority
           />
           <div className="absolute -right-2 bottom-[18px] w-10 md:w-14 opacity-80 hidden md:block">

@@ -266,6 +266,20 @@ export function HeroSection() {
             />
           </div>
 
+          {/* MASCOT */}
+          <div className="hero-mascot-container shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full md:hidden flex items-center justify-center shadow-lg overflow-hidden will-change-[transform,filter]">
+            <div className="relative w-full h-full border-[5px] border-white rounded-full bg-[#FFF2CC] overflow-hidden">
+              <Image
+                key={MASCOTS[currentMascotIndex].name}
+                src={MASCOTS[currentMascotIndex].src}
+                alt={`${MASCOTS[currentMascotIndex].name} character`}
+                width={96}
+                height={96}
+                className="hero-mascot-image w-full h-full object-cover object-[left_20%]"
+              />
+            </div>
+          </div>
+
           {/* =====================================================
               MAIN TITLE
           ====================================================== */}
@@ -281,10 +295,8 @@ export function HeroSection() {
               to
             </h2>
 
-            {/* =================================================
-                MASCOT
-            ================================================== */}
-            <div className="hero-mascot-container shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full flex items-center justify-center shadow-lg overflow-hidden will-change-[transform,filter]">
+            {/* MASCOT */}
+            <div className="hero-mascot-container shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white/90 rounded-full hidden md:flex items-center justify-center shadow-lg overflow-hidden will-change-[transform,filter]">
               <div className="relative w-full h-full border-[5px] border-white rounded-full bg-[#FFF2CC] overflow-hidden">
                 <Image
                   key={MASCOTS[currentMascotIndex].name}

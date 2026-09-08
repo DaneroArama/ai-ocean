@@ -408,7 +408,7 @@ html.lenis body {
   position: absolute;
   pointer-events: none;
   width: 220px;
-  height: 180px;
+  height: 100px;
 }
 .glass-corners::before {
   top: 0;

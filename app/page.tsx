@@ -7,7 +7,8 @@ import {
   CharacterSection,
   PersonalityTestSection,
   EventCTASection,
-  AboutSection
+  AboutSection,
+  MerchandiseSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 
@@ -41,10 +42,13 @@ export default function Home() {
       {/* Personality Test - Section 4 */}
       <PersonalityTestSection/>
 
-      {/* Event CTA + Marquee - Section 5 */}
+      {/* Merchandise Section - Section 5 */}
+      <MerchandiseSection/>
+
+      {/* Event CTA + Marquee - Section 6 */}
       <EventCTASection/>
 
-      {/* About - Section 6 */}
+      {/* About - Section 7 */}
       <AboutSection/>
     </PublicLayout>
   )

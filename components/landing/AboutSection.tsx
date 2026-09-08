@@ -118,11 +118,11 @@ export function AboutSection() {
       </div>
 
       {/* Bottom waves - scaled down to avoid overwhelming layout */}
-      <div className="relative w-full h-[300px] lg:h-[500px]">
+      <div className="relative w-full h-[200px] md:h-[500px]">
         <Image
           src={Waves}
           alt=""
-          className="absolute -bottom-5 left-[-15%] w-full h-[400px] object-contain"
+          className="absolute -bottom-5 left-[-25%] w-full h-[200px] md:h-[400px] md:left-[-15%] object-contain"
           priority
         />
         <Image
