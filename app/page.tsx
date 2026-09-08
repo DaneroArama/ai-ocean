@@ -8,7 +8,8 @@ import {
   PersonalityTestSection,
   EventCTASection,
   AboutSection,
-  MerchandiseSection
+  MerchandiseSection,
+  CommunityPartnersSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 
@@ -50,6 +51,9 @@ export default function Home() {
 
       {/* About - Section 7 */}
       <AboutSection/>
+
+      {/* Community Partners - Section 8 */}
+      <CommunityPartnersSection/>
     </PublicLayout>
   )
 }

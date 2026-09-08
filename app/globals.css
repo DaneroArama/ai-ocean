@@ -407,8 +407,8 @@ html.lenis body {
   content: '';
   position: absolute;
   pointer-events: none;
-  width: 220px;
-  height: 100px;
+  width: 80%;
+  height: 80%;
 }
 .glass-corners::before {
   top: 0;

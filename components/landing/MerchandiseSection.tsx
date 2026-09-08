@@ -13,8 +13,11 @@ import ToteBagProduct from '@/app/assets/Merchandise/Products/Tote Bag.png'
 import TShirt1Product from '@/app/assets/Merchandise/Products/T Shirt.png'
 import TShirt2Product from '@/app/assets/Merchandise/Products/T Shirt 2.png'
 import ToteBagScene from '@/app/assets/Merchandise/Tote Bag Scene.png'
+import ToteBagScene2 from '@/app/assets/Merchandise/Tote Bag Scene 2.png'
 import TShirtScene from '@/app/assets/Merchandise/T Shirt Scene.png'
-
+import TShirtScene2 from '@/app/assets/Merchandise/T Shirt Scene 2.png'
+import TShirtScene3 from '@/app/assets/Merchandise/T Shirt Scene 3.png'
+import TShirtScene4 from '@/app/assets/Merchandise/T Shirt Scene 4.png'
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
@@ -175,10 +178,10 @@ export const MerchandiseSection = () => {
   const [showTShirtModal, setShowTShirtModal] = useState(false)
 
   // T-Shirt pricing based on size
-  const tShirtPrices: Record<ProductSize, number> = {
-    L: 18500,
-    XL: 19000,
-    XXL: 20000,
+  const tShirtPrices: Record<ProductSize, string> = {
+    L: "18,500",
+    XL: "19,000",
+    XXL: "20,000",
   }
 
   const sizes: ProductSize[] = ['L', 'XL', 'XXL']
@@ -247,9 +250,9 @@ export const MerchandiseSection = () => {
               <div className="text-center mb-6">
                 <h3 className="text-4xl font-bold mb-3 tracking-wider group-hover:scale-105 transition-transform duration-700 ease-out">TOTE-BAG</h3>
                 <p className="font-syne text-white/90 text-sm leading-relaxed max-w-md mx-auto mb-6 group-hover:text-white transition-colors duration-700 ease-out">
-                  Limited edition"Into the AI Ocean" Event Tote Bag
+                  A practical tote bag featuring the &#34;Into The AI Ocean&#34; design, a simple way to carry a piece of the event with you.
                 </p>
-                <div className="font-syncopate text-4xl font-bold mb-6 group-hover:scale-110 transition-transform duration-700 ease-out">14500 MMK</div>
+                <div className="font-syncopate text-4xl font-bold mb-6 group-hover:scale-110 transition-transform duration-700 ease-out">14,500 MMK</div>
                 <Link
                   href="https://forms.gle/78zmXhfAtLziZSNa9"
                   target="_blank"
@@ -289,7 +292,7 @@ export const MerchandiseSection = () => {
               <div className="text-center mb-6">
                 <h3 className="text-4xl font-bold mb-3 tracking-wider group-hover:scale-105 transition-transform duration-700 ease-out">T-SHIRT</h3>
                 <p className="font-syne text-white/90 text-sm leading-relaxed max-w-md mx-auto mb-6 group-hover:text-white transition-colors duration-700 ease-out">
-                  Limited Edition "Into the AI Ocean" Event T-Shirt
+                  Exclusive Into The AI Ocean T-shirt featuring our signature event artwork and branding. A special piece to wear, keep, and remember the experience.
                 </p>
                 <div className="font-syncopate text-4xl font-bold mb-6 group-hover:scale-110 transition-all duration-700 ease-out">
                   {tShirtPrices[selectedSize]} MMK
