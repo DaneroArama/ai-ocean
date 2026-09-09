@@ -47,7 +47,7 @@ const QuickViewModal = ({isOpen, onClose, images, productName}: QuickViewModalPr
         gsap.fromTo(
           panelRef.current,
           {opacity: 0, scale: 0.92, y: 30},
-          {opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'back.out(1.4)', delay: 0.08}
+          {opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'back.out(1.4)', delay: 0.08, onComplete: () => { isOpening.current = false }}
         )
       })
       return () => ctx.revert()
@@ -96,7 +96,7 @@ const QuickViewModal = ({isOpen, onClose, images, productName}: QuickViewModalPr
     >
       <div
         ref={panelRef}
-        className="relative bg-white rounded-2xl max-w-lg w-full mx-4 shadow-2xl"
+        className="relative bg-white rounded-2xl max-w-sm w-full mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -114,14 +114,14 @@ const QuickViewModal = ({isOpen, onClose, images, productName}: QuickViewModalPr
 
         {/* Image Carousel */}
         <div className="relative p-5">
-          <div className="relative aspect-4/3 bg-ocean-medium rounded-lg overflow-hidden">
+          <div className="relative aspect-3/4 w-full bg-ocean-medium rounded-lg overflow-hidden">
             <Image
               key={currentIndex}
               data-carousel-img
               src={images[currentIndex]}
               alt={`${productName} - View ${currentIndex + 1}`}
               fill
-              className="object-contain"
+              className="object-cover"
             />
           </div>
 
@@ -240,7 +240,7 @@ export const MerchandiseSection = () => {
             {/* Quick View Button - Bottom Right Corner */}
             <button
               onClick={() => setShowToteBagModal(true)}
-              className="absolute bottom-6 right-6 z-10 bg-white/10 border-white/30 shadow-[inset_0px_0px_10px_5px_rgba(255,255,255,5)] rounded-full p-3 hover:shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out transform group-hover:scale-110 group-hover:rotate-12 active:scale-95"
+              className="absolute bottom-6 right-6 z-10 bg-white/10 border-white/30 shadow-[inset_0px_0px_10px_5px_rgba(255,255,255,5)] rounded-full p-3 hover:shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 ease-out transform md:group-hover:scale-110 md:group-hover:rotate-12 active:scale-95"
             >
               <Image src={EnlargeIcon} alt="Enlarge" width={24} height={24}/>
             </button>
@@ -282,7 +282,7 @@ export const MerchandiseSection = () => {
             {/* Quick View Button - Bottom Right Corner */}
             <button
               onClick={() => setShowTShirtModal(true)}
-              className="absolute bottom-6 right-6 z-10 bg-white/10 border-white/30 shadow-[inset_0px_0px_10px_5px_rgba(255,255,255,5)] rounded-full p-3 hover:shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out transform group-hover:scale-110 group-hover:rotate-12 active:scale-95"
+              className="absolute bottom-6 right-6 z-10 bg-white/10 border-white/30 shadow-[inset_0px_0px_10px_5px_rgba(255,255,255,5)] rounded-full p-3 hover:shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 ease-out transform md:group-hover:scale-110 md:group-hover:rotate-12 active:scale-95"
             >
               <Image src={EnlargeIcon} alt="Enlarge" width={24} height={24}/>
             </button>
@@ -308,7 +308,7 @@ export const MerchandiseSection = () => {
 
               {/* Product Image with Size Selector */}
               <div className="relative">
-                <div className="relative h-80 mb-6 group-hover:scale-105 transition-transform duration-700 ease-out">
+                <div className="relative h-80 group-hover:scale-105 transition-transform duration-700 ease-out">
                   <Image
                     key={selectedDesign}
                     src={selectedDesign === 1 ? TShirt1Product : TShirt2Product}
@@ -338,7 +338,7 @@ export const MerchandiseSection = () => {
               </div>
 
               {/* Design Selector */}
-              <div className="flex justify-center gap-4 mt-4">
+              <div className="flex justify-center gap-4 pb-12 md:pb-0">
                 <button
                   onClick={() => setSelectedDesign(1)}
                   className={`font-syne px-6 py-2 text-white border rounded-full hover:brightness-110 transition-all duration-500 ease-out font-bold hover:scale-105 active:scale-95 ${
@@ -369,13 +369,13 @@ export const MerchandiseSection = () => {
       <QuickViewModal
         isOpen={showToteBagModal}
         onClose={() => setShowToteBagModal(false)}
-        images={[ToteBagScene.src, ToteBagProduct.src]}
+        images={[ToteBagScene.src, ToteBagScene2.src, ToteBagProduct.src]}
         productName="Tote Bag"
       />
       <QuickViewModal
         isOpen={showTShirtModal}
         onClose={() => setShowTShirtModal(false)}
-        images={[TShirtScene.src, TShirt1Product.src, TShirt2Product.src]}
+        images={[TShirtScene.src, TShirtScene2.src, TShirtScene3.src, TShirtScene4.src, TShirt1Product.src, TShirt2Product.src]}
         productName="T-Shirt"
       />
     </section>

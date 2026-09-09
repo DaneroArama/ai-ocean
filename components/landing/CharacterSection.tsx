@@ -292,22 +292,6 @@ function CharacterSlide({
       if (mainPoly) gsap.set(mainPoly, { opacity: 0.3 })
       if (gradientEl) gsap.set(gradientEl, { opacity: 0.3 })
 
-      if (index === 0) {
-        // First slide: visible immediately, play micro animations on viewport entry
-        gsap.set(slideContentRef.current, { scale: 1, opacity: 1 })
-        ScrollTrigger.create({
-          trigger: node,
-          start: 'top 80%',
-          once: true,
-          onEnter: playEnter,
-        })
-      } else {
-        // Slides 1-4: hidden, register enter callback for tween progress
-        gsap.set(slideContentRef.current, { scale: 0.85, opacity: 0.3 })
-        enterCallbacksRef.current.set(index, playEnter)
-      }
-
-      // EXIT — fade out as the slide scrolls off to the left
       gsap.fromTo(
         slideContentRef.current,
         { scale: 1, opacity: 1 },
@@ -316,6 +300,7 @@ function CharacterSlide({
           opacity: 0.3,
           duration: 1,
           ease: 'power2.in',
+          immediateRender: true,
           scrollTrigger: {
             trigger: node,
             containerAnimation: scrollTween,
@@ -706,7 +691,7 @@ export function CharacterSection() {
         ease: 'none',
         scrollTrigger: {
           trigger: outer,
-          start: 'center',
+          start: 'center bottom',
           end: 'bottom',
           scrub: 1,
           invalidateOnRefresh: true,
