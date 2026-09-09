@@ -12,11 +12,10 @@ import CaretRightIcon from '@/app/assets/CaretRight.svg'
 import ToteBagProduct from '@/app/assets/Merchandise/Products/Tote Bag.png'
 import TShirt1Product from '@/app/assets/Merchandise/Products/T Shirt.png'
 import TShirt2Product from '@/app/assets/Merchandise/Products/T Shirt 2.png'
-import ToteBagScene2 from '@/app/assets/Merchandise/Tote Bag Scene 2.png'
-import TShirtScene from '@/app/assets/Merchandise/T Shirt Scene.png'
-import TShirtScene2 from '@/app/assets/Merchandise/T Shirt Scene 2.png'
-import TShirtScene3 from '@/app/assets/Merchandise/T Shirt Scene 3.png'
-import TShirtScene4 from '@/app/assets/Merchandise/T Shirt Scene 4.png'
+import ToteBagScene from '@/app/assets/Merchandise/Tote Bag Scene.jpg'
+import TShirtScene from '@/app/assets/Merchandise/T Shirt Scene.jpg'
+import TShirtScene2 from '@/app/assets/Merchandise/T Shirt Scene 2.jpg'
+import TShirtScene3 from '@/app/assets/Merchandise/T Shirt Scene 3.jpg'
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
@@ -95,7 +94,7 @@ const QuickViewModal = ({isOpen, onClose, images, productName}: QuickViewModalPr
     >
       <div
         ref={panelRef}
-        className="relative bg-white rounded-2xl max-w-sm w-full mx-4 shadow-2xl"
+        className="relative bg-white rounded-2xl max-w-2xl w-full mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -113,7 +112,7 @@ const QuickViewModal = ({isOpen, onClose, images, productName}: QuickViewModalPr
 
         {/* Image Carousel */}
         <div className="relative p-5">
-          <div className="relative aspect-3/4 w-full bg-ocean-medium rounded-lg overflow-hidden">
+          <div className="relative aspect-4/3 w-full bg-ocean-medium rounded-lg overflow-hidden">
             <Image
               key={currentIndex}
               data-carousel-img
@@ -225,8 +224,8 @@ export const MerchandiseSection = () => {
     <section ref={sectionRef} className="py-20 px-4 bg-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Section Title */}
-        <h2 ref={titleRef} className="font-syne text-4xl md:text-5xl font-bold text-[#0891b2] mb-12 opacity-0">
-          Preorder Items
+        <h2 ref={titleRef} className="font-syne text-4xl md:text-5xl font-bold text-[#0891b2] mb-12 opacity-0 text-center">
+          Collect event merch
         </h2>
 
         {/* Products Grid */}
@@ -368,13 +367,13 @@ export const MerchandiseSection = () => {
       <QuickViewModal
         isOpen={showToteBagModal}
         onClose={() => setShowToteBagModal(false)}
-        images={[ToteBagScene2.src, ToteBagProduct.src]}
+        images={[ToteBagScene.src]}
         productName="Tote Bag"
       />
       <QuickViewModal
         isOpen={showTShirtModal}
         onClose={() => setShowTShirtModal(false)}
-        images={[TShirtScene.src, TShirtScene2.src, TShirtScene3.src, TShirtScene4.src, TShirt1Product.src, TShirt2Product.src]}
+        images={[TShirtScene.src, TShirtScene2.src, TShirtScene3.src]}
         productName="T-Shirt"
       />
     </section>

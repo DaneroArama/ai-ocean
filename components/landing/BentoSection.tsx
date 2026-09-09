@@ -191,7 +191,7 @@ export function BentoSection() {
           {/* CARD 2 — 20+ Mentors */}
           <div className="bento-card md:col-span-1 md:row-span-2 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl transition-colors duration-300 p-8 flex items-center justify-center glass-corners">
             <div className="flex flex-col items-center justify-center text-center h-full">
-              <h3 className="font-syne text-5xl md:text-7xl font-bold text-white">20+</h3>
+              <h3 className="font-syne text-5xl md:text-7xl font-bold text-white">+++</h3>
               <p className="font-syncopate text-xl md:text-4xl font-semibold text-white/90 tracking-wide pb-6">Mentors</p>
             </div>
           </div>
@@ -204,7 +204,7 @@ export function BentoSection() {
               </p>
               <p className="font-syncopate text-2xl md:text-3xl font-bold text-white uppercase tracking-wide">
                 Speakers<br />
-                <span className="text-5xl">8+</span>
+                <span className="text-5xl">+++</span>
               </p>
               <Image src={logo} alt="Event icon" width={48} height={48} className="absolute -bottom-2 -right-2 object-contain w-12 h-12" />
             </div>
@@ -217,7 +217,7 @@ export function BentoSection() {
                 <Image src={colouredLogo} alt="Event icon" width={100} height={100} className="object-contain w-full h-28" />
               </div>
               <h3 className="font-syncopate text-xl md:text-3xl font-bold text-white uppercase tracking-wide">Judges</h3>
-              <h3 className="font-syncopate text-4xl md:text-5xl font-bold text-white">5+</h3>
+              <h3 className="font-syncopate text-4xl md:text-5xl font-bold text-white">+++</h3>
             </div>
           </div>
 
