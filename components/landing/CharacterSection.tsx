@@ -545,7 +545,7 @@ export function CharacterSection() {
         scrollTrigger: {
           trigger: outer,
           start: 'center',
-          end: 'bottom',
+          end: 'bottom bottom',
           scrub: 1,
           invalidateOnRefresh: true,
           snap: {
