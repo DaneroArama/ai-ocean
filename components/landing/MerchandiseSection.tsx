@@ -12,7 +12,6 @@ import CaretRightIcon from '@/app/assets/CaretRight.svg'
 import ToteBagProduct from '@/app/assets/Merchandise/Products/Tote Bag.png'
 import TShirt1Product from '@/app/assets/Merchandise/Products/T Shirt.png'
 import TShirt2Product from '@/app/assets/Merchandise/Products/T Shirt 2.png'
-import ToteBagScene from '@/app/assets/Merchandise/Tote Bag Scene.png'
 import ToteBagScene2 from '@/app/assets/Merchandise/Tote Bag Scene 2.png'
 import TShirtScene from '@/app/assets/Merchandise/T Shirt Scene.png'
 import TShirtScene2 from '@/app/assets/Merchandise/T Shirt Scene 2.png'
@@ -369,7 +368,7 @@ export const MerchandiseSection = () => {
       <QuickViewModal
         isOpen={showToteBagModal}
         onClose={() => setShowToteBagModal(false)}
-        images={[ToteBagScene.src, ToteBagScene2.src, ToteBagProduct.src]}
+        images={[ToteBagScene2.src, ToteBagProduct.src]}
         productName="Tote Bag"
       />
       <QuickViewModal

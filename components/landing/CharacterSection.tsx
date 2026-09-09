@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -51,13 +51,6 @@ const TRAIT_ICONS: Record<string, typeof BoldIcon> = {
   Versatile: VersatileIcon,
   Vigilant: VigilantIcon,
 }
-
-// How much vertical scroll (in viewport-heights) each slide transition takes.
-// This is deliberately based on viewport HEIGHT, not the pixel width of the
-// slides — on wide/ultrawide monitors the slides are much wider than they
-// are tall, so tying scroll length to width made this section take an
-// unreasonably long scroll to get through. Lower = snappier.
-const SCROLL_VH_PER_SLIDE = 1
 
 // Character data with unique background colors
 const characters = [
@@ -134,27 +127,17 @@ function CharacterSlide({
   character,
   scrollTween,
   index,
-  enterCallbacksRef,
 }: {
   character: typeof characters[number]
   scrollTween: gsap.core.Tween | null
   index: number
-  enterCallbacksRef: React.MutableRefObject<Map<number, () => void>>
 }) {
   const sectionRef = useRef<HTMLElement>(null)
   const slideContentRef = useRef<HTMLDivElement>(null)
-  const characterImageRef = useRef<HTMLDivElement>(null)
-  const quoteRef = useRef<HTMLDivElement>(null)
-  const nameRef = useRef<HTMLHeadingElement>(null)
   const bioRef = useRef<HTMLDivElement>(null)
-  const bioContentRef = useRef<HTMLParagraphElement>(null)
-  const traitsRef = useRef<HTMLDivElement>(null)
-  const trapeziumRef = useRef<SVGSVGElement>(null)
-  const leftBgRef = useRef<HTMLDivElement>(null)
   const scrollbarThumbRef = useRef<HTMLDivElement>(null)
   const scrollbarTrackRef = useRef<HTMLDivElement>(null)
   const isDraggingScrollbarRef = useRef(false)
-  const hasAnimatedRef = useRef(false)
 
   const [scrollTop, setScrollTop] = useState(0)
   const [isScrollbarDragging, setIsScrollbarDragging] = useState(false)
@@ -162,136 +145,13 @@ function CharacterSlide({
   const bgRightColor = extractHexColor(character.bgRight)
   const [startColor, endColor] = colorMap[character.bgLeft] || ['#02A4E3', '#0045A1']
 
-  // Animate in when scrolled into view
-  const animateIn = useCallback(() => {
-    if (hasAnimatedRef.current) return
-    hasAnimatedRef.current = true
-
-    if (characterImageRef.current) {
-      gsap.fromTo(
-        characterImageRef.current,
-        { x: 100, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.55, ease: 'power3.out', overwrite: 'auto' }
-      )
-    }
-
-    if (quoteRef.current) {
-      gsap.fromTo(
-        quoteRef.current,
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, delay: 0.25, ease: 'back.out(1.7)', overwrite: 'auto' }
-      )
-    }
-
-    if (nameRef.current) {
-      gsap.fromTo(
-        nameRef.current,
-        { y: -24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', delay: 0.15, overwrite: 'auto' }
-      )
-    }
-
-    if (bioContentRef.current) {
-      gsap.fromTo(
-        bioContentRef.current,
-        { y: 16, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.22, overwrite: 'auto' }
-      )
-    }
-
-    if (traitsRef.current) {
-      gsap.fromTo(
-        traitsRef.current,
-        { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.28, overwrite: 'auto' }
-      )
-      const items = traitsRef.current.querySelectorAll('.trait-item')
-      if (items.length) {
-        gsap.fromTo(
-          items,
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.4, stagger: 0.07, delay: 0.35, ease: 'back.out(1.4)', overwrite: 'auto' }
-        )
-      }
-    }
-
-    if (trapeziumRef.current) {
-      const mainPoly = trapeziumRef.current.querySelector('polygon[data-main]') as SVGPolygonElement | null
-      if (mainPoly) {
-        gsap.fromTo(mainPoly, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' })
-      }
-      const gradient = trapeziumRef.current.querySelector('linearGradient')
-      if (gradient) {
-        gsap.fromTo(gradient, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.inOut', overwrite: 'auto' })
-      }
-    }
-
-    if (sectionRef.current) {
-      gsap.fromTo(
-        sectionRef.current,
-        { opacity: 0.85 },
-        { opacity: 1, duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' }
-      )
-    }
-  }, [])
-
-  // Mobile fallback: no horizontal tween exists, so this is the original
-  // vertical "scrolled into view, play once" trigger.
-  useEffect(() => {
-    if (scrollTween) return // desktop uses the scrub timeline below instead
-    const node = sectionRef.current
-    if (!node) return
-
-    const trigger = ScrollTrigger.create({
-      trigger: node,
-      start: 'top 80%',
-      once: true,
-      onEnter: () => animateIn(),
-    })
-
-    return () => {
-      trigger.kill()
-    }
-  }, [animateIn, scrollTween])
-
-  // Desktop: one cohesive enter + exit timeline per slide, entirely driven by
-  // scroll position via containerAnimation. Everything — the content scale,
-  // the quote pop, the name/bio/traits reveal — lives in the SAME scrubbed
-  // timeline, so there's no separate "playing" state that can lag behind
-  // where the slide actually is. If you scroll fast, things simply jump to
-  // the correct in-between state instead of looking unfinished; if you
-  // scroll back, it reverses cleanly.
+  // Desktop: exit animation only (scale down as it scrolls out)
   useEffect(() => {
     if (!scrollTween) return
     const node = sectionRef.current
     if (!node) return
 
     const ctx = gsap.context(() => {
-      const traitItems = traitsRef.current ? traitsRef.current.querySelectorAll('.trait-item') : []
-      const mainPoly = trapeziumRef.current?.querySelector('polygon[data-main]') as SVGPolygonElement | null
-      const gradientEl = trapeziumRef.current?.querySelector('linearGradient')
-
-      const playEnter = () => {
-        gsap.to(characterImageRef.current, { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' })
-        gsap.to(nameRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.05 })
-        gsap.to(quoteRef.current, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)', delay: 0.1 })
-        gsap.to(bioContentRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.15 })
-        gsap.to(traitsRef.current, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.2 })
-        if (traitItems.length) gsap.to(traitItems, { scale: 1, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.4)', delay: 0.25 })
-        if (mainPoly) gsap.to(mainPoly, { opacity: 1, duration: 0.8, ease: 'power2.out' })
-        if (gradientEl) gsap.to(gradientEl, { opacity: 1, duration: 0.8, ease: 'power2.out' })
-      }
-
-      // Set initial hidden state for ALL slides
-      gsap.set(characterImageRef.current, { x: 50, opacity: 0.4 })
-      gsap.set(nameRef.current, { y: -20, opacity: 0 })
-      gsap.set(quoteRef.current, { scale: 0.6, opacity: 0 })
-      gsap.set(bioContentRef.current, { y: 16, opacity: 0 })
-      gsap.set(traitsRef.current, { y: 20, opacity: 0 })
-      if (traitItems.length) gsap.set(traitItems, { scale: 0.8, opacity: 0 })
-      if (mainPoly) gsap.set(mainPoly, { opacity: 0.3 })
-      if (gradientEl) gsap.set(gradientEl, { opacity: 0.3 })
-
       gsap.fromTo(
         slideContentRef.current,
         { scale: 1, opacity: 1 },
@@ -409,7 +269,6 @@ function CharacterSlide({
 
           {/* LEFT SIDE - Character & Quote */}
           <div
-            ref={leftBgRef}
             className={`flex-none md:flex-1 md:h-full md:min-h-0 relative flex flex-col items-center justify-center p-4 md:p-8 transition-all duration-700 ease-in-out z-20 min-h-[320px] md:min-h-0 py-20 md:py-0`}
           >
             {/* Event Title */}
@@ -425,7 +284,6 @@ function CharacterSlide({
 
             {/* Quote Bubble */}
             <div
-              ref={quoteRef}
               className="relative w-full max-w-[260px] md:max-w-[380px] flex items-center justify-center"
             >
               <svg
@@ -489,7 +347,7 @@ function CharacterSlide({
             </div>
 
             {/* Character Image */}
-            <div ref={characterImageRef} className="relative z-10">
+            <div className="relative z-10">
               <Image
                 src={character.image}
                 alt={character.name}
@@ -503,7 +361,6 @@ function CharacterSlide({
 
           {/* FLOATING TRAPEZIUM SHAPE */}
           <svg
-            ref={trapeziumRef}
             className="hidden md:block absolute top-0 right-0 h-full w-3/5 z-10 transition-all duration-700 ease-in-out"
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
@@ -552,7 +409,6 @@ function CharacterSlide({
 
             {/* Character Name */}
             <h2
-              ref={nameRef}
               className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 md:mb-8 min-h-[48px] md:min-h-[72px] lg:min-h-[80px] flex items-center leading-tight"
             >
               <span className="font-syncopate">{character.name.split(' (')[0]}</span>
@@ -570,7 +426,6 @@ function CharacterSlide({
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <p
-                  ref={bioContentRef}
                   className="font-quicksand font-semibold text-sm md:text-base lg:text-lg text-white/90 leading-relaxed whitespace-pre-line"
                 >
                   {character.bio}
@@ -610,7 +465,7 @@ function CharacterSlide({
             </div>
 
             {/* Traits */}
-            <div ref={traitsRef} className="relative flex-none h-[170px] md:h-[180px]">
+            <div className="relative flex-none h-[170px] md:h-[180px]">
               <div className="inline-block bg-white/20 backdrop-blur-sm rounded-t-2xl px-6 py-2 border-t border-l border-r border-white/30">
                 <h3 className="font-syne text-lg md:text-xl font-bold text-white uppercase">
                   Traits
@@ -672,8 +527,6 @@ export function CharacterSection() {
   const outerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [scrollTween, setScrollTween] = useState<gsap.core.Tween | null>(null)
-  const enterCallbacksRef = useRef<Map<number, () => void>>(new Map())
-  const enteredRef = useRef<Set<number>>(new Set())
   const totalSlides = characters.length
 
   useEffect(() => {
@@ -705,37 +558,10 @@ export function CharacterSection() {
 
       setScrollTween(tween)
 
-      // Simple scroll listener — triggers slide enter animations based on
-      // how far the outer container has scrolled into view
-      const onScroll = () => {
-        const outerRect = outer.getBoundingClientRect()
-        const viewportH = window.innerHeight
-        // How far the outer's top has scrolled past the viewport top (0 = just entered)
-        const scrolled = -outerRect.top
-        const scrollable = outerRect.height - viewportH
-        if (scrollable <= 0) return
-        const progress = Math.max(0, Math.min(1, scrolled / scrollable))
-
-        for (let i = 1; i < totalSlides; i++) {
-          const threshold = (i - 1) / (totalSlides - 1)
-          if (progress >= threshold && !enteredRef.current.has(i)) {
-            enteredRef.current.add(i)
-            enterCallbacksRef.current.get(i)?.()
-          }
-        }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      // Defer initial check so children have time to register their callbacks
-      const rafId = requestAnimationFrame(onScroll)
-
       return () => {
-        cancelAnimationFrame(rafId)
-        window.removeEventListener('scroll', onScroll)
         tween.scrollTrigger?.kill()
         tween.kill()
         setScrollTween(null)
-        enterCallbacksRef.current.clear()
-        enteredRef.current.clear()
       }
     })
 
@@ -748,8 +574,6 @@ export function CharacterSection() {
 
     return () => {
       cancelAnimationFrame(refreshId)
-      enterCallbacksRef.current.clear()
-      enteredRef.current.clear()
       mm.revert()
     }
   }, [])
@@ -761,7 +585,7 @@ export function CharacterSection() {
         <div className="sticky top-0 h-screen overflow-hidden">
           <div ref={trackRef} className="flex h-screen will-change-transform">
             {characters.map((character, i) => (
-              <CharacterSlide key={character.id} character={character} scrollTween={scrollTween} index={i} enterCallbacksRef={enterCallbacksRef} />
+              <CharacterSlide key={character.id} character={character} scrollTween={scrollTween} index={i} />
             ))}
           </div>
         </div>
@@ -770,7 +594,7 @@ export function CharacterSection() {
       <div className="md:hidden">
         <div className="flex flex-col">
           {characters.map((character, i) => (
-            <CharacterSlide key={character.id} character={character} scrollTween={null} index={i} enterCallbacksRef={enterCallbacksRef} />
+            <CharacterSlide key={character.id} character={character} scrollTween={null} index={i} />
           ))}
         </div>
       </div>
