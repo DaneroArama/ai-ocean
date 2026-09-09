@@ -66,7 +66,7 @@ export function PersonalityTestSection() {
           Discover Your
         </p>
         <h2 className="font-syncopate font-bold text-white text-3xl md:text-5xl lg:text-[52px] tracking-wide leading-none mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
-          AI ALTER EGO
+          Ocean Archetype
         </h2>
 
         <Link
