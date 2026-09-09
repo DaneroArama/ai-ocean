@@ -581,7 +581,7 @@ export function CharacterSection() {
   return (
     <>
       {/* Desktop: tall container + sticky horizontal scroll */}
-      <div ref={outerRef} className="relative hidden md:block" style={{ height: `${totalSlides * 80}vh` }}>
+      <div ref={outerRef} className="relative hidden md:block" style={{ height: `${totalSlides * 100}vh` }}>
         <div className="sticky top-0 h-screen overflow-hidden">
           <div ref={trackRef} className="flex h-screen will-change-transform">
             {characters.map((character, i) => (
