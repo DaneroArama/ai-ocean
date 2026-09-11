@@ -12,15 +12,24 @@ import {
   CommunityPartnersSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
+import { BubbleClickTrail } from '@/components/landing/BubbleClickTrail'
 
 export default function Home() {
   return (
     <PublicLayout>
 
+      {/* Click-anywhere bubble burst trail */}
+      <BubbleClickTrail
+        bubblesPerClick={12}
+        sizeRange={[30,64]}
+        spread={100}
+        maxBubbles={120}
+      />
+
       <div className="relative">
         {/* BUBBLES — floating to top + pop */}
         <FloatingBubbles
-          count={64}
+          count={120}
           className="inset-x-0 top-0 h-full z-15"
           sizeRange={[9, 38]}
           durationRange={[5.5, 11]}
