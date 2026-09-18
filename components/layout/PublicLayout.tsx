@@ -29,7 +29,7 @@ interface PublicLayoutProps {
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen bg-ocean-primary">
-      <IntroSplash />
+
       <Navbar />
       
       <main className="flex-1">

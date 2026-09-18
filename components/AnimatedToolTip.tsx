@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   motion,
   useTransform,
@@ -21,11 +20,9 @@ export const AnimatedTooltip = ({
   }[];
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const springConfig = { stiffness: 100, damping: 15 };
   const x = useMotionValue(0);
   const animationFrameRef = useRef<number | null>(null);
-  const avatarRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const rotate = useSpring(
     useTransform(x, [-100, 100], [-45, 45]),
@@ -47,69 +44,47 @@ export const AnimatedTooltip = ({
     });
   };
 
-  const handleMouseEnter = (itemId: number) => {
-    setHoveredIndex(itemId);
-    const avatarEl = avatarRefs.current[itemId];
-    if (avatarEl) {
-      const rect = avatarEl.getBoundingClientRect();
-      setTooltipPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top - 10,
-      });
-    }
-  };
-
   return (
     <>
-      {/* Fixed positioned tooltip portal */}
-      <AnimatePresence>
-        {hoveredIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.6 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              transition: {
-                type: "spring",
-                stiffness: 260,
-                damping: 10,
-              },
-            }}
-            exit={{ opacity: 0, y: 20, scale: 0.6 }}
-            style={{
-              translateX: translateX,
-              rotate: rotate,
-              whiteSpace: "nowrap",
-              left: tooltipPosition.x,
-              top: tooltipPosition.y,
-            }}
-            className="fixed z-[9999] flex -translate-x-1/2 -translate-y-full flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 px-5 py-4 shadow-xl min-w-[220px] pointer-events-none"
-          >
-            <div className="relative z-30 text-lg font-bold text-white">
-              {items.find(item => item.id === hoveredIndex)?.name}
-            </div>
-            <div className="text-sm text-white/90">
-              {items.find(item => item.id === hoveredIndex)?.designation}
-            </div>
-            {items.find(item => item.id === hoveredIndex)?.company && (
-              <div className="text-sm text-white/80">
-                {items.find(item => item.id === hoveredIndex)?.company}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Avatar images */}
       {items.map((item, idx) => (
         <div
-          ref={(el) => { avatarRefs.current[item.id] = el; }}
           className="group relative -mr-4"
           key={item.name}
-          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseEnter={() => setHoveredIndex(item.id)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
+          <AnimatePresence>
+            {hoveredIndex === item.id && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                  },
+                }}
+                exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                style={{
+                  translateX: translateX,
+                  rotate: rotate,
+                  whiteSpace: "nowrap",
+                }}
+                className="absolute -top-4 left-1/2 z-50 flex -translate-x-1/2 -translate-y-full flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 px-2 py-1.5 shadow-xl"
+              >
+                <div className="relative z-30 text-base font-bold text-white">
+                  {item.name}
+                </div>
+                <div className="text-sm text-white/90">{item.designation}</div>
+                {item.company && (
+                  <div className="text-sm text-white/80">{item.company}</div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
           <img
             onMouseMove={handleMouseMove}
             height={100}

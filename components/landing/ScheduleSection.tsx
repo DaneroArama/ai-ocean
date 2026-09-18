@@ -344,7 +344,7 @@ const ScheduleContentWithScrollbar = ({ schedule, isActive }: ScheduleContentPro
       <div
         ref={bioRef}
         onScroll={handleBioScroll}
-        className="flex-1 overflow-y-auto pr-12 space-y-3"
+        className="flex-1 overflow-y-auto pr-0 md:pr-12 space-y-3"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {schedule.scheduleItems.map((item, idx) => {
@@ -457,10 +457,11 @@ export const ScheduleSection = () => {
   // Handle phase selection and card animation
   useEffect(() => {
     if (activePhase === null) {
-      // Initial state - all cards stacked with tilt
+      // Initial state - cards stacked upward, first at bottom (biggest), alternating tilt
       gsap.to([finishedCardRef.current, confirmedCardRef.current, upcomingCardRef.current], {
-        y: (index) => index * 40,
-        rotation: (index) => (index - 1) * 1.5,
+        y: (index) => -index * 15,
+        scale: (index) => 1 + index * 0.03,
+        rotation: (index) => index % 2 === 0 ? -2 : 2,
         zIndex: (index) => 3 - index,
         duration: 0.7,
         ease: 'power3.out',
@@ -486,17 +487,19 @@ export const ScheduleSection = () => {
 
     // Animate selected card up and remove tilt
     gsap.to(selectedCard, {
+      x: 0,
       y: 0,
+      scale: 1,
       rotation: 0,
-      zIndex: 10,
+      zIndex: 50,
       duration: 0.7,
       ease: 'power3.out',
     })
 
     // Animate other cards down
     gsap.to(otherCards, {
-      y: 1000, // Move down below viewport
-      zIndex: 1,
+      y: 1500,
+      zIndex: 0,
       duration: 0.7,
       ease: 'power3.out',
     })
@@ -505,8 +508,8 @@ export const ScheduleSection = () => {
     if (previousCardType && previousCardType !== newCardType) {
       const previousCard = cardRefs[previousCardType].current
       gsap.to(previousCard, {
-        y: 500,
-        zIndex: 1,
+        y: 1500,
+        zIndex: 0,
         duration: 0.7,
         ease: 'power3.out',
       })
@@ -536,11 +539,15 @@ export const ScheduleSection = () => {
         {/* Mobile: Detail Cards First, Phase Cards Below */}
         <div className="md:hidden">
           {/* Stacked Event Cards (Mobile) */}
-          <div className="relative max-w-7xl mx-auto min-h-[500px] mb-8 animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-200 overflow-hidden">
+          <div className={`relative max-w-7xl mx-auto mb-8 animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-200 overflow-hidden transition-all duration-300 ${
+            selectedCardType ? 'min-h-[500px]' : 'min-h-0'
+          }`}>
             {/* Finished Card (Blue) */}
             <div
               ref={finishedCardRef}
-              className="absolute left-0 right-0 bg-linear-to-b from-ocean-primary to-65% to-white rounded-3xl px-4 pb-8"
+              className={`absolute left-0 right-0 bg-linear-to-b from-ocean-primary to-65% to-white rounded-3xl px-4 pb-8 transition-all duration-300 ${
+                selectedCardType !== 'finished' ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+              }`}
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
@@ -551,27 +558,23 @@ export const ScheduleSection = () => {
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-1">
-                  <div className="relative w-6 h-6 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-6 h-6 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain -rotate-90" />
                   </div>
-                  <div className="relative w-6 h-6 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
                 </div>
               </div>
 
               {/* Card Content */}
-              <div 
-                className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'finished' ? 'blur-sm' : 'blur-0'
-                }`}
-              >
+              <div className="bg-white rounded-2xl p-6 overflow-visible">
                 <ScheduleContentWithScrollbar 
-                  schedule={activePhase !== null ? phaseSchedules[activePhase] : phaseSchedules[0]} 
-                  isActive={activePhase !== null && selectedCardType === 'finished'}
+                  schedule={phaseSchedules[0]} 
+                  isActive={true}
                 />
               </div>
             </div>
@@ -579,38 +582,36 @@ export const ScheduleSection = () => {
             {/* Confirmed Card (Green) */}
             <div
               ref={confirmedCardRef}
-              className="absolute left-0 right-0 bg-linear-to-b from-green-500 via-[#A9D9BE] to-65% to-white rounded-3xl px-4 pb-8"
+              className={`absolute left-0 right-0 bg-linear-to-b from-green-500 via-[#A9D9BE] to-65% to-white rounded-3xl px-4 pb-8 transition-all duration-300 ${
+                selectedCardType !== 'confirmed' ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+              }`}
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-syne font-bold text-white">
-                    {activePhase !== null ? phaseSchedules[activePhase].title : phaseSchedules[2].title}
+                    {phaseSchedules[2].title}
                   </h3>
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-1">
-                  <div className="relative w-6 h-6 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-6 h-6 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-90" />
                   </div>
-                  <div className="relative w-6 h-6 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-180" />
                   </div>
                 </div>
               </div>
 
               {/* Card Content */}
-              <div 
-                className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'confirmed' ? 'blur-sm' : 'blur-0'
-                }`}
-              >
+              <div className="bg-white rounded-2xl p-6 overflow-visible">
                 <ScheduleContentWithScrollbar 
-                  schedule={activePhase !== null ? phaseSchedules[activePhase] : phaseSchedules[2]} 
-                  isActive={activePhase !== null && selectedCardType === 'confirmed'}
+                  schedule={phaseSchedules[2]} 
+                  isActive={true}
                 />
               </div>
             </div>
@@ -618,38 +619,36 @@ export const ScheduleSection = () => {
             {/* Upcoming Card (Grey) */}
             <div
               ref={upcomingCardRef}
-              className="absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl px-4 pb-8"
+              className={`overflow-hidden absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl px-4 pb-8 transition-all duration-300 ${
+                selectedCardType !== 'upcoming' ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+              }`}
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-syne font-bold text-white">
-                    {activePhase !== null ? phaseSchedules[activePhase].title : phaseSchedules[3].title}
+                    {phaseSchedules[3].title}
                   </h3>
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-1">
-                  <div className="relative w-6 h-6 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-6 h-6 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-90" />
                   </div>
-                  <div className="relative w-6 h-6 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-6 h-6">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-180" />
                   </div>
                 </div>
               </div>
 
               {/* Card Content */}
-              <div 
-                className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'upcoming' ? 'blur-sm' : 'blur-0'
-                }`}
-              >
+              <div className="bg-white rounded-2xl p-6 overflow-visible">
                 <ScheduleContentWithScrollbar 
-                  schedule={activePhase !== null ? phaseSchedules[activePhase] : phaseSchedules[3]} 
-                  isActive={activePhase !== null && selectedCardType === 'upcoming'}
+                  schedule={phaseSchedules[3]} 
+                  isActive={true}
                 />
               </div>
             </div>
@@ -657,6 +656,11 @@ export const ScheduleSection = () => {
 
           {/* Phase Cards - Horizontal Scroll (Mobile) */}
           <div className="overflow-x-auto pb-4 -mx-4 px-4 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-400">
+            {!selectedCardType && (
+              <p className="text-center text-sm text-gray-500 font-medium mb-4 animate-pulse">
+                ← Tap a phase to view details →
+              </p>
+            )}
             <div className="flex gap-4 min-w-max">
               {phases.map((phase, index) => {
                 const isActive = activePhase === index
@@ -728,6 +732,11 @@ export const ScheduleSection = () => {
         {/* Desktop: Phase Cards First, Detail Cards Below */}
         <div className="hidden md:block">
           {/* Phase Cards */}
+          {!selectedCardType && (
+            <p className="text-center text-sm text-gray-500 font-medium mb-4 animate-pulse">
+              Click a phase card to view details
+            </p>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-20 animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-200">
             {phases.map((phase, index) => {
               const isActive = activePhase === index
@@ -797,7 +806,7 @@ export const ScheduleSection = () => {
           </div>
 
           {/* Stacked Event Cards (Desktop) */}
-          <div className="relative max-w-7xl mx-auto min-h-[500px] animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-400 overflow-hidden">
+          <div className="relative max-w-7xl mx-auto min-h-[500px] animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-400">
             {/* Finished Card (Blue) - Desktop */}
             <div
               ref={finishedCardRef}
@@ -812,14 +821,14 @@ export const ScheduleSection = () => {
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-2">
-                  <div className="relative w-7 h-7 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-7 h-7 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-90" />
                   </div>
-                  <div className="relative w-7 h-7 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                 <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-180" />
                   </div>
                 </div>
               </div>
@@ -827,7 +836,7 @@ export const ScheduleSection = () => {
               {/* Card Content */}
               <div 
                 className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'finished' ? 'blur-sm' : 'blur-0'
+                  activePhase === null || selectedCardType !== 'finished' ? 'blur-[2px] pointer-events-none' : 'blur-0'
                 }`}
               >
                 <ScheduleContent 
@@ -851,14 +860,14 @@ export const ScheduleSection = () => {
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-2">
-                  <div className="relative w-7 h-7 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-7 h-7 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-90" />
                   </div>
-                  <div className="relative w-7 h-7 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                 <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-180" />
                   </div>
                 </div>
               </div>
@@ -866,7 +875,7 @@ export const ScheduleSection = () => {
               {/* Card Content */}
               <div 
                 className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'confirmed' ? 'blur-sm' : 'blur-0'
+                  activePhase === null || selectedCardType !== 'confirmed' ? 'blur-[2px] pointer-events-none' : 'blur-0'
                 }`}
               >
                 <ScheduleContent 
@@ -879,7 +888,7 @@ export const ScheduleSection = () => {
             {/* Upcoming Card (Grey) - Desktop */}
             <div
               ref={upcomingCardRef}
-              className="absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
+              className="overflow-hidden absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
@@ -890,14 +899,14 @@ export const ScheduleSection = () => {
                 </div>
                 {/* Rotated Logos */}
                 <div className="flex gap-2">
-                  <div className="relative w-7 h-7 rotate-12">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain" />
                   </div>
-                  <div className="relative w-7 h-7 -rotate-6">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                  <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-90" />
                   </div>
-                  <div className="relative w-7 h-7 rotate-[20deg]">
-                    <Image src={EventLogoColoured} alt="Event Logo" fill className="object-contain" />
+                 <div className="relative w-7 h-7">
+                    <Image src={EventLogoGrey} alt="Event Logo" fill className="object-contain rotate-180" />
                   </div>
                 </div>
               </div>
@@ -905,7 +914,7 @@ export const ScheduleSection = () => {
               {/* Card Content */}
               <div 
                 className={`bg-white rounded-2xl p-6 transition-all duration-700 overflow-visible ${
-                  activePhase === null || selectedCardType !== 'upcoming' ? 'blur-sm' : 'blur-0'
+                  activePhase === null || selectedCardType !== 'upcoming' ? 'blur-[2px] pointer-events-none' : 'blur-0'
                 }`}
               >
                 <ScheduleContent 

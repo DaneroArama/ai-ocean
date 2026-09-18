@@ -71,13 +71,24 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
           {
             title: 'Panel Discussion',
             description: 'Bridge gaps in perspectives, communication, and ways of working.',
+            people: []
+          },
+          {
+            title: 'Panelists',
+            description: 'Ma Chaw Su Hlaing, Ma Hnin Hay Mar Aung, Ma Kyi Sin Hsu Thar, Ko Sann Lynn Htun, Ma Thae Su Aye, Ma Phyo Thiri Thu',
             people: [
-              { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'Codigo', image: '/placeholder.jpg' },
-              { id: 2, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPet & EzyPro', image: '/placeholder.jpg' },
-              { id: 3, name: 'Kyi Sin Hsu Thar', designation: 'Product Designer', company: 'Codigo', image: '/placeholder.jpg' },
-              { id: 4, name: 'Sann Lynn Htun', designation: 'Senior Designer', company: 'Codigo', image: '/placeholder.jpg' },
-              { id: 5, name: 'Thae Su Aye', designation: 'UX Researcher', company: 'Codigo', image: '/placeholder.jpg' },
-              { id: 6, name: 'Phyo Thiri Thu', designation: 'Moderator', company: 'Codigo', image: '/placeholder.jpg' },
+              { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'Codigo', image: '/assets/Persons/Chaw Su Hlaing.png' },
+              { id: 2, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPet & EzyPro', image: '/assets/Persons/Hay Mar.png' },
+              { id: 3, name: 'Kyi Sin Hsu Thar', designation: 'Product Designer', company: 'Codigo', image: '/assets/Persons/Kyi Sin.png' },
+              { id: 4, name: 'Sann Lynn Htun', designation: 'Senior Designer', company: 'Codigo', image: '/assets/Persons/San Lynn.png' },
+              { id: 5, name: 'Thae Su Aye', designation: 'UX Researcher', company: 'Codigo', image: '/assets/Persons/Thae Su Aye.png' },
+            ]
+          },
+          {
+            title: 'Moderator',
+            description: 'Ma Phyo Thiri Thu',
+            people: [
+              { id: 6, name: 'Phyo Thiri Thu', designation: 'Moderator', company: 'Codigo', image: '/assets/Persons/Phyo Thiri.png' },
             ]
           }
         ]
@@ -89,66 +100,11 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     }
   },
   1: {
-    type: 'finished',
-    backgroundColor: 'from-cyan-400 to-blue-500',
+    type: 'upcoming',
+    backgroundColor: 'from-gray-300 to-gray-400',
     title: 'Main Event (Day 1 & 2)',
     description: '2 days intensive product sprints',
-    scheduleItems: [
-      {
-        time: '8:30 AM',
-        events: [
-          {
-            title: 'Arrival Time for Attendees',
-            description: 'Kick off the journey with insights from industry professionals.',
-            people: []
-          }
-        ]
-      },
-      {
-        time: '9:00 - 9:10 AM',
-        events: [
-          {
-            title: 'Opening Ceremony',
-            description: 'Welcome speech and event overview.',
-            people: [
-              { id: 1, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPet & EzyPro', image: '/placeholder.jpg' },
-            ]
-          },
-          {
-            title: 'Keynote Speech',
-            description: 'Future of UX Design in Southeast Asia.',
-            people: [
-              { id: 2, name: 'Chaw Su Hlaing', designation: 'UX Designer', company: 'Codigo', image: '/placeholder.jpg' },
-            ]
-          }
-        ]
-      },
-      {
-        time: '9:10 - 9:25 AM',
-        events: [
-          {
-            title: 'Panel Discussion',
-            description: 'Kick off the journey with insights from industry professionals.',
-            people: [
-              { id: 1, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPet & EzyPro', image: '/placeholder.jpg' },
-              { id: 2, name: 'Chaw Su Hlaing', designation: 'UX Designer', company: 'Codigo', image: '/placeholder.jpg' },
-              { id: 3, name: 'Kyi Sin Hsu Thar', designation: 'Product Designer', company: 'Codigo', image: '/placeholder.jpg' },
-            ]
-          }
-        ]
-      },
-      {
-        time: '12:00 - 1:00 PM',
-        events: [
-          {
-            title: 'Lunch Break',
-            description: '',
-            people: [],
-            highlight: true
-          }
-        ]
-      }
-    ],
+    scheduleItems: [],
     upcomingItems: [
       'Professional Panel Discussions',
       'Industry Sharing Sessions',
@@ -158,8 +114,8 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     ]
   },
   2: {
-    type: 'confirmed',
-    backgroundColor: 'from-green-400 to-emerald-600',
+    type: 'upcoming',
+    backgroundColor: 'from-gray-300 to-gray-400',
     title: 'Main Event (Day 1 & 2)',
     description: '2 days intensive product sprints',
     scheduleItems: [],
