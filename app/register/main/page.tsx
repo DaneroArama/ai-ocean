@@ -91,6 +91,7 @@ function RegistrationInner() {
   const submitReg = useMutation(api.buildathonRegistrations.submitRegistration);
 
   // Load existing draft
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (participant && !basic.email) {
       setBasic((b) => ({ ...b, email: participant.email, name: participant.name ?? "" }));
@@ -137,6 +138,7 @@ function RegistrationInner() {
       }
     }
   }, [myRegs, regId, basic]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
@@ -165,9 +167,9 @@ function RegistrationInner() {
       if (!regId) {
         const res = await createDraft({
           basicInfo: basic,
-          roleInfo: { positionCategory: "other" as "other", subRole: "", experienceYears: "no_experience" as "no_experience" },
-          eventPreferences: { preferredTrack: "in_person" as "in_person", bringLaptop: true, attendanceCommitment: true },
-          payment: { method: "mmqr" as "mmqr", receipt: "" },
+          roleInfo: { positionCategory: "other" as const, subRole: "", experienceYears: "no_experience" as const },
+          eventPreferences: { preferredTrack: "in_person" as const, bringLaptop: true, attendanceCommitment: true },
+          payment: { method: "mmqr" as const, receipt: "" },
         });
         setRegId(res.registrationId);
       } else {
@@ -186,7 +188,7 @@ function RegistrationInner() {
       return;
     }
     if (regId) {
-      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: roleInfo as any });
+      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: roleInfo as { positionCategory: "po_ba_business" | "design" | "development" | "project_product_management" | "other"; subRole: string; experienceYears: "no_experience" | "less_than_1" | "1_to_3" | "3_and_above"; organization?: string; portfolioLink?: string } });
     }
     setMsg(null);
     next();
@@ -198,7 +200,7 @@ function RegistrationInner() {
       return;
     }
     if (regId) {
-      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: eventPrefs as any });
+      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: eventPrefs as { preferredTrack: "in_person" | "online"; bringLaptop: boolean; attendanceCommitment: boolean } });
     }
     setMsg(null);
     next();
@@ -212,7 +214,7 @@ function RegistrationInner() {
     if (regId) {
       await updateReg({
         registrationId: regId as Id<"buildathonRegistrations">,
-        payment: { method: payment.method as any, receipt: payment.receipt, discountCode: payment.discountCode || undefined },
+        payment: { method: payment.method as "mmqr" | "aya_pay" | "cb_pay" | "kbz_pay" | "wave_money" | "ctzpay", receipt: payment.receipt, discountCode: payment.discountCode || undefined },
       });
     }
     setMsg(null);

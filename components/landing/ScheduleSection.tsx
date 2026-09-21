@@ -455,6 +455,7 @@ export const ScheduleSection = () => {
   const upcomingCardRef = useRef<HTMLDivElement>(null)
 
   // Handle phase selection and card animation
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (activePhase === null) {
       // Initial state - cards stacked upward, first at bottom (biggest), alternating tilt
@@ -517,6 +518,7 @@ export const ScheduleSection = () => {
 
     setSelectedCardType(newCardType)
   }, [activePhase, selectedCardType])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handlePhaseClick = (index: number) => {
     setActivePhase(index)

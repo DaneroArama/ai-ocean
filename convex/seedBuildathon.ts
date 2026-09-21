@@ -45,7 +45,7 @@ export const seed = mutation({
 
     // ── Roles ──
     const existingRoles = await ctx.db.query("buildathonRoles").collect();
-    let roleIds: Record<string, Id<"buildathonRoles">> = {};
+    const roleIds: Record<string, Id<"buildathonRoles">> = {};
 
     if (existingRoles.length === 0) {
       const rolesToCreate: SeedRole[] = [
