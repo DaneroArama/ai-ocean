@@ -166,7 +166,7 @@ const ScheduleContent = ({ schedule, isActive }: ScheduleContentProps) => {
 
   // Active Schedule with Items
   return (
-    <div className="max-h-[400px] overflow-y-auto pr-6">
+    <div className="pr-6">
       <div className="space-y-3 overflow-visible">
       {schedule.scheduleItems.map((item, idx) => {
         const hasMultipleEvents = item.events.length > 1
@@ -810,7 +810,7 @@ export const ScheduleSection = () => {
             {/* Finished Card (Blue) - Desktop */}
             <div
               ref={finishedCardRef}
-              className="absolute left-0 right-0 bg-linear-to-b from-ocean-primary to-65% to-white rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300 overflow-visible"
+              className="absolute left-0 right-0 bg-linear-to-b from-ocean-primary to-65% to-white shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300 overflow-visible"
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
@@ -849,7 +849,7 @@ export const ScheduleSection = () => {
             {/* Confirmed Card (Green) - Desktop */}
             <div
               ref={confirmedCardRef}
-              className="absolute left-0 right-0 bg-linear-to-b from-green-500 via-[#A9D9BE] to-65% to-white rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
+              className="absolute left-0 right-0 bg-linear-to-b from-green-500 via-[#A9D9BE] to-65% to-white shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">
@@ -888,7 +888,7 @@ export const ScheduleSection = () => {
             {/* Upcoming Card (Grey) - Desktop */}
             <div
               ref={upcomingCardRef}
-              className="overflow-hidden absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
+              className="overflow-hidden absolute left-0 right-0 bg-gradient-to-br from-gray-300 to-gray-400 shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] rounded-3xl px-4 pb-8 cursor-pointer group hover:scale-105 transition-transform duration-300"
             >
               {/* Browser-like Header with Title and Logos */}
               <div className="flex items-center justify-between p-3">

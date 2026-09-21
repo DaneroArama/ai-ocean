@@ -20,7 +20,6 @@ export default function AdminQuestionsPage() {
   const reorder = useMutation(api.roleDiscoveryQuestions.reorderRoleDiscoveryQuestions);
 
   const [filterCat, setFilterCat] = useState<string>("all");
-  const [filterPhase, setFilterPhase] = useState<Phase>("main-event");
   const [qSearch, setQSearch] = useState("");
   const [editing, setEditing] = useState<Question | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -51,20 +50,19 @@ export default function AdminQuestionsPage() {
   const filtered = useMemo(() => {
     if (!questions) return [];
     return questions.filter((q) => {
-      if (q.phase !== filterPhase) return false;
       if (filterCat !== "all" && q.category !== filterCat) return false;
       if (qSearch && !`${q.textEn} ${q.textMy} ${q.category}`.toLowerCase().includes(qSearch.toLowerCase())) return false;
       return true;
     }).sort((a, b) => a.order - b.order);
-  }, [questions, filterPhase, filterCat, qSearch]);
+  }, [questions, filterCat, qSearch]);
 
   const openCreate = () => {
     setEditing(null);
     setForm({
-      phase: filterPhase, category: "collaboration", type: "single", textEn: "", textMy: "",
+      phase: "main-event", category: "collaboration", type: "single", textEn: "", textMy: "",
       options: [{ id: "A", labelEn: "", labelMy: "" }, { id: "B", labelEn: "", labelMy: "" }],
       scoringSignals: [], multiTextCount: 4, multiTextPlaceholders: ["", "", "", ""],
-      order: (questions?.filter((q) => q.phase === filterPhase).length ?? 0), version: "v1", allowNotSure: true,
+      order: (questions?.length ?? 0), version: "v1", allowNotSure: true,
     });
     setShowForm(true);
   };
@@ -140,21 +138,12 @@ export default function AdminQuestionsPage() {
 
       {msg && <div className="rounded-xl border bg-amber-50 px-4 py-2 text-sm text-amber-800">{msg}</div>}
 
-      {/* Phase toggle */}
-      <div className="flex gap-1 rounded-xl border bg-gray-100 p-1">
-        {(["pre-event", "main-event"] as Phase[]).map((p) => (
-          <button key={p} onClick={() => setFilterPhase(p)} className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition ${filterPhase === p ? "bg-ocean-primary text-white shadow" : "text-gray-600 hover:bg-gray-200"}`}>
-            {p === "pre-event" ? "Pre-Event" : "Main Event"}
-          </button>
-        ))}
-      </div>
-
       <div className="flex flex-wrap gap-2 text-ocean-medium">
         <input placeholder="Search EN/MY/category" value={qSearch} onChange={(e) => setQSearch(e.target.value)} className="min-w-[220px] flex-1 rounded-lg border px-3 py-2 text-sm" />
         <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)} className="rounded-lg border px-3 py-2 text-sm text-ocean-medium">
           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs text-gray-600">{filtered.length} / {questions?.filter((q) => q.phase === filterPhase).length ?? 0}</span>
+        <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs text-gray-600">{filtered.length} / {questions?.length ?? 0}</span>
       </div>
 
       <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
@@ -199,10 +188,6 @@ export default function AdminQuestionsPage() {
             <div className="flex-1 overflow-y-auto overscroll-contain p-6" data-lenis-prevent>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <select value={form.phase} onChange={(e) => setForm({ ...form, phase: e.target.value as Phase })} className="rounded-lg border px-3 py-2 text-sm">
-                <option value="pre-event">Pre-Event</option>
-                <option value="main-event">Main Event</option>
-              </select>
               <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="rounded-lg border px-3 py-2 text-sm">
                 <option value="collaboration">collaboration</option><option value="product">product</option><option value="design">design</option><option value="engineering">engineering</option><option value="research">research</option>
               </select>

@@ -7,11 +7,11 @@ import N1 from '@/app/assets/num_icons_1.png'
 import N2 from '@/app/assets/num_icons_2.png'
 import N3 from '@/app/assets/num_icons_3.png'
 import N4 from '@/app/assets/num_icons_4.png'
-import A1 from '@/app/assets/about_event_1.png'
-import A2 from '@/app/assets/about_event_2.png'
-import A3 from '@/app/assets/about_event_3.png'
-import A4 from '@/app/assets/about_event_4.png'
-import A5 from '@/app/assets/about_event_5.png'
+import A1 from '@/app/assets/about_icon_1.png'
+import A2 from '@/app/assets/about_icon_2.png'
+import A3 from '@/app/assets/about_icon_3.png'
+import A4 from '@/app/assets/about_icon_4.png'
+import A5 from '@/app/assets/about_icon_5.png'
 
 import Starfish from '@/app/assets/Starfish.png'
 
@@ -34,13 +34,13 @@ export function AboutSection() {
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:gap-x-12">
               {[
-                { icon: N1, value: '50+', label: 'Events Hosted' },
+                { icon: N1, value: '50+', label: 'icons Hosted' },
                 { icon: N2, value: '2500+', label: 'Total Participants' },
                 { icon: N3, value: '320+', label: 'Trained Mentees' },
                 { icon: N4, value: '65+', label: 'Volunteers Engaged' },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-3">
-                  <Image src={s.icon} alt="" width={20} height={20} className="w-4 h-4 md:w-10 md:h-10 object-contain" />
+                  <Image src={s.icon} alt="" width={1920} height={1820} className="w-4 h-4 md:w-10 md:h-10 object-contain" />
                   <div className="leading-tight">
                     <div className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-lg lg:text-xl leading-none">{s.value}</div>
                     <div className="font-quicksand text-[#2A6A9E] text-xs md:text-sm leading-tight">{s.label}</div>
@@ -51,13 +51,13 @@ export function AboutSection() {
           </div>
         </div>
 
-        {/* ABOUT THE EVENT */}
+        {/* ABOUT THE icon */}
         <div className="text-center mt-8 md:mt-10">
           <h2 className="font-syncopate font-extrabold text-[#0B4A8A] text-xl md:text-2xl lg:text-3xl tracking-wide">
-            About the Event
+            About the icon
           </h2>
           <p className="font-quicksand font-medium text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-3">
-            During the AI Ocean event, you&apos;ll work alongside people from all backgrounds, experiment with
+            During the AI Ocean icon, you&apos;ll work alongside people from all backgrounds, experiment with
             user-friendly tools, and experience the thrill of building your own products
           </p>
         </div>
@@ -90,7 +90,7 @@ export function AboutSection() {
               key={c.title}
               className="bg-[#F2F9FF] border border-[#D6EEFF] rounded-xl p-4 md:p-5 flex gap-3 md:gap-4 items-start"
             >
-              <Image src={c.icon} alt="" width={24} height={24} className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+              <Image src={c.icon} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
               <div>
                 <h3 className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-[16px] lg:text-[17px] leading-tight">
                   {c.title}
@@ -104,7 +104,7 @@ export function AboutSection() {
 
           {/* Full width last card */}
           <div className="md:col-span-2 bg-[#F2F9FF] border border-[#D6EEFF] rounded-xl p-4 md:p-5 flex gap-3 md:gap-4 items-start">
-            <Image src={A5} alt="" width={24} height={24} className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+            <Image src={A5} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
             <div>
               <div className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-[16px] lg:text-[17px] leading-tight">
                 Building Products with AI

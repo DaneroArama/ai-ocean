@@ -204,6 +204,19 @@ export default defineSchema({
   // ================================================================
 
   /**
+   * Teams table — groups participants for the buildathon
+   */
+  teams: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+    memberIds: v.array(v.id("participants")),
+    createdBy: v.id("participants"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_created_by", ["createdBy"]),
+
+  /**
    * Buildathon Roles table — extensible role ecosystem
    * New Feature §9: Product/Design/Engineering/Data/Business/Team
    */
@@ -311,50 +324,70 @@ export default defineSchema({
       v.literal("role_selected"),
       v.literal("submitted")
     ),
-    // Basic Information per §4
     basicInfo: v.object({
       name: v.string(),
       email: v.string(),
-      phone: v.optional(v.string()),
-      university: v.optional(v.string()),
+      phone: v.string(),
+      telegramUsername: v.optional(v.string()),
       organization: v.optional(v.string()),
+      university: v.optional(v.string()),
     }),
-    // Background
-    background: v.optional(
-      v.object({
-        currentProfession: v.optional(v.string()),
-        occupation: v.optional(v.string()),
-        experienceLevel: v.optional(
-          v.union(
-            v.literal("none"),
-            v.literal("student"),
-            v.literal("junior"),
-            v.literal("mid"),
-            v.literal("senior")
-          )
-        ),
-      })
-    ),
-    interests: v.optional(v.array(v.string())),
-    skills: v.optional(v.array(v.string())),
-    preferences: v.optional(
-      v.object({
-        teamSize: v.optional(v.string()),
-        theme: v.optional(v.string()),
-        extra: v.optional(v.any()),
-      })
-    ),
-    dynamicResponses: v.optional(v.any()), // pre-event dynamic question responses
-    selectedRoleId: v.optional(v.id("buildathonRoles")), // participant decides per §11, never auto-overwritten
-    assessmentVersion: v.string(), // e.g., "v1"
+    roleInfo: v.optional(v.object({
+      positionCategory: v.union(
+        v.literal("po_ba_business"),
+        v.literal("design"),
+        v.literal("development"),
+        v.literal("project_product_management"),
+        v.literal("other")
+      ),
+      subRole: v.string(),
+      experienceYears: v.union(
+        v.literal("no_experience"),
+        v.literal("less_than_1"),
+        v.literal("1_to_3"),
+        v.literal("3_and_above")
+      ),
+      organization: v.optional(v.string()),
+      portfolioLink: v.optional(v.string()),
+    })),
+    eventPreferences: v.optional(v.object({
+      preferredTrack: v.union(v.literal("in_person"), v.literal("online")),
+      bringLaptop: v.boolean(),
+      attendanceCommitment: v.boolean(),
+    })),
+    payment: v.optional(v.object({
+      method: v.union(
+        v.literal("mmqr"),
+        v.literal("aya_pay"),
+        v.literal("cb_pay"),
+        v.literal("kbz_pay"),
+        v.literal("wave_money"),
+        v.literal("ctzpay")
+      ),
+      receipt: v.string(),
+      discountCode: v.optional(v.string()),
+    })),
+    paymentStatus: v.optional(v.union(
+      v.literal("pending"),
+      v.literal("verified"),
+      v.literal("rejected")
+    )),
+    teamId: v.optional(v.id("teams")),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Legacy fields from old schema (optional for backwards compat)
+    background: v.optional(v.any()),
+    interests: v.optional(v.array(v.string())),
+    skills: v.optional(v.array(v.string())),
+    preferences: v.optional(v.any()),
+    dynamicResponses: v.optional(v.any()),
+    selectedRoleId: v.optional(v.any()),
+    assessmentVersion: v.optional(v.string()),
+    paymentReceipt: v.optional(v.string()),
   })
     .index("by_participant", ["participantId"])
     .index("by_state", ["state"])
-    .index("by_selected_role", ["selectedRoleId"])
-    .index("by_participant_and_state", ["participantId", "state"])
-    .index("by_version", ["assessmentVersion"]),
+    .index("by_participant_and_state", ["participantId", "state"]),
 
   /**
    * Role Discovery Answers — per-registration, supports multiple + notSure

@@ -1,27 +1,71 @@
 /**
- * Buildathon Registrations — multi-step flow §3 + versioning §15
- * Basic→Background→Interests→Assessment→Recommended→Choice→Preferences→Review→Submit
- * Registration vs Assessment separated §14; selectedRole never auto-overwritten §4
+ * Buildathon Registrations — Google Form aligned schema
  */
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { Doc } from "./_generated/dataModel";
 import { getParticipantByIdentity } from "./helpers";
 
 export const createDraft = mutation({
   args: {
-    basicInfo: v.object({ name: v.string(), email: v.string(), phone: v.optional(v.string()), university: v.optional(v.string()), organization: v.optional(v.string()) }),
-    assessmentVersion: v.optional(v.string()),
+    basicInfo: v.object({
+      name: v.string(),
+      email: v.string(),
+      phone: v.string(),
+      telegramUsername: v.optional(v.string()),
+      organization: v.optional(v.string()),
+      university: v.optional(v.string()),
+    }),
+    roleInfo: v.object({
+      positionCategory: v.union(
+        v.literal("po_ba_business"),
+        v.literal("design"),
+        v.literal("development"),
+        v.literal("project_product_management"),
+        v.literal("other")
+      ),
+      subRole: v.string(),
+      experienceYears: v.union(
+        v.literal("no_experience"),
+        v.literal("less_than_1"),
+        v.literal("1_to_3"),
+        v.literal("3_and_above")
+      ),
+      organization: v.optional(v.string()),
+      portfolioLink: v.optional(v.string()),
+    }),
+    eventPreferences: v.object({
+      preferredTrack: v.union(v.literal("in_person"), v.literal("online")),
+      bringLaptop: v.boolean(),
+      attendanceCommitment: v.boolean(),
+    }),
+    payment: v.object({
+      method: v.union(
+        v.literal("mmqr"),
+        v.literal("aya_pay"),
+        v.literal("cb_pay"),
+        v.literal("kbz_pay"),
+        v.literal("wave_money"),
+        v.literal("ctzpay")
+      ),
+      receipt: v.string(),
+      discountCode: v.optional(v.string()),
+    }),
   },
   handler: async (ctx, args) => {
     const idt = await ctx.auth.getUserIdentity();
     if (!idt) throw new Error("Unauthorized");
     const p = await getParticipantByIdentity(ctx, idt);
-    if (!p) throw new Error("Participant not found — ensure profile exists");
+    if (!p) throw new Error("Participant not found");
     const now = Date.now();
-    const version = args.assessmentVersion ?? "v1";
     const regId = await ctx.db.insert("buildathonRegistrations", {
-      participantId: p._id, state: "draft", basicInfo: args.basicInfo, assessmentVersion: version, createdAt: now, updatedAt: now,
+      participantId: p._id,
+      state: "draft",
+      basicInfo: args.basicInfo,
+      roleInfo: args.roleInfo,
+      eventPreferences: args.eventPreferences,
+      payment: args.payment,
+      createdAt: now,
+      updatedAt: now,
     });
     return { registrationId: regId };
   },
@@ -30,24 +74,69 @@ export const createDraft = mutation({
 export const updateRegistration = mutation({
   args: {
     registrationId: v.id("buildathonRegistrations"),
-    basicInfo: v.optional(v.object({ name: v.string(), email: v.string(), phone: v.optional(v.string()), university: v.optional(v.string()), organization: v.optional(v.string()) })),
-    background: v.optional(v.object({ currentProfession: v.optional(v.string()), occupation: v.optional(v.string()), experienceLevel: v.optional(v.union(v.literal("none"), v.literal("student"), v.literal("junior"), v.literal("mid"), v.literal("senior"))) })),
-    interests: v.optional(v.array(v.string())),
-    skills: v.optional(v.array(v.string())),
-    preferences: v.optional(v.object({ teamSize: v.optional(v.string()), theme: v.optional(v.string()), extra: v.optional(v.any()) })),
-    dynamicResponses: v.optional(v.any()),
+    basicInfo: v.optional(v.object({
+      name: v.string(),
+      email: v.string(),
+      phone: v.string(),
+      telegramUsername: v.optional(v.string()),
+      organization: v.optional(v.string()),
+      university: v.optional(v.string()),
+    })),
+    roleInfo: v.optional(v.object({
+      positionCategory: v.union(
+        v.literal("po_ba_business"),
+        v.literal("design"),
+        v.literal("development"),
+        v.literal("project_product_management"),
+        v.literal("other")
+      ),
+      subRole: v.string(),
+      experienceYears: v.union(
+        v.literal("no_experience"),
+        v.literal("less_than_1"),
+        v.literal("1_to_3"),
+        v.literal("3_and_above")
+      ),
+      organization: v.optional(v.string()),
+      portfolioLink: v.optional(v.string()),
+    })),
+    eventPreferences: v.optional(v.object({
+      preferredTrack: v.union(v.literal("in_person"), v.literal("online")),
+      bringLaptop: v.boolean(),
+      attendanceCommitment: v.boolean(),
+    })),
+    payment: v.optional(v.object({
+      method: v.union(
+        v.literal("mmqr"),
+        v.literal("aya_pay"),
+        v.literal("cb_pay"),
+        v.literal("kbz_pay"),
+        v.literal("wave_money"),
+        v.literal("ctzpay")
+      ),
+      receipt: v.string(),
+      discountCode: v.optional(v.string()),
+    })),
+    paymentReceipt: v.optional(v.string()),
+    paymentStatus: v.optional(v.union(
+      v.literal("pending"),
+      v.literal("verified"),
+      v.literal("rejected")
+    )),
   },
   handler: async (ctx, args) => {
     const { registrationId, ...rest } = args;
     const reg = await ctx.db.get(registrationId);
     if (!reg) throw new Error("Not found");
-    const patch: Partial<Doc<"buildathonRegistrations">> = { updatedAt: Date.now() };
+    
+    const patch: Record<string, unknown> = { updatedAt: Date.now() };
+    
     if (rest.basicInfo !== undefined) patch.basicInfo = rest.basicInfo;
-    if (rest.background !== undefined) patch.background = rest.background;
-    if (rest.interests !== undefined) patch.interests = rest.interests;
-    if (rest.skills !== undefined) patch.skills = rest.skills;
-    if (rest.preferences !== undefined) patch.preferences = rest.preferences;
-    if (rest.dynamicResponses !== undefined) patch.dynamicResponses = rest.dynamicResponses;
+    if (rest.roleInfo !== undefined) patch.roleInfo = rest.roleInfo;
+    if (rest.eventPreferences !== undefined) patch.eventPreferences = rest.eventPreferences;
+    if (rest.payment !== undefined) patch.payment = rest.payment;
+    if (rest.paymentStatus !== undefined) patch.paymentStatus = rest.paymentStatus;
+    
     await ctx.db.patch(registrationId, patch);
     return { success: true };
   },
@@ -60,29 +149,9 @@ export const getMyBuildathonRegistrations = query({
     if (!idt) throw new Error("Unauthorized");
     const p = await getParticipantByIdentity(ctx, idt);
     if (!p) return [];
-    return await ctx.db.query("buildathonRegistrations").withIndex("by_participant", (q) => q.eq("participantId", p._id)).collect();
-  },
-});
-
-export const getRegistrationProgress = query({
-  args: { registrationId: v.id("buildathonRegistrations") },
-  handler: async (ctx, args) => {
-    const reg = await ctx.db.get(args.registrationId);
-    if (!reg) throw new Error("Not found");
-    const steps = ["basic", "background", "interests", "assessment", "recommended", "choice", "preferences", "review", "submitted"] as const;
-    const stateToStep: Record<Doc<"buildathonRegistrations">["state"], number> = { draft: 0, assessment: 3, recommended: 4, role_selected: 6, submitted: 8 };
-    const completed = stateToStep[reg.state] ?? 0;
-    return { completed, total: steps.length - 1, state: reg.state, selectedRoleId: reg.selectedRoleId ?? null };
-  },
-});
-
-export const confirmRoleSelection = mutation({
-  args: { registrationId: v.id("buildathonRegistrations"), selectedRoleId: v.optional(v.id("buildathonRoles")) },
-  handler: async (ctx, args) => {
-    const reg = await ctx.db.get(args.registrationId);
-    if (!reg) throw new Error("Not found");
-    await ctx.db.patch(args.registrationId, { selectedRoleId: args.selectedRoleId ?? undefined, state: "role_selected", updatedAt: Date.now() });
-    return { success: true };
+    return await ctx.db.query("buildathonRegistrations")
+      .withIndex("by_participant", (q) => q.eq("participantId", p._id))
+      .collect();
   },
 });
 
@@ -91,8 +160,26 @@ export const submitRegistration = mutation({
   handler: async (ctx, args) => {
     const reg = await ctx.db.get(args.registrationId);
     if (!reg) throw new Error("Not found");
-    if (!reg.selectedRoleId) throw new Error("Choose a role before submitting §11");
     await ctx.db.patch(args.registrationId, { state: "submitted", updatedAt: Date.now() });
+    return { success: true };
+  },
+});
+
+export const updatePaymentStatus = mutation({
+  args: { 
+    registrationId: v.id("buildathonRegistrations"),
+    status: v.union(v.literal("pending"), v.literal("verified"), v.literal("rejected"))
+  },
+  handler: async (ctx, args) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw new Error("Unauthorized");
+    const admin = await getParticipantByIdentity(ctx, idt);
+    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+    
+    await ctx.db.patch(args.registrationId, { 
+      paymentStatus: args.status, 
+      updatedAt: Date.now() 
+    });
     return { success: true };
   },
 });
@@ -109,12 +196,9 @@ export const listAllRegistrations = query({
     const results = await Promise.all(
       regs.map(async (reg) => {
         const participant = await ctx.db.get(reg.participantId);
-        const selectedRole = reg.selectedRoleId ? await ctx.db.get(reg.selectedRoleId) : null;
         return {
           ...reg,
           participantEmail: participant?.email ?? "—",
-          participantRole: participant?.role ?? "—",
-          selectedRoleName: selectedRole?.nameEn ?? null,
         };
       })
     );

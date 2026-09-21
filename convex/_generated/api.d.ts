@@ -22,6 +22,7 @@ import type * as roleDiscoveryAnswers from "../roleDiscoveryAnswers.js";
 import type * as roleDiscoveryQuestions from "../roleDiscoveryQuestions.js";
 import type * as seedBuildathon from "../seedBuildathon.js";
 import type * as seedOceanTest from "../seedOceanTest.js";
+import type * as teams from "../teams.js";
 
 import type {
   ApiFromModules,
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   roleDiscoveryQuestions: typeof roleDiscoveryQuestions;
   seedBuildathon: typeof seedBuildathon;
   seedOceanTest: typeof seedOceanTest;
+  teams: typeof teams;
 }>;
 
 /**

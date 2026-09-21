@@ -58,6 +58,9 @@ export default function AdminOverviewPage() {
             <Link href="/admin/registrations" className="rounded-xl border bg-white px-4 py-2.5 text-center text-ocean-medium text-sm font-semibold hover:bg-gray-50">
               View Registrations & Recommendations
             </Link>
+            <Link href="/admin/teams" className="rounded-xl border bg-white px-4 py-2.5 text-center text-ocean-medium text-sm font-semibold hover:bg-gray-50">
+              Manage Teams & Assign Members
+            </Link>
           </div>
         </div>
 

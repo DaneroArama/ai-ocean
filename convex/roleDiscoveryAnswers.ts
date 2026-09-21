@@ -79,7 +79,7 @@ export const calculateRecommendations = mutation({
       rankedRoles: ranked.map((r) => ({ roleId: r.roleId as Id<"buildathonRoles">, affinity: r.affinity, explanationEn: r.explanationEn, explanationMy: r.explanationMy })),
       confidence: conf.level,
       confidenceScore: conf.score,
-      assessmentVersion: reg.assessmentVersion,
+      assessmentVersion: "v1",
       calculatedAt: Date.now(),
     };
 

@@ -26,15 +26,15 @@ import Turtle from '@/app/assets/Mascots GIF/Turtle.gif'
 gsap.registerPlugin(ScrollTrigger)
 
 const PARTNERS = [
-  { name: 'WeGrow', src: WeGrow },
-  { name: 'CCI', src: CCI },
-  { name: 'PMPPO Learning', src: PMPPO },
+  { name: 'We Grow Myanmar', src: WeGrow },
+  { name: 'The Productive Schedule', src: TPS },
+  { name: 'PM x PO Learning & Development Hub', src: PMPPO },
+  { name: "Let's Tech Club", src: LetsTech },
+  { name: 'EzyPro, EzyPet', src: Ezypro },
+  { name: 'RiseUp Organization', src: Riseup },
+  { name: 'Women in AI (WAI) Myanmar', src: WAI },
   { name: 'BridgeX', src: BridgeX },
-  { name: 'EzyPro', src: Ezypro },
-  { name: 'RiseUp', src: Riseup },
-  { name: 'WAI', src: WAI },
-  { name: "Let's Tech", src: LetsTech },
-  { name: 'TPS', src: TPS },
+  { name: 'CCI France Myanmar', src: CCI },
 ]
 
 export function CommunityPartnersSection() {
@@ -137,6 +137,11 @@ export function CommunityPartnersSection() {
               key={partner.name}
               className="partner-card group relative w-[140px] h-[140px] md:w-[180px] md:h-[180px] rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg flex items-center justify-center p-4 opacity-0 cursor-pointer hover:scale-110 hover:bg-white/25 hover:shadow-2xl hover:border-white/40 hover:-translate-y-2 transition-all duration-300 ease-out"
             >
+              {/* Tooltip bubble */}
+              <div className="absolute -top-4 left-[60%] -translate-x-1/2 -translate-y-full bg-[#FFAE14] text-white text-sm font-bold px-4 py-2 rounded-2xl shadow-lg opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-50">
+                {partner.name}
+                <div className="absolute -bottom-2 left-[10%] -translate-x-1/2 w-4 h-4 bg-[#FFAE14] rounded-full"></div>
+              </div>
               <div className="w-full h-full bg-white rounded-xl flex items-center justify-center p-3 shadow-inner group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
                 <Image
                   src={partner.src}

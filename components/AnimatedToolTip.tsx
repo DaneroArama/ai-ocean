@@ -73,7 +73,7 @@ export const AnimatedTooltip = ({
                   rotate: rotate,
                   whiteSpace: "nowrap",
                 }}
-                className="absolute -top-4 left-1/2 z-50 flex -translate-x-1/2 -translate-y-full flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 px-2 py-1.5 shadow-xl"
+                className="absolute min-w-[250px] z-9999 -top-10 -left-[10%] z-50 flex -translate-y-full flex-col items-start justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 px-4 py-1.5 shadow-xl"
               >
                 <div className="relative z-30 text-base font-bold text-white">
                   {item.name}
@@ -82,6 +82,7 @@ export const AnimatedTooltip = ({
                 {item.company && (
                   <div className="text-sm text-white/80">{item.company}</div>
                 )}
+                <div className="absolute bg-red-500 w-4 h-4 rounded-full -bottom-10 left-[5%]"/>
               </motion.div>
             )}
           </AnimatePresence>
