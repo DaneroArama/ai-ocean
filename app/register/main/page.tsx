@@ -105,8 +105,8 @@ function RegistrationInner() {
         setBasic({
           name: draft.basicInfo.name,
           email: draft.basicInfo.email,
-          phone: draft.basicInfo.phone,
-          telegramUsername: draft.basicInfo.telegramUsername,
+          phone: draft.basicInfo.phone ?? "",
+          telegramUsername: draft.basicInfo.telegramUsername ?? "",
         });
         if (draft.roleInfo) {
           setRoleInfo({
@@ -127,9 +127,9 @@ function RegistrationInner() {
         if (draft.payment) {
           setPayment((p) => ({
             ...p,
-            method: draft.payment.method,
-            receipt: draft.payment.receipt,
-            discountCode: draft.payment.discountCode ?? "",
+            method: draft.payment?.method ?? "",
+            receipt: draft.payment?.receipt ?? null,
+            discountCode: draft.payment?.discountCode ?? "",
           }));
         }
         const stateToStep: Record<string, number> = { draft: 0, assessment: 1, recommended: 2, role_selected: 3, submitted: 4 };

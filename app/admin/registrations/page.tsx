@@ -96,7 +96,7 @@ export default function AdminRegistrationsPage() {
                       }`}>{r.paymentStatus}</span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 truncate">{r.basicInfo.email} | {r.basicInfo.phone} | @{r.basicInfo.telegramUsername}</p>
+                  <p className="text-xs text-gray-500 truncate">{r.basicInfo.email} | {r.basicInfo.phone}{r.basicInfo.telegramUsername ? ` | @${r.basicInfo.telegramUsername}` : ""}</p>
                 </div>
                 <div className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</div>
               </div>
