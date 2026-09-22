@@ -131,12 +131,14 @@ export function Navbar() {
 
               {/* Desktop Register Button */}
               <div className="hidden md:flex">
-                <button
-                  onClick={() => setShowComingSoon(true)}
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSfv4INFwIXb3IaT4tFcbpBHgXZMxHlvlQDrMXN7Eqf_iDx1pw/viewform?usp=dialog"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-ocean-primary/20 font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] hover:brightness-110 transition-all font-medium"
                 >
                   Register
-                </button>
+                </a>
               </div>
 
               {/* Mobile Menu Button */}
@@ -187,12 +189,15 @@ export function Navbar() {
 
               {/* Mobile Register Button */}
               <div className="pt-4 border-t border-white/10">
-                <button
-                  onClick={() => { closeMobileMenu(); setShowComingSoon(true); }}
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSfv4INFwIXb3IaT4tFcbpBHgXZMxHlvlQDrMXN7Eqf_iDx1pw/viewform?usp=dialog"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeMobileMenu}
                   className="bg-white/20 block w-full font-syncopate px-6 py-3 text-center text-white border border-white/30 rounded-full shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] hover:brightness-110 transition-all font-medium"
                 >
                   Register
-                </button>
+                </a>
               </div>
             </div>
           </div>

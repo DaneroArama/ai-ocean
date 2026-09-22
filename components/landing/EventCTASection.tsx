@@ -197,13 +197,15 @@ export function EventCTASection() {
           ideation and cross-sector development to a secure, localized launch
         </p>
 
-        <button
-          onClick={() => setShowPopup(true)}
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfv4INFwIXb3IaT4tFcbpBHgXZMxHlvlQDrMXN7Eqf_iDx1pw/viewform?usp=dialog"
+          target="_blank"
+          rel="noopener noreferrer"
           className="relative mt-2 inline-flex items-center gap-2 bg-[#FFA726] hover:bg-[#FF9800] text-white font-syne font-semibold text-sm md:text-[14px] px-6 md:px-7 py-2.5 rounded-full shadow-sm transition-colors duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
           Register Now
           <span aria-hidden>→</span>
-        </button>
+        </a>
       </div>
 
       {/* Marquee rows - w-full overflow-hidden to not affect CTA width */}

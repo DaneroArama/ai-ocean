@@ -46,7 +46,7 @@ export default function AdminRegistrationsPage() {
           r.basicInfo.name.toLowerCase().includes(q) ||
           r.basicInfo.email.toLowerCase().includes(q) ||
           r.basicInfo.phone.includes(q) ||
-          r.basicInfo.telegramUsername.toLowerCase().includes(q)
+          (r.basicInfo.telegramUsername ?? "").toLowerCase().includes(q)
         );
       }
       return true;
