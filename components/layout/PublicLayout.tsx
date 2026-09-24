@@ -31,7 +31,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
     <div className="flex flex-col min-h-screen bg-ocean-primary">
       <IntroSplash/>
       <Navbar />
-      
+
       <main className="flex-1">
         {children}
       </main>

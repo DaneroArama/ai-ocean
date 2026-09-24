@@ -30,7 +30,11 @@ export function LenisProvider({ children }: LenisProviderProps) {
     gsap.ticker.lagSmoothing(0);
     ScrollTrigger.refresh();
 
+    const onLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", onLoad);
+
     return () => {
+      window.removeEventListener("load", onLoad);
       unsubscribeScroll();
       gsap.ticker.remove(updateLenis);
       lenis.destroy();
