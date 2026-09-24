@@ -51,10 +51,10 @@ export function AboutSection() {
           </div>
         </div>
 
-        {/* ABOUT THE icon */}
+        {/* ABOUT THE Event */}
         <div className="text-center mt-8 md:mt-10">
           <h2 className="font-syncopate font-extrabold text-[#0B4A8A] text-xl md:text-2xl lg:text-3xl tracking-wide">
-            About the icon
+            About the Event
           </h2>
           <p className="font-quicksand font-medium text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-3">
             During the AI Ocean icon, you&apos;ll work alongside people from all backgrounds, experiment with

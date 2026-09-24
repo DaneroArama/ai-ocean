@@ -77,11 +77,11 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
             title: 'Panelists',
             description: 'Ma Chaw Su Hlaing, Ma Hnin Hay Mar Aung, Ma Kyi Sin Hsu Thar, Ko Sann Lynn Htun, Ma Thae Su Aye, Ma Phyo Thiri Thu',
             people: [
-              { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'Codigo', image: '/assets/Persons/Chaw Su Hlaing.png' },
-              { id: 2, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPet & EzyPro', image: '/assets/Persons/Hay Mar.png' },
-              { id: 3, name: 'Kyi Sin Hsu Thar', designation: 'Product Designer', company: 'Codigo', image: '/assets/Persons/Kyi Sin.png' },
-              { id: 4, name: 'Sann Lynn Htun', designation: 'Senior Designer', company: 'Codigo', image: '/assets/Persons/San Lynn.png' },
-              { id: 5, name: 'Thae Su Aye', designation: 'UX Researcher', company: 'Codigo', image: '/assets/Persons/Thae Su Aye.png' },
+            { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'CODIGO', image: '/assets/Persons/Chaw Su Hlaing.png' },
+            { id: 2, name: 'Sann Lynn Htun', designation: 'Senior Software Engineer', company: 'ACE Data Systems', image: '/assets/Persons/San Lynn.png' },
+            { id: 3, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPro', image: '/assets/Persons/Hay Mar.png' },
+            { id: 4, name: 'Kyi Sin Hsu Thar', designation: 'Head of Programs', company: 'UXMM', image: '/assets/Persons/Kyi Sin.png' },
+            { id: 5, name: 'Thae Su Aye', designation: 'Project Researcher', company: 'LOMTech', image: '/assets/Persons/Thae Su Aye.png' },
             ]
           },
           {
@@ -94,10 +94,6 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         ]
       }
     ],
-    registrationLink: {
-      text: 'Join the Pre-Event Online Panel',
-      buttonText: 'Register Now →'
-    }
   },
   1: {
     type: 'upcoming',

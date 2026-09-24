@@ -49,7 +49,7 @@ export const AnimatedTooltip = ({
     <>
       {items.map((item, idx) => (
         <div
-          className="group relative -mr-4"
+          className="group relative -mr-2"
           key={item.name}
           onMouseEnter={() => setHoveredIndex(item.id)}
           onMouseLeave={() => setHoveredIndex(null)}
@@ -83,7 +83,7 @@ export const AnimatedTooltip = ({
                 {item.company && (
                   <div className="text-sm text-white/80">{item.company}</div>
                 )}
-                <div className="absolute bg-red-500 w-4 h-4 rounded-full -bottom-10 left-[5%]"/>
+                <div className="absolute bg-orange-400 w-4 h-4 rounded-full -bottom-5 left-[5%]"/>
               </motion.div>
             )}
           </AnimatePresence>
