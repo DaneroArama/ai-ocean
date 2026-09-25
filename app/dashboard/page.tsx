@@ -56,7 +56,7 @@ function DashboardInner() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-syncopate text-2xl font-bold text-ocean-deep">Dashboard</h1>
-          <p className="text-sm text-gray-500">Welcome, {participant.name ?? participant.email}</p>
+          <p className="text-sm text-grey-800">Welcome, {participant.name ?? participant.email}</p>
         </div>
         <div className="flex gap-2">
           {participant.role === "admin" && (
@@ -89,7 +89,7 @@ function DashboardInner() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold text-ocean-deep">{participant.name ?? "Participant"}</h2>
-              <p className="text-sm text-gray-500 truncate">{participant.email}</p>
+              <p className="text-sm text-grey-800 truncate">{participant.email}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {hasRegistered && (
                   <span className={`rounded-full px-3 py-1 text-xs font-bold ${myReg.state === "submitted" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
@@ -174,7 +174,7 @@ function DashboardInner() {
               <div className="space-y-3">
                 <div className="rounded-xl bg-ocean-50 p-4">
                   <p className="font-bold text-ocean-primary">{myTeam.name}</p>
-                  {myTeam.description && <p className="text-xs text-gray-500 mt-1">{myTeam.description}</p>}
+                  {myTeam.description && <p className="text-xs text-grey-800 mt-1">{myTeam.description}</p>}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {myTeam.members.map((member) => (
@@ -195,7 +195,7 @@ function DashboardInner() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl bg-gray-50 p-4 text-center text-gray-500 text-sm">Register first to be assigned to a team.</div>
+              <div className="rounded-xl bg-gray-50 p-4 text-center text-grey-800 text-sm">Register first to be assigned to a team.</div>
             )}
           </div>
         </div>
@@ -207,25 +207,25 @@ function DashboardInner() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
               {myReg.roleInfo && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-gray-500">Role</p>
-                  <p className="font-semibold">{myReg.roleInfo.subRole}</p>
+                  <p className="text-xs text-grey-800">Role</p>
+                  <p className="font-semibold text-ocean-primary">{myReg.roleInfo.subRole}</p>
                 </div>
               )}
               {myReg.eventPreferences && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-gray-500">Track</p>
+                  <p className="text-xs text-grey-800">Track</p>
                   <p className="font-semibold">{myReg.eventPreferences.preferredTrack === "in_person" ? "In-Person" : "Online"}</p>
                 </div>
               )}
               {myReg.payment && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-gray-500">Payment Method</p>
-                  <p className="font-semibold">{PAYMENT_METHODS[myReg.payment.method] ?? myReg.payment.method}</p>
+                  <p className="text-xs text-grey-800">Payment Method</p>
+                  <p className="font-semibold text-ocean-primary">{PAYMENT_METHODS[myReg.payment.method] ?? myReg.payment.method}</p>
                 </div>
               )}
               <div className="rounded-lg bg-gray-50 p-3">
-                <p className="text-xs text-gray-500">Reg ID</p>
-                <p className="font-mono text-xs">{myReg._id}</p>
+                <p className="text-xs text-grey-800">Reg ID</p>
+                <p className="font-mono text-xs text-ocean-primary">{myReg._id}</p>
               </div>
             </div>
           </div>

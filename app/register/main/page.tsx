@@ -402,7 +402,7 @@ function RegistrationInner() {
 
       {/* Step 3: Payment */}
       {step === 3 && (
-        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white text-ocean-primary p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">💳 Payment & Administrative Info</h3>
           <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm">
             <p className="font-bold text-amber-800">Registration Fee: 80,000 MMK</p>
