@@ -87,7 +87,7 @@ function SpeakerPhoto({ speaker, imageRight, mascot }: { speaker: Speaker; image
           />
           {/* Mascots stacked: only opacity toggles on hover, so the visible image never swaps src (no flicker) */}
           <div
-            className={`pointer-events-none absolute -bottom-30 z-20 w-16 h-full md:w-[200px] opacity-0 scale-0 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            className={`pointer-events-none absolute -bottom-30 z-20 w-16 h-full md:w-[200px] opacity-0 scale-0 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transform-gpu will-change-transform transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
               imageRight ? 'left-1 md:-left-20 rotate-30' : 'right-1 md:-right-20 -rotate-30'
             }`}
           >
@@ -98,7 +98,7 @@ function SpeakerPhoto({ speaker, imageRight, mascot }: { speaker: Speaker; image
                 alt=""
                 fill
                 sizes="200px"
-                className={`object-contain ${m.src === mascot.src ? 'opacity-100' : 'opacity-0'}`}
+                className={`object-contain transition-opacity duration-200 ${m.src === mascot.src ? 'opacity-100' : 'opacity-0'}`}
               />
             ))}
           </div>
@@ -106,7 +106,7 @@ function SpeakerPhoto({ speaker, imageRight, mascot }: { speaker: Speaker; image
         {/* Sketchy border: filter only touches this overlay, never the photo */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -inset-[4px] rounded-[20px] border-[5px] border-white"
+          className="pointer-events-none absolute -inset-[4px] rounded-[20px] border-[5px] border-white transform-gpu"
           style={{ filter: 'url(#sketchy-border)' }}
         />
       </div>
@@ -158,7 +158,7 @@ function SpeakerCard({ speaker, index }: { speaker: Speaker; index: number }) {
   return (
     <article
       onMouseEnter={handleMouseEnter}
-      className="group rounded-[1.75rem] md:rounded-[2rem] overflow-hidden bg-[#00B4F1] shadow-[6px_6px_0px_0px_#FFFFFF] transform-gpu will-change-transform transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0px_0px_#FFFFFF]"
+      className="group rounded-[1.75rem] md:rounded-[2rem] overflow-hidden bg-[#00B4F1] transform-gpu will-change-transform transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0px_0px_#FFFFFF]"
     >
         <div
           className={`flex flex-col md:flex-row md:items-stretch ${
@@ -292,4 +292,9 @@ export function SpeakersSection() {
         {/* Day toggle */}
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-12 md:mt-16">
           <DayToggleButton label="Day 1" active={activeDay === 1} onClick={() => handleDayChange(1)} />
-          <DayToggleButton label="Day 2" active={activeDay === 2} on
+          <DayToggleButton label="Day 2" active={activeDay === 2} onClick={() => handleDayChange(2)} />
+        </div>
+      </div>
+    </section>
+  )
+}
