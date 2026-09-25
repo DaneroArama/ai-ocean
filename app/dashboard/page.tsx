@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { useState } from "react";
 import Link from "next/link";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { validateReceiptFile, uploadReceiptFile, friendlyErrorMessage } from "@/lib/uploads";
 
 const PAYMENT_METHODS: Record<string, string> = {
   mmqr: "MMQR", aya_pay: "AYA Pay", cb_pay: "CB Pay",
@@ -17,6 +18,7 @@ function DashboardInner() {
   const { participant } = useAuth();
   const { signOut } = useAuthActions();
   const updateRegistration = useMutation(api.buildathonRegistrations.updateRegistration);
+  const generateReceiptUploadUrl = useMutation(api.buildathonRegistrations.generateReceiptUploadUrl);
   const [msg, setMsg] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -25,22 +27,29 @@ function DashboardInner() {
 
   const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !myReg) return;
-    if (file.size > 10 * 1024 * 1024) { setMsg("File too large. Max 10MB."); return; }
+    e.target.value = "";
+    if (!file || !myReg || uploading) return;
+    const problem = validateReceiptFile(file);
+    if (problem) {
+      setMsg(problem);
+      return;
+    }
     setUploading(true);
+    setMsg(null);
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        await updateRegistration({
-          registrationId: myReg._id,
-          payment: { method: myReg.payment?.method ?? "mmqr", receipt: reader.result as string },
-          paymentStatus: "pending",
-        });
-        setMsg("Receipt uploaded! Waiting for admin verification.");
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
-    } catch { setMsg("Upload failed"); setUploading(false); }
+      const uploadUrl = await generateReceiptUploadUrl({ registrationId: myReg._id });
+      const storageId = await uploadReceiptFile(uploadUrl, file);
+      await updateRegistration({
+        registrationId: myReg._id,
+        payment: { method: myReg.payment?.method ?? "mmqr", receipt: storageId },
+        paymentStatus: "pending",
+      });
+      setMsg("✅ Receipt uploaded! Waiting for admin verification.");
+    } catch (error) {
+      setMsg(friendlyErrorMessage(error, "Upload failed. Please try again."));
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (!participant) return null;
@@ -56,7 +65,7 @@ function DashboardInner() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-syncopate text-2xl font-bold text-ocean-deep">Dashboard</h1>
-          <p className="text-sm text-grey-800">Welcome, {participant.name ?? participant.email}</p>
+          <p className="text-sm text-ocean-deep">Welcome, {participant.name ?? participant.email}</p>
         </div>
         <div className="flex gap-2">
           {participant.role === "admin" && (
@@ -66,7 +75,7 @@ function DashboardInner() {
         </div>
       </div>
 
-      {msg && <div className="mb-6 rounded-xl border bg-emerald-50 px-4 py-3 text-sm text-emerald-800 border-emerald-200">{msg}</div>}
+        {msg && <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-red-50 text-red-800 border-red-200"}`}>{msg}</div>}
 
       {isReady && (
         <div className="mb-6 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 p-6 shadow-sm">
@@ -89,7 +98,7 @@ function DashboardInner() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold text-ocean-deep">{participant.name ?? "Participant"}</h2>
-              <p className="text-sm text-grey-800 truncate">{participant.email}</p>
+              <p className="text-sm text-ocean-deep truncate">{participant.email}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {hasRegistered && (
                   <span className={`rounded-full px-3 py-1 text-xs font-bold ${myReg.state === "submitted" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
@@ -174,7 +183,7 @@ function DashboardInner() {
               <div className="space-y-3">
                 <div className="rounded-xl bg-ocean-50 p-4">
                   <p className="font-bold text-ocean-primary">{myTeam.name}</p>
-                  {myTeam.description && <p className="text-xs text-grey-800 mt-1">{myTeam.description}</p>}
+                  {myTeam.description && <p className="text-xs text-ocean-deep mt-1">{myTeam.description}</p>}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {myTeam.members.map((member) => (
@@ -195,7 +204,7 @@ function DashboardInner() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl bg-gray-50 p-4 text-center text-grey-800 text-sm">Register first to be assigned to a team.</div>
+              <div className="rounded-xl bg-gray-50 p-4 text-center text-ocean-deep text-sm">Register first to be assigned to a team.</div>
             )}
           </div>
         </div>
@@ -207,24 +216,24 @@ function DashboardInner() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
               {myReg.roleInfo && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-grey-800">Role</p>
+                  <p className="text-xs text-ocean-deep">Role</p>
                   <p className="font-semibold text-ocean-primary">{myReg.roleInfo.subRole}</p>
                 </div>
               )}
               {myReg.eventPreferences && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-grey-800">Track</p>
+                  <p className="text-xs text-ocean-deep">Track</p>
                   <p className="font-semibold">{myReg.eventPreferences.preferredTrack === "in_person" ? "In-Person" : "Online"}</p>
                 </div>
               )}
               {myReg.payment && (
                 <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs text-grey-800">Payment Method</p>
+                  <p className="text-xs text-ocean-deep">Payment Method</p>
                   <p className="font-semibold text-ocean-primary">{PAYMENT_METHODS[myReg.payment.method] ?? myReg.payment.method}</p>
                 </div>
               )}
               <div className="rounded-lg bg-gray-50 p-3">
-                <p className="text-xs text-grey-800">Reg ID</p>
+                <p className="text-xs text-ocean-deep">Reg ID</p>
                 <p className="font-mono text-xs text-ocean-primary">{myReg._id}</p>
               </div>
             </div>

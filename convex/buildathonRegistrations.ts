@@ -1,9 +1,112 @@
 /**
  * Buildathon Registrations — Google Form aligned schema
  */
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { v, ConvexError } from "convex/values";
+import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 import { getParticipantByIdentity } from "./helpers";
+
+/** Max receipt size accepted by the app (matches the client-side 10 MB limit). */
+const MAX_RECEIPT_BYTES = 10 * 1024 * 1024;
+/**
+ * Convex values must stay under 1 MiB, so an inline (legacy base64) receipt
+ * can never be larger than this. Storage-backed receipts only need to be a
+ * short storage id, so the same guard covers both representations.
+ */
+const MAX_RECEIPT_VALUE_CHARS = 900_000;
+
+function receiptError(code: string, message: string) {
+  return new ConvexError({ code, message });
+}
+
+/**
+ * Validate a receipt value before writing it into a document.
+ * New receipts are Convex storage ids; older records may hold inline data URLs.
+ */
+async function assertReceiptValue(ctx: MutationCtx, receipt: string): Promise<void> {
+  if (receipt.length > MAX_RECEIPT_VALUE_CHARS) {
+    throw receiptError(
+      "RECEIPT_TOO_LARGE",
+      "Payment receipt is too large. Please upload a file smaller than 10 MB."
+    );
+  }
+  if (receipt === "" || receipt.startsWith("data:") || receipt.startsWith("http")) {
+    return;
+  }
+  const meta = (await ctx.db.system.get("_storage", receipt as Id<"_storage">)) as unknown as {
+    size?: number;
+    contentType?: string | null;
+  } | null;
+  if (!meta) {
+    throw receiptError(
+      "RECEIPT_NOT_FOUND",
+      "The uploaded receipt could not be found. Please upload it again."
+    );
+  }
+  if (typeof meta.size === "number" && meta.size > MAX_RECEIPT_BYTES) {
+    try {
+      await ctx.storage.delete(receipt as Id<"_storage">);
+    } catch {
+      // best effort — the file is rejected either way
+    }
+    throw receiptError(
+      "RECEIPT_TOO_LARGE",
+      "Payment receipt is too large. The maximum allowed size is 10 MB."
+    );
+  }
+  const contentType = meta.contentType;
+  if (contentType && !contentType.startsWith("image/") && contentType !== "application/pdf") {
+    throw receiptError(
+      "RECEIPT_UNSUPPORTED_TYPE",
+      "Unsupported file type. Please upload an image (PNG/JPG) or a PDF."
+    );
+  }
+}
+
+/** Signed URL + content type for a stored (or legacy inline) receipt. */
+export type ReceiptFile = { url: string; contentType: string | null };
+
+async function resolveReceipt(ctx: QueryCtx, receipt: string | undefined): Promise<ReceiptFile | null> {
+  if (!receipt) return null;
+  if (receipt.startsWith("data:")) {
+    const mime = receipt.slice(5).split(";")[0] || null;
+    return { url: receipt, contentType: mime };
+  }
+  if (receipt.startsWith("http")) {
+    return { url: receipt, contentType: receipt.toLowerCase().includes(".pdf") ? "application/pdf" : null };
+  }
+  try {
+    const url = await ctx.storage.getUrl(receipt as Id<"_storage">);
+    if (!url) return null;
+    const meta = (await ctx.db.system.get("_storage", receipt as Id<"_storage">)) as unknown as {
+      contentType?: string | null;
+    } | null;
+    return { url, contentType: meta?.contentType ?? null };
+  } catch {
+    return null;
+  }
+}
+
+/** Generate a short-lived URL the client POSTs the receipt file to. */
+export const generateReceiptUploadUrl = mutation({
+  args: { registrationId: v.id("buildathonRegistrations") },
+  handler: async (ctx, args) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw receiptError("UNAUTHENTICATED", "Please sign in again to upload a receipt.");
+    const p = await getParticipantByIdentity(ctx, idt);
+    if (!p) {
+      throw receiptError("PARTICIPANT_NOT_FOUND", "Your profile is still being created. Please try again in a moment.");
+    }
+    const reg = await ctx.db.get(args.registrationId);
+    if (!reg) {
+      throw receiptError("NOT_FOUND", "Registration not found. Please refresh the page and try again.");
+    }
+    if (reg.participantId !== p._id && p.role !== "admin") {
+      throw receiptError("FORBIDDEN", "You can only upload a receipt for your own registration.");
+    }
+    return await ctx.storage.generateUploadUrl();
+  },
+});
 
 export const createDraft = mutation({
   args: {
@@ -56,6 +159,7 @@ export const createDraft = mutation({
     if (!idt) throw new Error("Unauthorized");
     const p = await getParticipantByIdentity(ctx, idt);
     if (!p) throw new Error("Participant not found");
+    await assertReceiptValue(ctx, args.payment.receipt);
     const now = Date.now();
     const regId = await ctx.db.insert("buildathonRegistrations", {
       participantId: p._id,
@@ -126,9 +230,21 @@ export const updateRegistration = mutation({
   },
   handler: async (ctx, args) => {
     const { registrationId, ...rest } = args;
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw receiptError("UNAUTHENTICATED", "Please sign in again to save your registration.");
+    const p = await getParticipantByIdentity(ctx, idt);
+    if (!p) {
+      throw receiptError("PARTICIPANT_NOT_FOUND", "Your profile is still being created. Please try again in a moment.");
+    }
     const reg = await ctx.db.get(registrationId);
-    if (!reg) throw new Error("Not found");
-    
+    if (!reg) throw receiptError("NOT_FOUND", "Registration not found. Please refresh the page and try again.");
+    if (reg.participantId !== p._id && p.role !== "admin") {
+      throw receiptError("FORBIDDEN", "You can only update your own registration.");
+    }
+    if (rest.payment?.receipt !== undefined) {
+      await assertReceiptValue(ctx, rest.payment.receipt);
+    }
+
     const patch: Record<string, unknown> = { updatedAt: Date.now() };
     
     if (rest.basicInfo !== undefined) patch.basicInfo = rest.basicInfo;
@@ -149,9 +265,15 @@ export const getMyBuildathonRegistrations = query({
     if (!idt) throw new Error("Unauthorized");
     const p = await getParticipantByIdentity(ctx, idt);
     if (!p) return [];
-    return await ctx.db.query("buildathonRegistrations")
+    const regs = await ctx.db.query("buildathonRegistrations")
       .withIndex("by_participant", (q) => q.eq("participantId", p._id))
       .collect();
+    return await Promise.all(
+      regs.map(async (reg) => ({
+        ...reg,
+        receiptFile: await resolveReceipt(ctx, reg.payment?.receipt),
+      }))
+    );
   },
 });
 
@@ -199,6 +321,7 @@ export const listAllRegistrations = query({
         return {
           ...reg,
           participantEmail: participant?.email ?? "—",
+          receiptFile: await resolveReceipt(ctx, reg.payment?.receipt),
         };
       })
     );

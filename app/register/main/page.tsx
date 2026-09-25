@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { validateReceiptFile, uploadReceiptFile, friendlyErrorMessage } from "@/lib/uploads";
 
 const STEPS = ["Basic Info", "Role & Background", "Event Preferences", "Payment", "Review"] as const;
 
@@ -81,14 +82,18 @@ function RegistrationInner() {
     method: "" as string,
     receipt: null as string | null,
     receiptFile: null as File | null,
+    receiptId: null as string | null,
+    receiptMime: null as string | null,
     discountCode: "",
   });
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const myRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
   const createDraft = useMutation(api.buildathonRegistrations.createDraft);
   const updateReg = useMutation(api.buildathonRegistrations.updateRegistration);
   const submitReg = useMutation(api.buildathonRegistrations.submitRegistration);
+  const generateReceiptUploadUrl = useMutation(api.buildathonRegistrations.generateReceiptUploadUrl);
 
   // Load existing draft
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -126,10 +131,14 @@ function RegistrationInner() {
           });
         }
         if (draft.payment) {
+          const savedReceiptUrl = draft.receiptFile?.url ?? null;
           setPayment((p) => ({
             ...p,
             method: draft.payment?.method ?? "",
-            receipt: draft.payment?.receipt ?? null,
+            receipt: savedReceiptUrl,
+            receiptFile: null,
+            receiptId: savedReceiptUrl ? draft.payment?.receipt ?? null : null,
+            receiptMime: draft.receiptFile?.contentType ?? null,
             discountCode: draft.payment?.discountCode ?? "",
           }));
         }
@@ -145,22 +154,29 @@ function RegistrationInner() {
 
   const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        setMsg("❌ File too large. Max 10MB.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPayment((p) => ({ ...p, receipt: reader.result as string, receiptFile: file }));
-      };
-      reader.readAsDataURL(file);
+    e.target.value = "";
+    if (!file) return;
+    const problem = validateReceiptFile(file);
+    if (problem) {
+      setMsg(problem);
+      return;
     }
+    setPayment((p) => {
+      if (p.receipt?.startsWith("blob:")) URL.revokeObjectURL(p.receipt);
+      return {
+        ...p,
+        receipt: URL.createObjectURL(file),
+        receiptFile: file,
+        receiptId: null,
+        receiptMime: file.type || null,
+      };
+    });
+    setMsg(null);
   };
 
   const handleBasicNext = async () => {
     if (!basic.name || !basic.email || !basic.phone) {
-      setMsg("Name, email, and phone are required");
+      setMsg("❌ Name, email, and phone are required.");
       return;
     }
     try {
@@ -178,52 +194,88 @@ function RegistrationInner() {
       setMsg(null);
       next();
     } catch (e: unknown) {
-      setMsg(e instanceof Error ? e.message : "Error");
+      setMsg(friendlyErrorMessage(e, "Could not save your details. Please try again."));
     }
   };
 
   const handleRoleNext = async () => {
     if (!roleInfo.positionCategory || !roleInfo.subRole || !roleInfo.experienceYears) {
-      setMsg("Please fill all required fields");
+      setMsg("❌ Please fill all required fields.");
       return;
     }
-    if (regId) {
-      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: roleInfo as { positionCategory: "po_ba_business" | "design" | "development" | "project_product_management" | "other"; subRole: string; experienceYears: "no_experience" | "less_than_1" | "1_to_3" | "3_and_above"; organization?: string; portfolioLink?: string } });
+    try {
+      if (regId) {
+        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: roleInfo as { positionCategory: "po_ba_business" | "design" | "development" | "project_product_management" | "other"; subRole: string; experienceYears: "no_experience" | "less_than_1" | "1_to_3" | "3_and_above"; organization?: string; portfolioLink?: string } });
+      }
+      setMsg(null);
+      next();
+    } catch (e: unknown) {
+      setMsg(friendlyErrorMessage(e, "Could not save your role details. Please try again."));
     }
-    setMsg(null);
-    next();
   };
 
   const handleEventPrefsNext = async () => {
     if (!eventPrefs.preferredTrack || eventPrefs.bringLaptop === null || eventPrefs.attendanceCommitment === null) {
-      setMsg("Please complete all fields");
+      setMsg("❌ Please complete all fields.");
       return;
     }
-    if (regId) {
-      await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: eventPrefs as { preferredTrack: "in_person" | "online"; bringLaptop: boolean; attendanceCommitment: boolean } });
+    try {
+      if (regId) {
+        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: eventPrefs as { preferredTrack: "in_person" | "online"; bringLaptop: boolean; attendanceCommitment: boolean } });
+      }
+      setMsg(null);
+      next();
+    } catch (e: unknown) {
+      setMsg(friendlyErrorMessage(e, "Could not save your event preferences. Please try again."));
     }
-    setMsg(null);
-    next();
   };
 
   const handlePaymentNext = async () => {
-    if (!payment.method || !payment.receipt) {
-      setMsg("Payment method and receipt are required");
+    if (uploadingReceipt) return;
+    if (!payment.method) {
+      setMsg("❌ Please select a payment method.");
       return;
     }
-    if (regId) {
+    if (!payment.receipt && !payment.receiptId) {
+      setMsg("❌ Please upload your payment receipt.");
+      return;
+    }
+    if (!regId) {
+      setMsg("❌ Registration not found. Please go back to the first step and try again.");
+      return;
+    }
+    setUploadingReceipt(true);
+    try {
+      let receiptValue = payment.receiptId;
+      if (payment.receiptFile) {
+        const uploadUrl = await generateReceiptUploadUrl({ registrationId: regId as Id<"buildathonRegistrations"> });
+        receiptValue = await uploadReceiptFile(uploadUrl, payment.receiptFile);
+      }
+      if (!receiptValue) {
+        setMsg("❌ Please upload your payment receipt.");
+        return;
+      }
       await updateReg({
         registrationId: regId as Id<"buildathonRegistrations">,
-        payment: { method: payment.method as "mmqr" | "aya_pay" | "cb_pay" | "kbz_pay" | "wave_money" | "ctzpay", receipt: payment.receipt, discountCode: payment.discountCode || undefined },
+        payment: {
+          method: payment.method as "mmqr" | "aya_pay" | "cb_pay" | "kbz_pay" | "wave_money" | "ctzpay",
+          receipt: receiptValue,
+          discountCode: payment.discountCode || undefined,
+        },
       });
+      setPayment((p) => ({ ...p, receiptId: receiptValue, receiptFile: null }));
+      setMsg(null);
+      next();
+    } catch (e: unknown) {
+      setMsg(friendlyErrorMessage(e, "Could not save your payment details. Please try again."));
+    } finally {
+      setUploadingReceipt(false);
     }
-    setMsg(null);
-    next();
   };
 
   const handleSubmit = async () => {
     if (!agreedToTerms) {
-      setMsg("Please agree to the terms and conditions");
+      setMsg("❌ Please agree to the terms and conditions.");
       return;
     }
     if (!regId) return;
@@ -232,7 +284,7 @@ function RegistrationInner() {
       setMsg("✅ Registration submitted!");
       setStep(STEPS.length);
     } catch (e: unknown) {
-      setMsg(e instanceof Error ? e.message : "Error");
+      setMsg(friendlyErrorMessage(e, "Could not submit your registration. Please try again."));
     }
   };
 
@@ -271,7 +323,7 @@ function RegistrationInner() {
       </div>
 
       {msg && (
-        <div className={`rounded-xl border px-4 py-3 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
+        <div className={`rounded-xl border px-4 py-3 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800 border-emerald-200" : msg.startsWith("❌") ? "bg-red-50 text-red-800 border-red-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
           {msg}
         </div>
       )}
@@ -295,7 +347,7 @@ function RegistrationInner() {
             </div>
             <div>
               <label className="text-sm font-medium text-ocean-deep">Telegram Username *</label>
-              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="@username" value={basic.telegramUsername} onChange={(e) => setBasic({ ...basic, telegramUsername: e.target.value })} />
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="username" value={basic.telegramUsername} onChange={(e) => setBasic({ ...basic, telegramUsername: e.target.value })} />
               <p className="mt-1 text-xs text-ocean-medium">To be used while you&apos;re joining for buildathon</p>
             </div>
           </div>
@@ -432,13 +484,15 @@ function RegistrationInner() {
               <button type="button" onClick={() => fileInputRef.current?.click()} className="mt-2 w-full rounded-xl border-2 border-dashed border-ocean-surface bg-ocean-foam p-6 text-center transition hover:border-ocean-primary hover:bg-white">
                 {payment.receipt ? (
                   <div className="space-y-2">
-                    {payment.receiptFile?.type.startsWith("image/") ? (
-                      <img src={payment.receipt} alt="Receipt" className="mx-auto max-h-32 rounded-lg object-contain" />
-                    ) : (
+                    {payment.receiptMime === "application/pdf" || payment.receiptFile?.name.toLowerCase().endsWith(".pdf") ? (
                       <div className="text-3xl">📄</div>
+                    ) : (
+                      <img src={payment.receipt} alt="Receipt" className="mx-auto max-h-32 rounded-lg object-contain" />
                     )}
-                    <p className="text-xs text-ocean-medium">{payment.receiptFile?.name}</p>
-                    <p className="text-xs text-emerald-600 font-medium">✓ Receipt uploaded</p>
+                    <p className="text-xs text-ocean-medium">{payment.receiptFile?.name ?? "Receipt"}</p>
+                    <p className={`text-xs font-medium ${payment.receiptId && !payment.receiptFile ? "text-emerald-600" : "text-ocean-primary"}`}>
+                      {payment.receiptId && !payment.receiptFile ? "✓ Receipt uploaded" : "✓ Receipt selected — uploads when you continue"}
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -457,7 +511,9 @@ function RegistrationInner() {
           </div>
           <div className="mt-6 flex justify-between">
             <button onClick={back} className="rounded-xl border px-5 py-2 text-sm">Back</button>
-            <button onClick={handlePaymentNext} className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">Review →</button>
+            <button onClick={handlePaymentNext} disabled={uploadingReceipt} className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep disabled:cursor-not-allowed disabled:opacity-60">
+              {uploadingReceipt ? "Uploading receipt…" : "Review →"}
+            </button>
           </div>
         </div>
       )}
@@ -469,7 +525,7 @@ function RegistrationInner() {
           <div className="mt-4 space-y-4 text-sm">
             <div className="rounded-lg bg-ocean-foam p-4">
               <h4 className="font-bold text-ocean-deep mb-2">Basic Info</h4>
-              <p>{basic.name}</p>
+              <p className="text-ocean-medium">{basic.name}</p>
               <p className="text-ocean-medium">{basic.email} | {basic.phone}</p>
               <p className="text-ocean-medium">Telegram: {basic.telegramUsername}</p>
             </div>
@@ -480,7 +536,7 @@ function RegistrationInner() {
               {roleInfo.organization && <p className="text-ocean-medium">{roleInfo.organization}</p>}
               {roleInfo.portfolioLink && <p className="text-ocean-medium text-xs truncate">{roleInfo.portfolioLink}</p>}
             </div>
-            <div className="rounded-lg bg-ocean-foam p-4">
+            <div className="rounded-lg bg-ocean-foam text-ocean-primary p-4">
               <h4 className="font-bold text-ocean-deep mb-2">Event Preferences</h4>
               <p>Track: {eventPrefs.preferredTrack === "in_person" ? "📍 In-Person (Yangon)" : "💻 Online"}</p>
               <p>Laptop: {eventPrefs.bringLaptop ? "✅ Bringing own" : "❌ Need assistance"}</p>
@@ -498,7 +554,7 @@ function RegistrationInner() {
             </div>
             <div className="rounded-lg bg-ocean-foam p-4">
               <span className="font-bold text-ocean-deep">Reg ID: </span>
-              <span className="font-mono text-xs">{regId ?? "—"}</span>
+              <span className="font-mono text-xs text-ocean-primary">{regId ?? "—"}</span>
             </div>
           </div>
 

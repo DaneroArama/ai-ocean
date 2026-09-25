@@ -141,9 +141,15 @@ export default function AdminRegistrationsPage() {
                           {r.payment.discountCode && <p className="text-gray-500">Code: {r.payment.discountCode}</p>}
                         </>
                       )}
-                      {r.payment?.receipt && (
+                      {r.receiptFile && (
                         <div className="mt-2">
-                          <img src={r.payment.receipt} alt="Receipt" className="max-h-40 rounded-lg border" />
+                          {r.receiptFile.contentType?.startsWith("image/") ? (
+                            <img src={r.receiptFile.url} alt="Receipt" className="max-h-40 rounded-lg border" />
+                          ) : (
+                            <a href={r.receiptFile.url} target="_blank" rel="noreferrer" className="inline-block rounded bg-ocean-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-ocean-deep">
+                              📄 View receipt
+                            </a>
+                          )}
                           <div className="flex gap-2 mt-2">
                             <button onClick={() => handlePaymentStatus(r._id, "verified")} className="rounded bg-emerald-500 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-600">Verify</button>
                             <button onClick={() => handlePaymentStatus(r._id, "rejected")} className="rounded bg-red-500 px-3 py-1 text-xs font-bold text-white hover:bg-red-600">Reject</button>
