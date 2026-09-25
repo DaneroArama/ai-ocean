@@ -36,7 +36,7 @@ export function AdminAuthGuard({ children }: { children: ReactNode }) {
     }
     if (participant === null) return;
     if (isAdmin === false) {
-      router.replace("/?error=admin_required");
+      router.replace("/dashboard");
     }
   }, [loading, isAuthenticated, participant, isAdmin, router]);
 

@@ -45,11 +45,11 @@ function Stepper({ current }: { current: number }) {
     <div className="flex items-center gap-1 overflow-x-auto pb-2">
       {STEPS.map((s, i) => (
         <div key={s} className="flex items-center gap-1 shrink-0">
-          <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${i === current ? "bg-ocean-primary text-white" : i < current ? "bg-emerald-500 text-white" : "bg-gray-200 text-gray-600"}`}>
+          <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${i === current ? "bg-ocean-primary text-white" : i < current ? "bg-emerald-500 text-white" : "bg-ocean-surface text-ocean-deep"}`}>
             {i < current ? "✓" : i + 1}
           </div>
-          <span className={`hidden text-xs font-semibold md:inline ${i === current ? "text-ocean-deep" : "text-gray-400"}`}>{s}</span>
-          {i < STEPS.length - 1 && <div className={`mx-1 h-0.5 w-6 ${i < current ? "bg-emerald-500" : "bg-gray-200"}`} />}
+          <span className={`hidden text-xs font-semibold md:inline ${i === current ? "text-ocean-deep" : "text-ocean-medium"}`}>{s}</span>
+          {i < STEPS.length - 1 && <div className={`mx-1 h-0.5 w-6 ${i < current ? "bg-emerald-500" : "bg-ocean-surface"}`} />}
         </div>
       ))}
     </div>
@@ -244,7 +244,7 @@ function RegistrationInner() {
     <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <h1 className="font-syncopate text-xl font-bold text-ocean-deep md:text-2xl">Into The AI Ocean Registration</h1>
-        <Link href="/dashboard" className="text-xs text-gray-500 hover:underline">← Dashboard</Link>
+        <Link href="/dashboard" className="text-xs text-ocean-medium hover:underline">← Dashboard</Link>
       </div>
 
       {/* Event Info Banner */}
@@ -260,12 +260,12 @@ function RegistrationInner() {
         <p className="text-xs"><strong>Fees:</strong> 80,000 MMK</p>
       </div>
 
-      <div className="rounded-2xl border bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-ocean-surface bg-white p-4 shadow-sm">
         <Stepper current={step} />
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-ocean-surface/50">
           <div className="h-full bg-ocean-primary transition-all" style={{ width: `${Math.min(progressPct, 100)}%` }} />
         </div>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-ocean-medium">
           {step < STEPS.length ? `${progressPct}% — ${STEPS[step]}` : "Complete"}
         </p>
       </div>
@@ -278,25 +278,25 @@ function RegistrationInner() {
 
       {/* Step 0: Basic Info */}
       {step === 0 && (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">Basic Information <span className="text-red-500">*</span></h3>
           <div className="mt-4 space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Full Name *</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="Enter your full name" value={basic.name} onChange={(e) => setBasic({ ...basic, name: e.target.value })} />
+              <label className="text-sm font-medium text-ocean-deep">Full Name *</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="Enter your full name" value={basic.name} onChange={(e) => setBasic({ ...basic, name: e.target.value })} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Email Address *</label>
-              <input type="email" className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="your@email.com" value={basic.email} onChange={(e) => setBasic({ ...basic, email: e.target.value })} />
+              <label className="text-sm font-medium text-ocean-deep">Email Address *</label>
+              <input type="email" className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="your@email.com" value={basic.email} onChange={(e) => setBasic({ ...basic, email: e.target.value })} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Phone Number *</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="09xxxxxxxx" value={basic.phone} onChange={(e) => setBasic({ ...basic, phone: e.target.value })} />
+              <label className="text-sm font-medium text-ocean-deep">Phone Number *</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="09xxxxxxxx" value={basic.phone} onChange={(e) => setBasic({ ...basic, phone: e.target.value })} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Telegram Username *</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="@username" value={basic.telegramUsername} onChange={(e) => setBasic({ ...basic, telegramUsername: e.target.value })} />
-              <p className="mt-1 text-xs text-gray-500">To be used while you&apos;re joining for buildathon</p>
+              <label className="text-sm font-medium text-ocean-deep">Telegram Username *</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="@username" value={basic.telegramUsername} onChange={(e) => setBasic({ ...basic, telegramUsername: e.target.value })} />
+              <p className="mt-1 text-xs text-ocean-medium">To be used while you&apos;re joining for buildathon</p>
             </div>
           </div>
           <div className="mt-6 flex justify-end">
@@ -307,43 +307,43 @@ function RegistrationInner() {
 
       {/* Step 1: Role & Background */}
       {step === 1 && (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">Role & Background <span className="text-red-500">*</span></h3>
           <div className="mt-4 space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Position Category *</label>
+              <label className="text-sm font-medium text-ocean-deep">Position Category *</label>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {POSITION_CATEGORIES.map((cat) => (
-                  <button key={cat.value} type="button" onClick={() => setRoleInfo({ ...roleInfo, positionCategory: cat.value })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${roleInfo.positionCategory === cat.value ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                  <button key={cat.value} type="button" onClick={() => setRoleInfo({ ...roleInfo, positionCategory: cat.value })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${roleInfo.positionCategory === cat.value ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                     {cat.label}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Sub Role *</label>
-              <select className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" value={roleInfo.subRole} onChange={(e) => setRoleInfo({ ...roleInfo, subRole: e.target.value })}>
+              <label className="text-sm font-medium text-ocean-deep">Sub Role *</label>
+              <select className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" value={roleInfo.subRole} onChange={(e) => setRoleInfo({ ...roleInfo, subRole: e.target.value })}>
                 <option value="">Select sub role</option>
                 {SUB_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Experience Years *</label>
+              <label className="text-sm font-medium text-ocean-deep">Experience Years *</label>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {EXPERIENCE_OPTIONS.map((opt) => (
-                  <button key={opt.value} type="button" onClick={() => setRoleInfo({ ...roleInfo, experienceYears: opt.value })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${roleInfo.experienceYears === opt.value ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                  <button key={opt.value} type="button" onClick={() => setRoleInfo({ ...roleInfo, experienceYears: opt.value })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${roleInfo.experienceYears === opt.value ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                     {opt.label}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Organization/Company</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="If applicable" value={roleInfo.organization} onChange={(e) => setRoleInfo({ ...roleInfo, organization: e.target.value })} />
+              <label className="text-sm font-medium text-ocean-deep">Organization/Company</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="If applicable" value={roleInfo.organization} onChange={(e) => setRoleInfo({ ...roleInfo, organization: e.target.value })} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Portfolio / GitHub / LinkedIn Link</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="https://..." value={roleInfo.portfolioLink} onChange={(e) => setRoleInfo({ ...roleInfo, portfolioLink: e.target.value })} />
+              <label className="text-sm font-medium text-ocean-deep">Portfolio / GitHub / LinkedIn Link</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="https://..." value={roleInfo.portfolioLink} onChange={(e) => setRoleInfo({ ...roleInfo, portfolioLink: e.target.value })} />
             </div>
           </div>
           <div className="mt-6 flex justify-between">
@@ -355,39 +355,39 @@ function RegistrationInner() {
 
       {/* Step 2: Event Preferences */}
       {step === 2 && (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">Event Preferences <span className="text-red-500">*</span></h3>
           <div className="mt-4 space-y-5">
             <div>
-              <label className="text-sm font-medium text-gray-700">Preferred Event Track *</label>
-              <p className="text-xs text-gray-500">Please note that you cannot change after submission.</p>
+              <label className="text-sm font-medium text-ocean-deep">Preferred Event Track *</label>
+              <p className="text-xs text-ocean-medium">Please note that you cannot change after submission.</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, preferredTrack: "in_person" })} className={`rounded-lg border px-4 py-4 text-center text-sm transition ${eventPrefs.preferredTrack === "in_person" ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, preferredTrack: "in_person" })} className={`rounded-lg border px-4 py-4 text-center text-sm transition ${eventPrefs.preferredTrack === "in_person" ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   📍 In-Person (Yangon)
                 </button>
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, preferredTrack: "online" })} className={`rounded-lg border px-4 py-4 text-center text-sm transition ${eventPrefs.preferredTrack === "online" ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, preferredTrack: "online" })} className={`rounded-lg border px-4 py-4 text-center text-sm transition ${eventPrefs.preferredTrack === "online" ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   💻 Online
                 </button>
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Will you bring your own laptop and charger? *</label>
+              <label className="text-sm font-medium text-ocean-deep">Will you bring your own laptop and charger? *</label>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, bringLaptop: true })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.bringLaptop === true ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, bringLaptop: true })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.bringLaptop === true ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   ✅ Yes, I will bring my own laptop and charger
                 </button>
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, bringLaptop: false })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.bringLaptop === false ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, bringLaptop: false })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.bringLaptop === false ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   ❌ No, I need assistance
                 </button>
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Attendance Commitment *</label>
+              <label className="text-sm font-medium text-ocean-deep">Attendance Commitment *</label>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, attendanceCommitment: true })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.attendanceCommitment === true ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, attendanceCommitment: true })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.attendanceCommitment === true ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   ✅ Yes, I can attend all days of the event
                 </button>
-                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, attendanceCommitment: false })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.attendanceCommitment === false ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                <button type="button" onClick={() => setEventPrefs({ ...eventPrefs, attendanceCommitment: false })} className={`rounded-lg border px-4 py-3 text-left text-sm transition ${eventPrefs.attendanceCommitment === false ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                   ❌ No, I cannot commit to all days
                 </button>
               </div>
@@ -402,7 +402,7 @@ function RegistrationInner() {
 
       {/* Step 3: Payment */}
       {step === 3 && (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">💳 Payment & Administrative Info</h3>
           <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm">
             <p className="font-bold text-amber-800">Registration Fee: 80,000 MMK</p>
@@ -416,20 +416,20 @@ function RegistrationInner() {
           </div>
           <div className="mt-4 space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Payment Method *</label>
+              <label className="text-sm font-medium text-ocean-deep">Payment Method *</label>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 {PAYMENT_METHODS.map((m) => (
-                  <button key={m.value} type="button" onClick={() => setPayment({ ...payment, method: m.value })} className={`rounded-lg border px-3 py-3 text-center text-sm transition ${payment.method === m.value ? "border-ocean-primary bg-ocean-50 font-bold" : "border-gray-200 bg-white hover:bg-gray-50"}`}>
+                  <button key={m.value} type="button" onClick={() => setPayment({ ...payment, method: m.value })} className={`rounded-lg border px-3 py-3 text-center text-sm transition ${payment.method === m.value ? "border-ocean-primary bg-ocean-foam font-bold text-ocean-deep" : "border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:bg-ocean-foam"}`}>
                     {m.label}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Payment Receipt *</label>
-              <p className="text-xs text-gray-500">Upload the payment receipt. Max 10MB. PDF or image.</p>
+              <label className="text-sm font-medium text-ocean-deep">Payment Receipt *</label>
+              <p className="text-xs text-ocean-medium">Upload the payment receipt. Max 10MB. PDF or image.</p>
               <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleReceiptChange} className="hidden" />
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="mt-2 w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center transition hover:border-ocean-primary hover:bg-ocean-50">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="mt-2 w-full rounded-xl border-2 border-dashed border-ocean-surface bg-ocean-foam p-6 text-center transition hover:border-ocean-primary hover:bg-white">
                 {payment.receipt ? (
                   <div className="space-y-2">
                     {payment.receiptFile?.type.startsWith("image/") ? (
@@ -437,22 +437,22 @@ function RegistrationInner() {
                     ) : (
                       <div className="text-3xl">📄</div>
                     )}
-                    <p className="text-xs text-gray-500">{payment.receiptFile?.name}</p>
+                    <p className="text-xs text-ocean-medium">{payment.receiptFile?.name}</p>
                     <p className="text-xs text-emerald-600 font-medium">✓ Receipt uploaded</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <div className="text-3xl">📄</div>
-                    <p className="text-sm text-gray-600">Click to upload receipt</p>
-                    <p className="text-xs text-gray-400">PNG, JPG or PDF. Max 10MB.</p>
+                    <p className="text-sm text-ocean-medium">Click to upload receipt</p>
+                    <p className="text-xs text-ocean-medium">PNG, JPG or PDF. Max 10MB.</p>
                   </div>
                 )}
               </button>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Partnership Discount Code</label>
-              <input className="mt-1 w-full rounded-lg border px-3 py-2.5 text-sm" placeholder="Enter code (optional)" value={payment.discountCode} onChange={(e) => setPayment({ ...payment, discountCode: e.target.value })} />
-              <p className="mt-1 text-xs text-gray-500">Enter Partnership Organization Discount Code. Discounts will be refunded after full payment is made and verified.</p>
+              <label className="text-sm font-medium text-ocean-deep">Partnership Discount Code</label>
+              <input className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30" placeholder="Enter code (optional)" value={payment.discountCode} onChange={(e) => setPayment({ ...payment, discountCode: e.target.value })} />
+              <p className="mt-1 text-xs text-ocean-medium">Enter Partnership Organization Discount Code. Discounts will be refunded after full payment is made and verified.</p>
             </div>
           </div>
           <div className="mt-6 flex justify-between">
@@ -464,51 +464,51 @@ function RegistrationInner() {
 
       {/* Step 4: Review & Submit */}
       {step === 4 && (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">Review & Submit</h3>
           <div className="mt-4 space-y-4 text-sm">
-            <div className="rounded-lg bg-gray-50 p-4">
-              <h4 className="font-bold text-gray-700 mb-2">Basic Info</h4>
+            <div className="rounded-lg bg-ocean-foam p-4">
+              <h4 className="font-bold text-ocean-deep mb-2">Basic Info</h4>
               <p>{basic.name}</p>
-              <p className="text-gray-500">{basic.email} | {basic.phone}</p>
-              <p className="text-gray-500">Telegram: {basic.telegramUsername}</p>
+              <p className="text-ocean-medium">{basic.email} | {basic.phone}</p>
+              <p className="text-ocean-medium">Telegram: {basic.telegramUsername}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 p-4">
-              <h4 className="font-bold text-gray-700 mb-2">Role & Background</h4>
+            <div className="rounded-lg bg-ocean-foam p-4">
+              <h4 className="font-bold text-ocean-deep mb-2">Role & Background</h4>
               <p>{POSITION_CATEGORIES.find((c) => c.value === roleInfo.positionCategory)?.label} → {roleInfo.subRole}</p>
-              <p className="text-gray-500">{EXPERIENCE_OPTIONS.find((e) => e.value === roleInfo.experienceYears)?.label}</p>
-              {roleInfo.organization && <p className="text-gray-500">{roleInfo.organization}</p>}
-              {roleInfo.portfolioLink && <p className="text-gray-500 text-xs truncate">{roleInfo.portfolioLink}</p>}
+              <p className="text-ocean-medium">{EXPERIENCE_OPTIONS.find((e) => e.value === roleInfo.experienceYears)?.label}</p>
+              {roleInfo.organization && <p className="text-ocean-medium">{roleInfo.organization}</p>}
+              {roleInfo.portfolioLink && <p className="text-ocean-medium text-xs truncate">{roleInfo.portfolioLink}</p>}
             </div>
-            <div className="rounded-lg bg-gray-50 p-4">
-              <h4 className="font-bold text-gray-700 mb-2">Event Preferences</h4>
+            <div className="rounded-lg bg-ocean-foam p-4">
+              <h4 className="font-bold text-ocean-deep mb-2">Event Preferences</h4>
               <p>Track: {eventPrefs.preferredTrack === "in_person" ? "📍 In-Person (Yangon)" : "💻 Online"}</p>
               <p>Laptop: {eventPrefs.bringLaptop ? "✅ Bringing own" : "❌ Need assistance"}</p>
               <p>Attendance: {eventPrefs.attendanceCommitment ? "✅ All days" : "❌ Cannot commit all"}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 p-4">
-              <h4 className="font-bold text-gray-700 mb-2">Payment</h4>
+            <div className="rounded-lg bg-ocean-foam p-4">
+              <h4 className="font-bold text-ocean-deep mb-2">Payment</h4>
               <p>Method: {PAYMENT_METHODS.find((m) => m.value === payment.method)?.label}</p>
               {payment.receipt ? (
                 <p className="text-emerald-600">✓ Receipt uploaded</p>
               ) : (
                 <p className="text-amber-600">⚠ No receipt uploaded</p>
               )}
-              {payment.discountCode && <p className="text-gray-500">Code: {payment.discountCode}</p>}
+              {payment.discountCode && <p className="text-ocean-medium">Code: {payment.discountCode}</p>}
             </div>
-            <div className="rounded-lg bg-gray-50 p-4">
-              <span className="font-bold text-gray-700">Reg ID: </span>
+            <div className="rounded-lg bg-ocean-foam p-4">
+              <span className="font-bold text-ocean-deep">Reg ID: </span>
               <span className="font-mono text-xs">{regId ?? "—"}</span>
             </div>
           </div>
 
           {/* Terms & Conditions */}
-          <div className="mt-6 rounded-xl border bg-gray-50 p-4">
+          <div className="mt-6 rounded-xl border border-ocean-surface bg-ocean-foam p-4">
             <label className="flex items-start gap-3 cursor-pointer">
               <input type="checkbox" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} className="mt-1 accent-ocean-primary" />
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-ocean-deep">
                 <p>I agree to the terms and conditions. I understand that my personal information will be used solely for event logistics and communication related to Into the AI Ocean. I consent to the processing of my data for event organization purposes.</p>
-                <p className="mt-2 text-gray-500">⚠ Your personal information will be used solely for event logistics and communication related to Into the AI Ocean. We will not share your data with third parties without your consent.</p>
+                <p className="mt-2 text-ocean-medium">⚠ Your personal information will be used solely for event logistics and communication related to Into the AI Ocean. We will not share your data with third parties without your consent.</p>
               </div>
             </label>
           </div>
@@ -524,10 +524,10 @@ function RegistrationInner() {
 
       {/* Complete */}
       {step >= STEPS.length && (
-        <div className="rounded-2xl border bg-white p-8 shadow-sm text-center">
+        <div className="rounded-2xl border border-ocean-surface bg-white p-8 shadow-sm text-center">
           <div className="text-5xl mb-4">🎉</div>
           <h3 className="font-syncopate text-xl font-bold text-ocean-deep">Registration Complete!</h3>
-          <p className="mt-2 text-sm text-gray-600">Your registration is submitted. We&apos;ll verify your payment and confirm your spot.</p>
+          <p className="mt-2 text-sm text-ocean-medium">Your registration is submitted. We&apos;ll verify your payment and confirm your spot.</p>
           <div className="mt-6 flex justify-center gap-3">
             <Link href="/dashboard" className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
               Go to Dashboard

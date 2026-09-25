@@ -233,7 +233,7 @@ export function SpeakersSection() {
         </defs>
       </svg>
       {/* Title row — full bleed: waves repeat to both screen edges */}
-      <div className="flex items-center gap-4 md:gap-6 mb-10 md:mb-12 -mx-4">
+      <div className="flex items-center justify-center gap-4 md:gap-6 mb-10 md:mb-12 mx-auto md:-mx-4">
         <div
           aria-hidden
           className="hidden sm:block flex-1 h-8 md:h-11 lg:h-14"

@@ -62,7 +62,7 @@ function DashboardInner() {
           {participant.role === "admin" && (
             <Link href="/admin" className="rounded-xl bg-ocean-primary px-4 py-2 text-sm font-bold text-white hover:bg-ocean-deep">Admin Panel</Link>
           )}
-          <button onClick={() => void signOut()} className="rounded-xl border bg-white px-4 py-2 text-sm font-semibold hover:bg-gray-50">Sign out</button>
+          <button onClick={() => void signOut()} className="rounded-xl border bg-white hover:border-ocean-primary px-4 py-2 text-sm font-semibold text-ocean-primary hover:bg-gray-50">Sign out</button>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ function DashboardInner() {
                     </div>
                   </div>
                 </div>
-                <div className="rounded-xl bg-gray-50 p-3 text-xs space-y-1">
+                <div className="rounded-xl bg-gray-50 p-3 text-xs text-ocean-primary space-y-1">
                   <p className="font-bold">Payment Info:</p>
                   <p>Number: 09260567664</p>
                   <p>Name: Wai Yi Mon Soe</p>
@@ -241,7 +241,7 @@ function DashboardInner() {
             {hasRegistered && myReg.state !== "submitted" && (
               <Link href="/register/main" className="rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep">Complete Registration</Link>
             )}
-            <Link href="/" className="rounded-xl border bg-white px-6 py-3 text-sm font-semibold hover:bg-gray-50">Back to Home</Link>
+            <Link href="/" className="rounded-xl border bg-white px-6 py-3 text-sm text-ocean-primary font-semibold hover:bg-gray-50">Back to Home</Link>
           </div>
         </div>
       </div>

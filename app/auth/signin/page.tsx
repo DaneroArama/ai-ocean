@@ -12,8 +12,16 @@ function SignInInner() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
   const search = useSearchParams();
-  const next = search.get("next") ?? "/admin";
+  const next = search.get("next");
   const [error, setError] = useState<string | null>(null);
+
+  const destinationFor = (admin: boolean) => {
+    const safeNext =
+      next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+    if (admin) return safeNext?.startsWith("/admin") ? safeNext : "/admin";
+    if (safeNext && !safeNext.startsWith("/admin")) return safeNext;
+    return "/dashboard";
+  };
 
   const participant = useQuery(api.participants.getCurrentParticipant, isAuthenticated ? {} : "skip");
   const isAdmin = useQuery(api.participants.isAdmin, isAuthenticated ? {} : "skip");
@@ -26,20 +34,19 @@ function SignInInner() {
   }, [isAuthenticated, participant, ensure]);
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && participant !== undefined) {
-      if (participant === null) return; // creating…
-      if (participant === undefined) return;
-      // auto-redirect based on role — after participant doc exists
-      if (isAdmin) router.replace(next.startsWith("/admin") ? next : "/admin");
-      else router.replace("/dashboard");
-    }
+    if (isLoading || !isAuthenticated) return;
+    if (participant === undefined || participant === null) return;
+    if (isAdmin === undefined) return;
+    // auto-redirect based on role — after participant doc exists
+    router.replace(destinationFor(isAdmin));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, isAuthenticated, participant, isAdmin, router, next]);
 
   const handle = async (provider: "google" | "github") => {
     setError(null);
     try {
-      const dest = next.startsWith("/") ? next : "/dashboard";
-      const redirectTo = `${window.location.origin}${dest}`;
+      const query = search.toString();
+      const redirectTo = `${window.location.origin}/auth/signin${query ? `?${query}` : ""}`;
       await signIn(provider, { redirectTo });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Sign-in failed");

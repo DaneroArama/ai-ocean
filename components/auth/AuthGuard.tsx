@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useConvexAuth } from "convex/react";
@@ -12,12 +12,13 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   const { isAuthenticated: convexAuth } = useConvexAuth();
   const ensure = useMutation(api.participants.ensureCurrentParticipant);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace("/auth/signin");
+      router.replace(`/auth/signin?next=${encodeURIComponent(pathname)}`);
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, pathname]);
 
   useEffect(() => {
     if (convexAuth && user === null) {
