@@ -75,7 +75,7 @@ function DashboardInner() {
         </div>
       </div>
 
-        {msg && <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-red-50 text-red-800 border-red-200"}`}>{msg}</div>}
+      {msg && <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-red-50 text-red-800 border-red-200"}`}>{msg}</div>}
 
       {isReady && (
         <div className="mb-6 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 p-6 shadow-sm">
@@ -223,7 +223,7 @@ function DashboardInner() {
               {myReg.eventPreferences && (
                 <div className="rounded-lg bg-gray-50 p-3">
                   <p className="text-xs text-ocean-deep">Track</p>
-                  <p className="font-semibold">{myReg.eventPreferences.preferredTrack === "in_person" ? "In-Person" : "Online"}</p>
+                  <p className="font-semibold text-ocean-primary">{myReg.eventPreferences.preferredTrack === "in_person" ? "In-Person" : "Online"}</p>
                 </div>
               )}
               {myReg.payment && (
