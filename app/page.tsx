@@ -10,7 +10,8 @@ import {
   AboutSection,
   MerchandiseSection,
   CommunityPartnersSection,
-  ScheduleSection
+  ScheduleSection,
+  SpeakersSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 import { BubbleClickTrail } from '@/components/landing/BubbleClickTrail'
@@ -59,13 +60,16 @@ export default function Home() {
       {/* Schedule Section - Section 6 */}
       <ScheduleSection/>
 
-      {/* Event CTA + Marquee - Section 7 */}
+      {/* Speakers - Section 7 */}
+      <SpeakersSection/>
+
+      {/* Event CTA + Marquee - Section 8 */}
       <EventCTASection/>
 
-      {/* About - Section 8 */}
+      {/* About - Section 9 */}
       <AboutSection/>
 
-      {/* Community Partners - Section 9 */}
+      {/* Community Partners - Section 10 */}
       <CommunityPartnersSection/>
     </PublicLayout>
   )

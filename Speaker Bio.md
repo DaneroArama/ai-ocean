@@ -1,0 +1,43 @@
+Day 1 
+Ko Myo Maung Muang
+Ko Zayar Htun
+Ko Aung Min Soe
+Ma Khin Moet Moet Nyein (Ma Kay Nyein)
+
+Day 2
+Ma Shu Mawa Soe
+Ko Aung Kyaw Min
+Ko Min Khant Ko Ko
+Ko Pyit Sone Oo
+Aiko Huang
+
+Ko Myo Maung
+Myo Maung, a Lead UX Designer with over 15 years of experience in graphic design, UI/UX design, and digital product design.  He has worked across different industries, including telecom, banking, fintech, and social impact organizations, and has led UX/UI design projects for digital products and design systems.  Myo is passionate about creating meaningful user experiences, design systems, and helping teams work more effectively through design and AI.
+
+Ko Aung Kyaw Minn
+Aung Kyaw Minn began his career as a Telecom Engineer at ZTE Corporation in 2008 after earning his degree from the University of Computer Studies, Yangon. In 2010, he transitioned into software development, working as a freelance developer and delivering specialized software solutions for retail and wholesale businesses. In 2018, he founded dhobi.co, an online laundry service platform, where he served as Chief Technology Officer (CTO), leading both product development and operations. In late 2020, he joined Hana Microfinance as an Assistant Innovation Manager, spearheading the digital transformation of microfinance operations. His role encompassed managing development teams, designing application architectures, and establishing operational procedures. In early 2022, he joined Nexlabs as a Solution Architect and Lead Developer, leading the development of the Yangon Neighborhood Network Portal for Doh Eain. His leadership and technical expertise earned him the role of Head of Technology, where he oversaw software projects and shaped the company’s technological strategy. Following tech team of Nexlabs’ rebranding to Onenex, he continued in this role, leading a team of over 80 developers and driving innovative solutions in the tech industry. In August 2024, he joined AYA Bank’s Innovation Labs as a Solution Architect, where he currently plays a key role in designing and implementing cutting-edge financial technology solutions.
+
+Ko Zayar Htun
+ ➡️ Senior Manager- Digital Delivery & Operations (Japan Market) @ Cheil Vietnam  ➡️ Founder of PMxPO Learning and Development   PgMP® and PMP® certified Program Orchestrator with 10+ years of experience leading multi-product programs and digital transformations across international markets, including Banking, FinTech, and Energy. A former Software Engineer turned Delivery Manager, a recognized contributor to the PMI PMBOK® Guide (7th & 8th Editions) and 5th Edition of The Standard for Program Management. I specializes in Lean-Agile governance, cross-border team delivery, and incorporating modern methodologies into project management. (Burmese Version) ➡️ Senior Manager- Digital Delivery & Operations (Japan Market) @ Cheil Vietnam  ➡️ Founder of PMxPO Learning and Development  ကျွန်တော်သည် ဘဏ်လုပ်ငန်း၊ FinTech နှင့် စွမ်းအင်ကဏ္ဍများ အပါအဝင် နိုင်ငံတကာ ဈေးကွက်များတစ်လျှောက် Multi-Product Program များနှင့် Digital Transformation များကို ဦးဆောင်ခဲ့သည့် ၁၀ နှစ်ကျော် အတွေ့အကြုံရှိ PgMP® နှင့် PMP® လက်မှတ်ရ Program Orchestrator တစ်ဦး ဖြစ်ပါသည်။ Software Engineer ဘဝမှ Delivery Manager အဖြစ်သို့ ကူးပြောင်းလာသူဖြစ်ပြီး၊ PMI ၏ PMBOK® Guide (7th & 8th Editions) နှင့် 5th Edition of The Standard for Program Management တို့တွင် ပါဝင်ကူညီရေးသားခဲ့သူအဖြစ် အသိအမှတ်ပြုခံရသူလည်း ဖြစ်ပါသည်။ ကျွန်တော်သည် Lean-Agile Governance၊ နယ်စပ်ဖြတ်ကျော်အသင်းအဖွဲ့များ၏ Delivery ပိုင်းနှင့် ခေတ်မီနည်းလမ်းများကို Project Management အတွင်း ပေါင်းစပ်အသုံးပြုခြင်းဆိုင်ရာ နယ်ပယ်များတွင် အထူးပြု လုပ်ကိုင်လျက် ရှိပါသည်။
+
+Ko Aung Min Soe
+I am Aung Min Soe (Kinn), a Lead Product Designer with 8+ years of experience across Fintech, Enterprise SaaS, EdTech, and AI-powered products. I specialize in product design, scalable design systems, conversational UX, and bridging the gap between design and development. My recent work focuses on AI-assisted product experiences, workflow automation, and design-to-code practices that help teams move from ideas to production more effectively.
+
+Aiko Huang
+Aiko Huang is a Portfolio Director at H3VEA Technology Services, where she works at the intersection of business strategy, technology, and user experience. With 15 years of experience in education before transitioning into UX and service design, Aiko brings a multidisciplinary perspective spanning UX design, service design, enterprise architecture, and digital transformation.  Today, she works closely with organisations to translate business needs into practical digital solutions, balancing user needs, operational realities, technical constraints, and commercial considerations. Her experience gives her a practical perspective on one of the most common challenges in digital projects: how to create meaningful user experiences while still delivering what the business needs.
+
+
+Ko Min Khant Ko Ko
+Min Khant Ko Ko is a Digital Creator, AI Evaluator, and AI Researcher advancing technology education across Burma and Thailand. Drawing on six years in marketing technology and AI creative work, he serves as a freelance AI Instructor delivering training to SMEs and corporations. As an AI Evaluator, he tests large language models for Google, Uber, and IBM. His research examines AI's impact on the tech sector and creative jobs in Burma. In 2023, he founded Alex's Vlog, dedicated “for the people of Burma,” and has since trained 1,000+ youth organizations, SMEs and corporate businesses in digital literacy, cybersecurity, and generative AI. မင်းခန့်ကိုကိုသည် မြန်မာနိုင်ငံနှင့် ထိုင်းနိုင်ငံတစ်ဝန်း နည်းပညာပညာရေးကို မြှင့်တင်ပေးနေသော ဒစ်ဂျစ်တယ် ဖန်တီးရှင်၊ AI အကဲဖြတ်သူနှင့် AI သုတေသီတစ်ဦး ဖြစ်သည်။  စျေးကွက်ဖော်ဆောင်ရေး နည်းပညာနှင့် AI ဖန်တီးမှုလုပ်ငန်းများတွင် ခြောက်နှစ်တာ အတွေ့အကြုံများကို အခြေခံ၍ အသေးစားနှင့် အလတ်စားလုပ်ငန်းများ (SMEs) နှင့် ကော်ပိုရိတ်ကုမ္ပဏီများအတွက် လေ့ကျင့်သင်တန်းများ ပို့ချပေးနေသည့် အလွတ်တန်း AI နည်းပြတစ်ဦးလည်း ဖြစ်သည်။ AI အကဲဖြတ်သူတစ်ဦးအနေဖြင့် Google၊ Uber နှင့် IBM တို့အတွက် ကြီးမားသော ဘာသာစကားမော်ဒယ်များ (LLMs) ကို စမ်းသပ်ပေးလျက်ရှိသည်။ သူ၏ သုတေသနပြုချက်များတွင် AI က နည်းပညာကဏ္ဍနှင့် မြန်မာနိုင်ငံရှိ ဖန်တီးမှုဆိုင်ရာ အလုပ်အကိုင်များအပေါ် သက်ရောက်ပုံကို လေ့လာဆန်းစစ်ထားသည်။  ၂၀၂၃ ခုနှစ်တွင် "မြန်မာပြည်သူများအတွက်" ရည်စူးထားသည့် "Alex's Vlog" ကို တည်ထောင်ခဲ့ပြီး ယနေ့အထိ လူငယ်အဖွဲ့အစည်းများ၊ SMEs များနှင့် ကော်ပိုရိတ်စီးပွားရေးလုပ်ငန်းများမှ လူပုဂ္ဂိုလ် ၁၀၀၀ ကျော်အား ဒစ်ဂျစ်တယ် စာတတ်မြောက်မှု၊ ဆိုက်ဘာလုံခြုံရေးနှင့် ဂျင်နရေတစ် AI (Generative AI) တို့ကို သင်တန်းပို့ချပေးခဲ့ပြီး ဖြစ်သည်။
+
+Ma Khin Moet Moet Nyein
+Kay leads the Data & Digital team at Doh Eain, a Myanmar-based social enterprise working across heritage restoration, urban resilience, community networks, and humanitarian response. Her work spans three pillars — impact reporting, platform development, and applied research — and she sits on the organization's Senior Management Team, guiding how data and technology serve Doh Eain's mission across its teams.  Her data journey took shape at Yoma Bank, where she spent nearly six years building out the bank's data function, before taking on further roles at CGAP, Shopee, and FINCA Impact Finance — moving across global development, e-commerce, and banking along the way. Drawing on this cross-sector experience, Kay is passionate about helping teams move beyond viewing data and AI as purely technical tools — instead grounding them in structured, human-centered thinking that keeps technology purposeful and accountable to the real work it's meant to support.
+
+
+Ko Pyit Sone Oo
+Pyit Sone Oo is the CEO of BEYOND 360, one of Myanmar’s fastest-growing advertising and brand agencies. With over 10 years of experience in advertising, branding, and creative strategy, he has worked with leading local and international brands across telecom, banking, FMCG, insurance, and lifestyle sectors. His work focuses on building strong brand ideas that connect business goals with human insight and culturally relevant creative execution. He is also involved in industry judging and creative evaluation, bringing a perspective shaped by both strategic thinking and hands-on agency leadership.
+
+
+
+Shu Mawa Soe
+Shu is an AI-driven product designer specializing in humanizing complex systems. She received her MSc in HCI at the University of St Andrews and is now currently consulting for an AI SaaS startup. Shu’s core mission is to drive human-centered design by grounding product decisions in actual research and proven models. Her specialty is bringing soul back into digital experiences to avoid AI slop by centering real user needs and accessibility.
