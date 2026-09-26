@@ -262,7 +262,8 @@ export const getMyBuildathonRegistrations = query({
   args: {},
   handler: async (ctx) => {
     const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
+    // Public registration page queries this while signed out — nothing to list yet
+    if (!idt) return [];
     const p = await getParticipantByIdentity(ctx, idt);
     if (!p) return [];
     const regs = await ctx.db.query("buildathonRegistrations")
@@ -280,8 +281,15 @@ export const getMyBuildathonRegistrations = query({
 export const submitRegistration = mutation({
   args: { registrationId: v.id("buildathonRegistrations") },
   handler: async (ctx, args) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw receiptError("UNAUTHENTICATED", "Please sign in to submit your registration.");
+    const p = await getParticipantByIdentity(ctx, idt);
+    if (!p) throw receiptError("PARTICIPANT_NOT_FOUND", "Your profile is still being created. Please try again in a moment.");
     const reg = await ctx.db.get(args.registrationId);
-    if (!reg) throw new Error("Not found");
+    if (!reg) throw receiptError("NOT_FOUND", "Registration not found. Please refresh the page and try again.");
+    if (reg.participantId !== p._id && p.role !== "admin") {
+      throw receiptError("FORBIDDEN", "You can only submit your own registration.");
+    }
     await ctx.db.patch(args.registrationId, { state: "submitted", updatedAt: Date.now() });
     return { success: true };
   },

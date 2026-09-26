@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -8,11 +8,13 @@ import { Id } from "@/convex/_generated/dataModel";
 export default function AdminTeamsPage() {
   const teams = useQuery(api.teams.listTeams);
   const unassigned = useQuery(api.teams.listUnassignedParticipants);
+  const autoCandidates = useQuery(api.teams.countAutoTeamCandidates);
   const createTeam = useMutation(api.teams.createTeam);
   const updateTeam = useMutation(api.teams.updateTeam);
   const deleteTeam = useMutation(api.teams.deleteTeam);
   const addMember = useMutation(api.teams.addMemberToTeam);
   const removeMember = useMutation(api.teams.removeMemberFromTeam);
+  const autoCreateTeams = useMutation(api.teams.autoCreateTeams);
 
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Id<"teams"> | null>(null);
@@ -20,16 +22,18 @@ export default function AdminTeamsPage() {
   const [teamDesc, setTeamDesc] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Id<"teams"> | null>(null);
+  const [showAutoForm, setShowAutoForm] = useState(false);
+  const [teamSize, setTeamSize] = useState(5);
+  const [autoBusy, setAutoBusy] = useState(false);
 
   const handleCreate = async () => {
-    if (!teamName.trim()) { setMsg("Team name required"); return; }
     try {
       if (editingTeam) {
-        await updateTeam({ teamId: editingTeam, name: teamName, description: teamDesc || undefined });
+        await updateTeam({ teamId: editingTeam, name: teamName.trim() || undefined, description: teamDesc || undefined });
         setMsg("✅ Team updated");
       } else {
-        await createTeam({ name: teamName, description: teamDesc || undefined });
-        setMsg("✅ Team created");
+        await createTeam({ name: teamName.trim() || undefined, description: teamDesc || undefined });
+        setMsg("✅ Team created" + (teamName.trim() ? "" : " — give it a name later"));
       }
       setShowForm(false);
       setEditingTeam(null);
@@ -37,6 +41,19 @@ export default function AdminTeamsPage() {
       setTeamDesc("");
     } catch (e: unknown) {
       setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
+    }
+  };
+
+  const handleAutoCreate = async () => {
+    setAutoBusy(true);
+    try {
+      const res = await autoCreateTeams({ teamSize });
+      setMsg(`✅ ${res.message}`);
+      setShowAutoForm(false);
+    } catch (e: unknown) {
+      setMsg("❌ " + (e instanceof Error ? e.message : "Failed to auto-create teams"));
+    } finally {
+      setAutoBusy(false);
     }
   };
 
@@ -68,9 +85,9 @@ export default function AdminTeamsPage() {
     }
   };
 
-  const openEdit = (team: { _id: Id<"teams">; name: string; description?: string }) => {
+  const openEdit = (team: { _id: Id<"teams">; name?: string; description?: string }) => {
     setEditingTeam(team._id);
-    setTeamName(team.name);
+    setTeamName(team.name ?? "");
     setTeamDesc(team.description ?? "");
     setShowForm(true);
   };
@@ -82,9 +99,17 @@ export default function AdminTeamsPage() {
           <h1 className="font-syncopate text-xl font-bold text-ocean-deep">Teams Management</h1>
           <p className="text-xs text-gray-700">Create teams and assign participants.</p>
         </div>
-        <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
-          + New Team
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setShowAutoForm(true)}
+            className="rounded-xl bg-ocean-deep px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-primary"
+          >
+            ⚡ Auto-Create from Registrations
+          </button>
+          <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
+            + New Team
+          </button>
+        </div>
       </div>
 
       {msg && <div className={`rounded-xl border px-4 py-2 text-sm ${msg.startsWith("✅") ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"}`}>{msg}</div>}
@@ -98,14 +123,24 @@ export default function AdminTeamsPage() {
             <div className="rounded-2xl border bg-white p-8 text-center text-gray-500">
               <div className="text-4xl mb-3">👥</div>
               <p>No teams created yet.</p>
+              <p className="mt-1 text-xs">Auto-create them from submitted, payment-verified registrations — or add one manually.</p>
             </div>
           ) : (
             teams.map((team) => (
               <div key={team._id} className={`rounded-2xl border bg-white p-5 shadow-sm transition ${selectedTeam === team._id ? "ring-2 ring-ocean-primary" : ""}`}>
                 <div className="flex items-start justify-between">
                   <div onClick={() => setSelectedTeam(selectedTeam === team._id ? null : team._id)} className="cursor-pointer flex-1">
-                    <h3 className="font-bold text-lg text-ocean-deep">{team.name}</h3>
-                    {team.description && <p className="text-sm text-gray-500">{team.description}</p>}
+                    <h3 className={`font-bold text-lg ${team.name ? "text-ocean-deep" : "italic text-gray-400"}`}>
+                      {team.name || "Unnamed team"}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {team.description && <p className="text-sm text-gray-500">{team.description}</p>}
+                      {team.track && (
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${team.track === "in_person" ? "bg-ocean-surface text-ocean-deep" : "bg-gray-100 text-gray-600"}`}>
+                          {team.track === "in_person" ? "In-Person" : "Online"}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400 mt-1">{team.members.length} member(s)</p>
                   </div>
                   <div className="flex gap-2">
@@ -179,7 +214,7 @@ export default function AdminTeamsPage() {
             <h3 className="font-syncopate text-lg font-bold">{editingTeam ? "Edit Team" : "Create Team"}</h3>
             <div className="mt-4 space-y-3">
               <input
-                placeholder="Team name"
+                placeholder="Team name (optional — you can add it later)"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
                 className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -196,6 +231,56 @@ export default function AdminTeamsPage() {
               <button onClick={() => setShowForm(false)} className="rounded-xl border px-5 py-2 text-sm">Cancel</button>
               <button onClick={handleCreate} className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white">
                 {editingTeam ? "Save" : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Auto-Create Modal */}
+      {showAutoForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="font-syncopate text-lg font-bold">Auto-Create Teams</h3>
+            <p className="mt-3 text-sm text-gray-600">
+              Groups <strong>submitted + payment-verified</strong> registrations that aren&apos;t on a team yet.
+              Splits by track (In-Person / Online) and balances roles across teams. Names are left empty for you to add later.
+            </p>
+            <div className="mt-4 rounded-xl bg-ocean-foam p-4 text-sm">
+              {!autoCandidates ? (
+                <p className="text-gray-500">Counting eligible registrations…</p>
+              ) : autoCandidates.total === 0 ? (
+                <p className="text-gray-500">No eligible registrations right now.</p>
+              ) : (
+                <div className="space-y-1">
+                  <p className="font-semibold text-ocean-deep">{autoCandidates.total} eligible participant(s)</p>
+                  <p className="text-xs text-gray-600">
+                    In-Person: {autoCandidates.byTrack.in_person ?? 0} • Online: {autoCandidates.byTrack.online ?? 0} • Track unspecified: {autoCandidates.byTrack.unspecified ?? 0}
+                  </p>
+                  {autoCandidates.capped && (
+                    <p className="text-xs text-amber-600">Only the first 300 are placed per run — run again for the rest.</p>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex items-center gap-3">
+              <label className="text-sm font-semibold text-gray-700">Team size</label>
+              <input
+                type="number"
+                min={2}
+                max={20}
+                value={teamSize}
+                onChange={(e) => setTeamSize(Number(e.target.value))}
+                className="w-20 rounded-lg border px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <button onClick={() => setShowAutoForm(false)} className="rounded-xl border px-5 py-2 text-sm">Cancel</button>
+              <button
+                onClick={handleAutoCreate}
+                disabled={autoBusy || !autoCandidates || autoCandidates.total === 0}
+                className="rounded-xl bg-ocean-deep px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-primary disabled:opacity-50"
+              >
+                {autoBusy ? "Creating…" : "Create Teams"}
               </button>
             </div>
           </div>

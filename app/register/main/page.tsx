@@ -1,15 +1,16 @@
 "use client";
 
-import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { validateReceiptFile, uploadReceiptFile, friendlyErrorMessage } from "@/lib/uploads";
 
-const STEPS = ["Basic Info", "Role & Background", "Event Preferences", "Payment", "Review"] as const;
+const STEPS = ["Basic Info", "Role & Background", "Event Preferences", "Create Account", "Payment", "Confirm"] as const;
 
 const POSITION_CATEGORIES = [
   { value: "po_ba_business", label: "PO/BA/Business" },
@@ -41,6 +42,24 @@ const PAYMENT_METHODS = [
   { value: "ctzpay", label: "CTZPay" },
 ] as const;
 
+const ACCOUNT_INPUT = "mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30";
+
+function signUpErrorMessage(error: unknown): string {
+  const raw = (error instanceof Error ? error.message : "")
+    .replace(/^Error:\s*/i, "")
+    .replace(/^(Uncaught Error:\s*)+/i, "")
+    .trim();
+  if (!raw) return "❌ Could not create your account. Please try again.";
+  const text = raw.toLowerCase();
+  if (text.includes("already") || text.includes("exists") || text.includes("taken")) {
+    return "❌ An account with this email already exists — please sign in instead.";
+  }
+  if (text.includes("password") && text.includes("8")) {
+    return "❌ Password must be at least 8 characters.";
+  }
+  return `❌ ${raw}`;
+}
+
 function Stepper({ current }: { current: number }) {
   return (
     <div className="flex items-center gap-1 overflow-x-auto pb-2">
@@ -58,7 +77,9 @@ function Stepper({ current }: { current: number }) {
 }
 
 function RegistrationInner() {
-  const { participant } = useAuth();
+  const router = useRouter();
+  const { participant, isAuthenticated } = useAuth();
+  const { signIn } = useAuthActions();
   const [step, setStep] = useState(0);
   const [regId, setRegId] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -89,11 +110,42 @@ function RegistrationInner() {
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  // Create Account step (email + password)
+  const [account, setAccount] = useState({ email: "", password: "", confirm: "" });
+  const [creatingAccount, setCreatingAccount] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+
+  // Anonymous draft — guestId lives in localStorage, data lives in Convex
+  const [guestId, setGuestId] = useState<string | null>(null);
+  const restoredRef = useRef(false);
+  const ensureTriedRef = useRef(false);
+
   const myRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
-  const createDraft = useMutation(api.buildathonRegistrations.createDraft);
+  const guestDraft = useQuery(api.guestDrafts.getGuestDraft, guestId ? { guestId } : "skip");
+  const saveGuestDraft = useMutation(api.guestDrafts.saveGuestDraft);
+  const claimGuestDraft = useMutation(api.guestDrafts.claimGuestDraft);
+  const ensure = useMutation(api.participants.ensureCurrentParticipant);
   const updateReg = useMutation(api.buildathonRegistrations.updateRegistration);
   const submitReg = useMutation(api.buildathonRegistrations.submitRegistration);
   const generateReceiptUploadUrl = useMutation(api.buildathonRegistrations.generateReceiptUploadUrl);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const KEY = "ai-ocean:guestId";
+    const fallbackId = () =>
+      `guest-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+    try {
+      let id = window.localStorage.getItem(KEY);
+      if (!id || !/^[A-Za-z0-9_-]{16,64}$/.test(id)) {
+        id = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : fallbackId();
+        window.localStorage.setItem(KEY, id);
+      }
+      setGuestId(id);
+    } catch {
+      setGuestId(fallbackId());
+    }
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Load existing draft
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -142,11 +194,90 @@ function RegistrationInner() {
             discountCode: draft.payment?.discountCode ?? "",
           }));
         }
-        const stateToStep: Record<string, number> = { draft: 0, assessment: 1, recommended: 2, role_selected: 3, submitted: 4 };
-        setStep(stateToStep[draft.state] ?? 0);
+        // An existing registration means the account step is already behind them
+        setStep(draft.state === "submitted" || draft.payment ? 5 : 4);
       }
     }
   }, [myRegs, regId, basic]);
+
+  // Restore anonymous progress from the guest draft (once)
+  useEffect(() => {
+    if (restoredRef.current) return;
+    if (myRegs && myRegs.length > 0) {
+      restoredRef.current = true;
+      return;
+    }
+    if (!guestDraft) return;
+    restoredRef.current = true;
+    if (guestDraft.basicInfo) {
+      setBasic({
+        name: guestDraft.basicInfo.name,
+        email: guestDraft.basicInfo.email,
+        phone: guestDraft.basicInfo.phone,
+        telegramUsername: guestDraft.basicInfo.telegramUsername ?? "",
+      });
+    }
+    if (guestDraft.roleInfo) {
+      setRoleInfo({
+        positionCategory: guestDraft.roleInfo.positionCategory,
+        subRole: guestDraft.roleInfo.subRole,
+        experienceYears: guestDraft.roleInfo.experienceYears,
+        organization: guestDraft.roleInfo.organization ?? "",
+        portfolioLink: guestDraft.roleInfo.portfolioLink ?? "",
+      });
+    }
+    if (guestDraft.eventPreferences) {
+      setEventPrefs({
+        preferredTrack: guestDraft.eventPreferences.preferredTrack,
+        bringLaptop: guestDraft.eventPreferences.bringLaptop,
+        attendanceCommitment: guestDraft.eventPreferences.attendanceCommitment,
+      });
+    }
+    if (!regId) {
+      if (guestDraft.eventPreferences) setStep(3);
+      else if (guestDraft.roleInfo) setStep(2);
+      else if (guestDraft.basicInfo) setStep(1);
+    }
+  }, [guestDraft, myRegs, regId]);
+
+  // Prefill the account email with the contact email from the form
+  useEffect(() => {
+    if (!account.email && basic.email) setAccount((a) => ({ ...a, email: basic.email }));
+  }, [basic.email, account.email]);
+
+  // After sign-up (or when already signed in): create the profile + claim the draft
+  useEffect(() => {
+    if (!claiming || !isAuthenticated) return;
+    if (participant === null) {
+      if (!ensureTriedRef.current) {
+        ensureTriedRef.current = true;
+        ensure({}).catch((e: unknown) => {
+          setMsg(friendlyErrorMessage(e, "Could not set up your account. Please try again."));
+          setClaiming(false);
+        });
+      }
+      return;
+    }
+    if (!participant || !guestId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await claimGuestDraft({ guestId });
+        if (cancelled) return;
+        setRegId(res.registrationId);
+        setClaiming(false);
+        setMsg(null);
+        setStep((s) => Math.max(s, 4));
+      } catch (e: unknown) {
+        if (cancelled) return;
+        setMsg(friendlyErrorMessage(e, "Could not link your form to your new account."));
+        setClaiming(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [claiming, isAuthenticated, participant, guestId, claimGuestDraft, ensure]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -174,22 +305,23 @@ function RegistrationInner() {
     setMsg(null);
   };
 
+  const requireGuest = () => {
+    if (regId || guestId) return true;
+    setMsg("❌ Could not save your answers. Please refresh the page and try again.");
+    return false;
+  };
+
   const handleBasicNext = async () => {
     if (!basic.name || !basic.email || !basic.phone) {
       setMsg("❌ Name, email, and phone are required.");
       return;
     }
+    if (!requireGuest()) return;
     try {
-      if (!regId) {
-        const res = await createDraft({
-          basicInfo: basic,
-          roleInfo: { positionCategory: "other" as const, subRole: "", experienceYears: "no_experience" as const },
-          eventPreferences: { preferredTrack: "in_person" as const, bringLaptop: true, attendanceCommitment: true },
-          payment: { method: "mmqr" as const, receipt: "" },
-        });
-        setRegId(res.registrationId);
-      } else {
+      if (regId) {
         await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, basicInfo: basic });
+      } else {
+        await saveGuestDraft({ guestId: guestId as string, basicInfo: basic });
       }
       setMsg(null);
       next();
@@ -203,9 +335,13 @@ function RegistrationInner() {
       setMsg("❌ Please fill all required fields.");
       return;
     }
+    if (!requireGuest()) return;
+    const payload = roleInfo as { positionCategory: "po_ba_business" | "design" | "development" | "project_product_management" | "other"; subRole: string; experienceYears: "no_experience" | "less_than_1" | "1_to_3" | "3_and_above"; organization?: string; portfolioLink?: string };
     try {
       if (regId) {
-        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: roleInfo as { positionCategory: "po_ba_business" | "design" | "development" | "project_product_management" | "other"; subRole: string; experienceYears: "no_experience" | "less_than_1" | "1_to_3" | "3_and_above"; organization?: string; portfolioLink?: string } });
+        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, roleInfo: payload });
+      } else {
+        await saveGuestDraft({ guestId: guestId as string, roleInfo: payload });
       }
       setMsg(null);
       next();
@@ -219,14 +355,67 @@ function RegistrationInner() {
       setMsg("❌ Please complete all fields.");
       return;
     }
+    if (!requireGuest()) return;
+    const payload = eventPrefs as { preferredTrack: "in_person" | "online"; bringLaptop: boolean; attendanceCommitment: boolean };
     try {
       if (regId) {
-        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: eventPrefs as { preferredTrack: "in_person" | "online"; bringLaptop: boolean; attendanceCommitment: boolean } });
+        await updateReg({ registrationId: regId as Id<"buildathonRegistrations">, eventPreferences: payload });
+      } else {
+        await saveGuestDraft({ guestId: guestId as string, eventPreferences: payload });
       }
       setMsg(null);
       next();
     } catch (e: unknown) {
       setMsg(friendlyErrorMessage(e, "Could not save your event preferences. Please try again."));
+    }
+  };
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (creatingAccount || claiming) return;
+    const email = account.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setMsg("❌ Please enter a valid email address.");
+      return;
+    }
+    if (account.password.length < 8) {
+      setMsg("❌ Password must be at least 8 characters.");
+      return;
+    }
+    if (account.password !== account.confirm) {
+      setMsg("❌ Passwords do not match.");
+      return;
+    }
+    if (!requireGuest()) return;
+    setCreatingAccount(true);
+    setMsg(null);
+    try {
+      await signIn("password", {
+        flow: "signUp",
+        email,
+        password: account.password,
+        ...(basic.name ? { name: basic.name } : {}),
+      });
+      setClaiming(true);
+    } catch (err: unknown) {
+      setMsg(signUpErrorMessage(err));
+    } finally {
+      setCreatingAccount(false);
+    }
+  };
+
+  const handleContinueWithAccount = () => {
+    if (claiming || !participant) return;
+    setMsg(null);
+    setClaiming(true);
+  };
+
+  const handleOAuthFromStep = async (provider: "google" | "github") => {
+    setMsg(null);
+    try {
+      await signIn(provider, { redirectTo: `${window.location.origin}/register/main` });
+    } catch (err: unknown) {
+      setMsg(friendlyErrorMessage(err, "Sign-in failed. Please try again."));
     }
   };
 
@@ -278,17 +467,19 @@ function RegistrationInner() {
       setMsg("❌ Please agree to the terms and conditions.");
       return;
     }
-    if (!regId) return;
+    if (!regId) {
+      setMsg("❌ Your account is not linked yet. Please finish the Create Account step first.");
+      return;
+    }
     try {
       await submitReg({ registrationId: regId as Id<"buildathonRegistrations"> });
-      setMsg("✅ Registration submitted!");
+      setMsg("✅ Registration submitted! Taking you to your dashboard…");
       setStep(STEPS.length);
+      router.replace("/dashboard");
     } catch (e: unknown) {
       setMsg(friendlyErrorMessage(e, "Could not submit your registration. Please try again."));
     }
   };
-
-  if (!participant) return null;
 
   const progressPct = Math.round(((step + 1) / STEPS.length) * 100);
 
@@ -296,7 +487,11 @@ function RegistrationInner() {
     <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <h1 className="font-syncopate text-xl font-bold text-ocean-deep md:text-2xl">Into The AI Ocean Registration</h1>
-        <Link href="/dashboard" className="text-xs text-ocean-medium hover:underline">← Dashboard</Link>
+        {participant ? (
+          <Link href="/dashboard" className="text-xs text-ocean-medium hover:underline">← Dashboard</Link>
+        ) : (
+          <Link href="/" className="text-xs text-ocean-medium hover:underline">← Home</Link>
+        )}
       </div>
 
       {/* Event Info Banner */}
@@ -452,8 +647,122 @@ function RegistrationInner() {
         </div>
       )}
 
-      {/* Step 3: Payment */}
+      {/* Step 3: Create Account */}
       {step === 3 && (
+        <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
+          <h3 className="font-semibold text-ocean-deep">Create Your Account</h3>
+          <p className="mt-2 text-sm text-ocean-medium">
+            Your answers so far are saved. Create an account with your email and password so we can save your
+            registration, verify your payment, and keep you updated.
+          </p>
+
+          {isAuthenticated ? (
+            <div className="mt-4 space-y-4">
+              <div className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
+                {participant ? (
+                  <>
+                    ✓ Signed in as <strong>{participant.email}</strong>
+                    {participant.name ? <span> ({participant.name})</span> : null}
+                  </>
+                ) : (
+                  <span>Setting up your account…</span>
+                )}
+              </div>
+              <div className="flex justify-between">
+                <button onClick={back} className="rounded-xl border px-5 py-2 text-sm">Back</button>
+                <button
+                  onClick={handleContinueWithAccount}
+                  disabled={claiming || !participant}
+                  className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {claiming ? "Linking your form…" : "Continue →"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleCreateAccount} className="mt-4 space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-ocean-deep">Email Address *</label>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    className={ACCOUNT_INPUT}
+                    placeholder="your@email.com"
+                    value={account.email}
+                    onChange={(e) => setAccount({ ...account, email: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-ocean-deep">Password *</label>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    className={ACCOUNT_INPUT}
+                    placeholder="At least 8 characters"
+                    value={account.password}
+                    onChange={(e) => setAccount({ ...account, password: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-ocean-deep">Confirm Password *</label>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    className={ACCOUNT_INPUT}
+                    placeholder="Repeat your password"
+                    value={account.confirm}
+                    onChange={(e) => setAccount({ ...account, confirm: e.target.value })}
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <button type="button" onClick={back} className="rounded-xl border px-5 py-2 text-sm">Back</button>
+                  <button
+                    type="submit"
+                    disabled={creatingAccount || claiming}
+                    className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {creatingAccount || claiming ? "Creating your account…" : "Create account & continue →"}
+                  </button>
+                </div>
+              </form>
+
+              <div className="mt-5 flex items-center gap-3 text-xs text-ocean-medium">
+                <div className="h-px flex-1 bg-ocean-surface" />
+                OR
+                <div className="h-px flex-1 bg-ocean-surface" />
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => handleOAuthFromStep("google")}
+                  className="flex w-full items-center justify-center gap-3 rounded-xl border border-ocean-surface bg-white px-4 py-3 text-sm font-semibold text-ocean-primary transition hover:bg-ocean-foam"
+                >
+                  🔵 Continue with Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuthFromStep("github")}
+                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-black"
+                >
+                  ⚫ Continue with GitHub
+                </button>
+              </div>
+
+              <p className="mt-4 text-xs text-ocean-medium">
+                Already have an account?{" "}
+                <Link href={`/auth/signin?next=${encodeURIComponent("/register/main")}`} className="font-semibold text-ocean-primary hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Step 4: Payment */}
+      {step === 4 && (
         <div className="rounded-2xl border border-ocean-surface bg-white text-ocean-primary p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">💳 Payment & Administrative Info</h3>
           <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm">
@@ -512,14 +821,14 @@ function RegistrationInner() {
           <div className="mt-6 flex justify-between">
             <button onClick={back} className="rounded-xl border px-5 py-2 text-sm">Back</button>
             <button onClick={handlePaymentNext} disabled={uploadingReceipt} className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep disabled:cursor-not-allowed disabled:opacity-60">
-              {uploadingReceipt ? "Uploading receipt…" : "Review →"}
+              {uploadingReceipt ? "Uploading receipt…" : "Confirm →"}
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 4: Review & Submit */}
-      {step === 4 && (
+      {/* Step 5: Review & Confirm */}
+      {step === 5 && (
         <div className="rounded-2xl border border-ocean-surface bg-white p-6 shadow-sm">
           <h3 className="font-semibold text-ocean-deep">Review & Submit</h3>
           <div className="mt-4 space-y-4 text-sm">
@@ -596,9 +905,5 @@ function RegistrationInner() {
 }
 
 export default function RegistrationPage() {
-  return (
-    <AuthGuard>
-      <RegistrationInner />
-    </AuthGuard>
-  );
+  return <RegistrationInner />;
 }

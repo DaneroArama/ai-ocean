@@ -185,21 +185,32 @@ export const ensureCurrentParticipant = mutation({
 
     const idt = identity as AuthIdentity;
     let email: string | null = idt.email ?? idt.emailAddress ?? null;
+    let name: string | null = idt.name ?? null;
+    let image: string | null = idt.picture ?? idt.image ?? null;
 
-    if (!email) {
+    if (!email || !name || !image) {
       const rawSubject = idt.subject;
       const userId = rawSubject?.split("|")[0];
       if (userId) {
         try {
           const authUser = await ctx.db.get(userId as Doc<"users">["_id"]);
-            if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
-              email = (authUser as { email: string }).email;
-            } else {
-              const users = await ctx.db.query("users").collect();
-              const match = users.find((u) => u._id === userId || idt.tokenIdentifier?.includes(u._id));
-              if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
-                email = (match as { email: string }).email;
+          if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
+            if (!email) email = (authUser as { email: string }).email;
+            if (!name && "name" in authUser && typeof (authUser as { name?: unknown }).name === "string" && (authUser as { name?: string }).name) {
+              name = (authUser as { name: string }).name;
+            }
+            if (!image && "image" in authUser && typeof (authUser as { image?: unknown }).image === "string" && (authUser as { image?: string }).image) {
+              image = (authUser as { image: string }).image;
+            }
+          } else {
+            const users = await ctx.db.query("users").collect();
+            const match = users.find((u) => u._id === userId || idt.tokenIdentifier?.includes(u._id));
+            if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
+              if (!email) email = (match as { email: string }).email;
+              if (!name && "name" in match && typeof (match as { name?: unknown }).name === "string" && (match as { name?: string }).name) {
+                name = (match as { name: string }).name;
               }
+            }
           }
         } catch (e) {
           console.log("users lookup failed", e);
@@ -216,8 +227,8 @@ export const ensureCurrentParticipant = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, {
         lastLoginAt: Date.now(),
-        name: idt.name ?? existing.name,
-        image: idt.picture ?? idt.image ?? existing.image,
+        name: name ?? existing.name,
+        image: image ?? existing.image,
       });
       return existing._id;
     }
@@ -227,8 +238,8 @@ export const ensureCurrentParticipant = mutation({
     const now = Date.now();
     return await ctx.db.insert("participants", {
       email: email,
-      name: idt.name,
-      image: idt.picture ?? idt.image,
+      name: name ?? undefined,
+      image: image ?? undefined,
       preferredLanguage: "en",
       role: role as "participant" | "admin",
       createdAt: now,

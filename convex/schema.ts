@@ -207,8 +207,13 @@ export default defineSchema({
    * Teams table — groups participants for the buildathon
    */
   teams: defineTable({
-    name: v.string(),
+    // Optional: auto-generated teams start unnamed and are named later by an admin
+    name: v.optional(v.string()),
     description: v.optional(v.string()),
+    track: v.optional(v.union(
+      v.literal("in_person"),
+      v.literal("online")
+    )),
     memberIds: v.array(v.id("participants")),
     createdBy: v.id("participants"),
     createdAt: v.number(),
@@ -388,6 +393,49 @@ export default defineSchema({
     .index("by_participant", ["participantId"])
     .index("by_state", ["state"])
     .index("by_participant_and_state", ["participantId", "state"]),
+
+  /**
+   * Guest Drafts — anonymous registration progress (no account yet).
+   * Keyed by a client-generated guestId kept in localStorage; the draft is
+   * claimed (copied into buildathonRegistrations) when the user creates an
+   * account in the Create Account step.
+   */
+  guestDrafts: defineTable({
+    guestId: v.string(),
+    basicInfo: v.optional(v.object({
+      name: v.string(),
+      email: v.string(),
+      phone: v.string(),
+      telegramUsername: v.optional(v.string()),
+    })),
+    roleInfo: v.optional(v.object({
+      positionCategory: v.union(
+        v.literal("po_ba_business"),
+        v.literal("design"),
+        v.literal("development"),
+        v.literal("project_product_management"),
+        v.literal("other")
+      ),
+      subRole: v.string(),
+      experienceYears: v.union(
+        v.literal("no_experience"),
+        v.literal("less_than_1"),
+        v.literal("1_to_3"),
+        v.literal("3_and_above")
+      ),
+      organization: v.optional(v.string()),
+      portfolioLink: v.optional(v.string()),
+    })),
+    eventPreferences: v.optional(v.object({
+      preferredTrack: v.union(v.literal("in_person"), v.literal("online")),
+      bringLaptop: v.boolean(),
+      attendanceCommitment: v.boolean(),
+    })),
+    claimedBy: v.optional(v.id("participants")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_guestId", ["guestId"]),
 
   /**
    * Role Discovery Answers — per-registration, supports multiple + notSure

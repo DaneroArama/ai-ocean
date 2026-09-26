@@ -4,6 +4,8 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { registrationCategory } from "@/lib/registrationStatus";
+import type { RegistrationCategory } from "@/lib/registrationStatus";
 
 function StatCard({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
@@ -19,14 +21,29 @@ export default function AdminOverviewPage() {
   const { participant } = useAuth();
 
   const participants = useQuery(api.admin.listParticipants, { limit: 100 });
-  const buildathonRegs = useQuery(api.buildathonRegistrations.getMyBuildathonRegistrations);
+  const allRegs = useQuery(api.buildathonRegistrations.listAllRegistrations);
   const roles = useQuery(api.buildathonRoles.listRoles, { activeOnly: false });
   const questions = useQuery(api.roleDiscoveryQuestions.listRoleDiscoveryQuestions, {});
 
+  const categoryCounts = Array.isArray(allRegs)
+    ? allRegs.reduce(
+        (acc, reg) => {
+          acc[registrationCategory(reg)] += 1;
+          return acc;
+        },
+        { draft: 0, submitted: 0, verified: 0, rejected: 0 } as Record<RegistrationCategory, number>
+      )
+    : null;
+
   const totalParticipants = participants?.length ?? "—";
-  const totalBuildathon = Array.isArray(buildathonRegs) ? buildathonRegs.length : "—";
+  const totalBuildathon = Array.isArray(allRegs) ? allRegs.length : "—";
   const totalRoles = Array.isArray(roles) ? roles.length : "—";
   const totalQs = Array.isArray(questions) ? questions.length : "—";
+  const regHint = categoryCounts
+    ? `${categoryCounts.draft} draft • ${categoryCounts.submitted} submitted • ${categoryCounts.verified} verified${
+        categoryCounts.rejected ? ` • ${categoryCounts.rejected} rejected` : ""
+      }`
+    : "buildathonRegistrations";
 
   return (
     <div className="space-y-8">
@@ -40,7 +57,7 @@ export default function AdminOverviewPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Participants" value={totalParticipants} hint="participants table" />
-        <StatCard label="Buildathon regs" value={totalBuildathon} hint="buildathonRegistrations" />
+        <StatCard label="Buildathon regs" value={totalBuildathon} hint={regHint} />
         <StatCard label="Roles" value={totalRoles} hint="buildathonRoles" />
         <StatCard label="Questions" value={totalQs} hint="roleDiscoveryQuestions" />
       </div>

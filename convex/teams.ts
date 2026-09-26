@@ -2,12 +2,15 @@
  * Teams — manage buildathon teams
  */
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, QueryCtx } from "./_generated/server";
 import { getParticipantByIdentity } from "./helpers";
+import type { Id } from "./_generated/dataModel";
+
+const MAX_AUTO_PLACEMENTS_PER_RUN = 300;
 
 export const createTeam = mutation({
   args: {
-    name: v.string(),
+    name: v.optional(v.string()),
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -26,6 +29,171 @@ export const createTeam = mutation({
       updatedAt: now,
     });
     return { teamId };
+  },
+});
+
+/**
+ * Registrations eligible for automatic team placement:
+ * submitted, payment verified, and not yet on a team.
+ */
+type AutoCandidate = {
+  regId: Id<"buildathonRegistrations">;
+  participantId: Id<"participants">;
+  track: "in_person" | "online" | undefined;
+  category: string;
+};
+
+async function loadAutoTeamCandidates(ctx: QueryCtx) {
+  const candidates: AutoCandidate[] = [];
+
+  for await (const reg of ctx.db.query("buildathonRegistrations")) {
+    if (reg.state !== "submitted") continue;
+    if (reg.paymentStatus !== "verified") continue;
+    if (reg.teamId !== undefined) continue;
+    candidates.push({
+      regId: reg._id,
+      participantId: reg.participantId,
+      track: reg.eventPreferences?.preferredTrack,
+      category: reg.roleInfo?.positionCategory ?? "other",
+    });
+    if (candidates.length >= MAX_AUTO_PLACEMENTS_PER_RUN) break;
+  }
+  return candidates;
+}
+
+const TRACK_LABEL: Record<string, string> = {
+  in_person: "In-Person",
+  online: "Online",
+};
+
+export const countAutoTeamCandidates = query({
+  args: {},
+  handler: async (ctx) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw new Error("Unauthorized");
+    const admin = await getParticipantByIdentity(ctx, idt);
+    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+
+    const candidates = await loadAutoTeamCandidates(ctx);
+    const byTrack: Record<string, number> = {};
+    for (const c of candidates) {
+      const key = c.track ?? "unspecified";
+      byTrack[key] = (byTrack[key] ?? 0) + 1;
+    }
+    return { total: candidates.length, byTrack, capped: candidates.length >= MAX_AUTO_PLACEMENTS_PER_RUN };
+  },
+});
+
+/**
+ * Group eligible registrations into new teams:
+ * split by preferred track, balanced so each team has an even head count
+ * and a spread of positionCategory. New teams are created unnamed — the
+ * admin names them later from the Teams page.
+ */
+export const autoCreateTeams = mutation({
+  args: {
+    teamSize: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const idt = await ctx.auth.getUserIdentity();
+    if (!idt) throw new Error("Unauthorized");
+    const admin = await getParticipantByIdentity(ctx, idt);
+    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+
+    const teamSize = args.teamSize ?? 5;
+    if (!Number.isInteger(teamSize) || teamSize < 2 || teamSize > 20) {
+      throw new Error("Team size must be a whole number between 2 and 20");
+    }
+
+    const candidates = await loadAutoTeamCandidates(ctx);
+    if (candidates.length === 0) {
+      return { teamsCreated: 0, membersPlaced: 0, message: "No eligible registrations (submitted + payment verified) are waiting for a team." };
+    }
+
+    // Split by track: "in_person" | "online" | "unspecified"
+    const buckets = new Map<string, AutoCandidate[]>();
+    for (const c of candidates) {
+      const key = c.track ?? "unspecified";
+      const list = buckets.get(key) ?? [];
+      list.push(c);
+      buckets.set(key, list);
+    }
+
+    const now = Date.now();
+    let teamsCreated = 0;
+    let membersPlaced = 0;
+
+    for (const [trackKey, members] of buckets) {
+      // Group by category, then deal each category's members round-robin
+      // across teams so every team ends up with a mix of roles.
+      const byCategory = new Map<string, AutoCandidate[]>();
+      for (const m of members) {
+        const list = byCategory.get(m.category) ?? [];
+        list.push(m);
+        byCategory.set(m.category, list);
+      }
+
+      const teamCount = Math.ceil(members.length / teamSize);
+      const teams: AutoCandidate[][] = Array.from({ length: teamCount }, () => []);
+      const categoryCounts: Map<string, number>[] = Array.from(
+        { length: teamCount },
+        () => new Map<string, number>()
+      );
+
+      const place = (teamIndex: number, m: AutoCandidate) => {
+        teams[teamIndex].push(m);
+        const counts = categoryCounts[teamIndex];
+        counts.set(m.category, (counts.get(m.category) ?? 0) + 1);
+      };
+
+      let roundRobin = 0;
+      for (const list of byCategory.values()) {
+        for (const m of list) {
+          // Prefer teams with room left; rotate starting index for even dealing.
+          let placed = false;
+          for (let n = 0; n < teams.length && !placed; n++) {
+            const i = (roundRobin + n) % teams.length;
+            if (teams[i].length < teamSize) {
+              place(i, m);
+              roundRobin = (i + 1) % teams.length;
+              placed = true;
+            }
+          }
+          if (!placed) {
+            // Defensive fallback: every team is full (shouldn't happen given teamCount math).
+            const i = teams.reduce((a, b) => (b.length < a.length ? b : a), teams[0]);
+            place(teams.indexOf(i), m);
+          }
+        }
+      }
+
+      for (const team of teams) {
+        if (team.length === 0) continue;
+        const trackField = trackKey === "in_person" || trackKey === "online" ? trackKey : undefined;
+        const teamId = await ctx.db.insert("teams", {
+          memberIds: team.map((m) => m.participantId),
+          description:
+            trackKey === "unspecified"
+              ? "Auto-generated • track not specified"
+              : `Auto-generated • ${TRACK_LABEL[trackKey] ?? trackKey}`,
+          track: trackField,
+          createdBy: admin._id,
+          createdAt: now,
+          updatedAt: now,
+        });
+        teamsCreated++;
+        for (const m of team) {
+          await ctx.db.patch(m.regId, { teamId, updatedAt: now });
+          membersPlaced++;
+        }
+      }
+    }
+
+    return {
+      teamsCreated,
+      membersPlaced,
+      message: `Created ${teamsCreated} team(s) with ${membersPlaced} member(s). Names are yours to add.`,
+    };
   },
 });
 

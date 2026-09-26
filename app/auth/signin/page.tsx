@@ -3,7 +3,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth } from "convex/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, FormEvent } from "react";
+import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -14,6 +15,9 @@ function SignInInner() {
   const search = useSearchParams();
   const next = search.get("next");
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const destinationFor = (admin: boolean) => {
     const safeNext =
@@ -21,6 +25,27 @@ function SignInInner() {
     if (admin) return safeNext?.startsWith("/admin") ? safeNext : "/admin";
     if (safeNext && !safeNext.startsWith("/admin")) return safeNext;
     return "/dashboard";
+  };
+
+  const authErrorMessage = (err: unknown, fallback: string) => {
+    const raw = (err instanceof Error ? err.message : "")
+      .replace(/^Error:\s*/i, "")
+      .replace(/^(Uncaught Error:\s*)+/i, "")
+      .trim();
+    if (!raw) return `❌ ${fallback}`;
+    const text = raw.toLowerCase();
+    if (
+      text.includes("invalidsecret") ||
+      text.includes("invalid credentials") ||
+      text.includes("incorrect") ||
+      text.includes("wrong password")
+    ) {
+      return "❌ Incorrect email or password.";
+    }
+    if (text.includes("rate") || text.includes("too many")) {
+      return "❌ Too many attempts. Please wait a moment and try again.";
+    }
+    return `❌ ${raw}`;
   };
 
   const participant = useQuery(api.participants.getCurrentParticipant, isAuthenticated ? {} : "skip");
@@ -49,7 +74,29 @@ function SignInInner() {
       const redirectTo = `${window.location.origin}/auth/signin${query ? `?${query}` : ""}`;
       await signIn(provider, { redirectTo });
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Sign-in failed");
+      setError(authErrorMessage(e, "Sign-in failed"));
+    }
+  };
+
+  const handlePasswordSignIn = async (e: FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+    setError(null);
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("❌ Please enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      setError("❌ Please enter your password.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await signIn("password", { flow: "signIn", email: normalizedEmail, password });
+    } catch (err: unknown) {
+      setError(authErrorMessage(err, "Could not sign in. Please try again."));
+      setSubmitting(false);
     }
   };
 
@@ -86,7 +133,45 @@ function SignInInner() {
 
       {error && <div className="mt-4 w-full rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
-      <div className="mt-8 w-full space-y-3">
+      <form onSubmit={handlePasswordSignIn} className="mt-8 w-full space-y-3">
+        <div>
+          <label className="text-sm font-medium text-ocean-deep">Email Address</label>
+          <input
+            type="email"
+            autoComplete="email"
+            className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-ocean-deep">Password</label>
+          <input
+            type="password"
+            autoComplete="current-password"
+            className="mt-1 w-full rounded-lg border border-ocean-surface bg-ocean-foam px-3 py-2.5 text-sm text-ocean-deep transition placeholder:text-ocean-medium focus:border-ocean-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-primary/30"
+            placeholder="Your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full rounded-xl bg-ocean-primary px-4 py-3 font-bold text-white shadow-sm transition hover:bg-ocean-deep disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {submitting ? "Signing in…" : "Sign in with Email & Password"}
+        </button>
+      </form>
+
+      <div className="mt-5 flex items-center gap-3 text-xs text-gray-400">
+        <div className="h-px flex-1 bg-gray-200" />
+        OR
+        <div className="h-px flex-1 bg-gray-200" />
+      </div>
+
+      <div className="mt-4 w-full space-y-3">
         <button
           onClick={() => handle("google")}
           className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-ocean-primary shadow-sm transition hover:bg-gray-50"
@@ -101,7 +186,14 @@ function SignInInner() {
         </button>
       </div>
 
-      <p className="mt-6 text-xs text-gray-400">By signing in you agree to our terms. OAuth via Convex Auth → participants table (role defaults to participant).</p>
+      <p className="mt-6 text-sm text-gray-500">
+        New here?{" "}
+        <Link href="/register/main" className="font-semibold text-ocean-primary hover:underline">
+          Create an account &amp; register
+        </Link>
+      </p>
+
+      <p className="mt-6 text-xs text-gray-400">By signing in you agree to our terms. Accounts are created via email &amp; password or OAuth through Convex Auth.</p>
     </div>
   );
 }

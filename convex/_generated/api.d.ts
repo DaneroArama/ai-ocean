@@ -12,6 +12,7 @@ import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as buildathonRegistrations from "../buildathonRegistrations.js";
 import type * as buildathonRoles from "../buildathonRoles.js";
+import type * as guestDrafts from "../guestDrafts.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as oceanTest from "../oceanTest.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   buildathonRegistrations: typeof buildathonRegistrations;
   buildathonRoles: typeof buildathonRoles;
+  guestDrafts: typeof guestDrafts;
   helpers: typeof helpers;
   http: typeof http;
   oceanTest: typeof oceanTest;
