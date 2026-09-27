@@ -250,6 +250,7 @@ function DashboardInner() {
             {hasRegistered && myReg.state !== "submitted" && (
               <Link href="/register/main" className="rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep">Complete Registration</Link>
             )}
+            <Link href="/frame-generator" className="rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep">Create Your Event Frame</Link>
             <Link href="/" className="rounded-xl border bg-white px-6 py-3 text-sm text-ocean-primary font-semibold hover:bg-gray-50">Back to Home</Link>
           </div>
         </div>
