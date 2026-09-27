@@ -9,6 +9,9 @@ import Scene1 from "@/components/comic/Scene1";
 import Scene2 from "@/components/comic/Scene2";
 import Scene3 from "@/components/comic/Scene3";
 import Scene4 from "@/components/comic/Scene4";
+import Scene5Horizontal from "@/components/comic/Scene5Horizontal";
+import Scene6 from "@/components/comic/Scene6";
+import Scene7 from "@/components/comic/Scene7";
 import AudioUnlockOverlay from "@/components/comic/AudioUnlockOverlay";
 import { AudioController } from "@/lib/comic/audioController";
 
@@ -19,42 +22,40 @@ if (typeof window !== "undefined") {
 
 export default function ComicPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const audioControllerRef = useRef<AudioController | null>(null);
+  const [audioController, setAudioController] = useState<AudioController | null>(null);
   const [showAudioPrompt, setShowAudioPrompt] = useState(false);
-  const [scrollAttempted, setScrollAttempted] = useState(false);
 
   useEffect(() => {
-    // Initialize audio controller
-    audioControllerRef.current = new AudioController();
+    // Initialize audio controller once at mount
+    const controller = new AudioController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time external system init; single cascading render at mount
+    setAudioController(controller);
 
     // Try to unlock audio on first scroll
     const handleFirstScroll = async () => {
-      if (!scrollAttempted && audioControllerRef.current) {
-        setScrollAttempted(true);
-        await audioControllerRef.current.initializeOnUserInteraction();
-        
-        // Check if audio unlocked successfully
-        setTimeout(() => {
-          if (audioControllerRef.current && !audioControllerRef.current.isUnlocked()) {
-            setShowAudioPrompt(true);
-          }
-        }, 500);
-      }
+      await controller.initializeOnUserInteraction();
+
+      // Check if audio unlocked successfully
+      setTimeout(() => {
+        if (!controller.isUnlocked()) {
+          setShowAudioPrompt(true);
+        }
+      }, 500);
     };
 
     window.addEventListener("scroll", handleFirstScroll, { once: true });
     window.addEventListener("click", handleFirstScroll, { once: true });
 
     return () => {
-      audioControllerRef.current?.cleanup();
+      controller.cleanup();
       window.removeEventListener("scroll", handleFirstScroll);
       window.removeEventListener("click", handleFirstScroll);
     };
-  }, [scrollAttempted]);
+  }, []);
 
   const handleAudioUnlock = async () => {
-    if (audioControllerRef.current) {
-      await audioControllerRef.current.initializeOnUserInteraction();
+    if (audioController) {
+      await audioController.initializeOnUserInteraction();
       setShowAudioPrompt(false);
     }
   };
@@ -102,33 +103,28 @@ export default function ComicPage() {
         className="comic-container relative w-full bg-linear-to-b from-ocean-primary to-ocean-light"
       >
         {/* Intro Scene */}
-        <IntroScene audioController={audioControllerRef.current} />
+        <IntroScene audioController={audioController} />
         
         {/* Scene 1 - Calm Morning */}
-        <Scene1 audioController={audioControllerRef.current} />
-        
-        {/* Spacer after scene 1 */}
-        <div className="h-[80vh]" />
+        <Scene1 audioController={audioController} />
 
         {/* Scene 2 - Changing Sky */}
-        <Scene2 audioController={audioControllerRef.current} />
+        <Scene2 audioController={audioController} />
         
         {/* Scene 3 - Stormy Night */}
-        <Scene3 audioController={audioControllerRef.current} />
-
-        {/* Spacer after scene 3 */}
-        <div className="h-[100vh]" />
+        <Scene3 audioController={audioController} />
 
         {/* Scene 4 - Different Morning */}
-        <Scene4 audioController={audioControllerRef.current} />
+        <Scene4 audioController={audioController} />
+        
+        {/* Scene 5 - Riding the New Wave (horizontal scroll) */}
+        <Scene5Horizontal audioController={audioController} />
 
-        {/* Spacer after scene 4 */}
-        <div className="h-[50vh]" />
+        {/* Scene 6 - Swimming End */}
+        <Scene6 audioController={audioController} />
 
-        {/* Placeholder for future scenes */}
-        <div className="min-h-screen flex items-center justify-center bg-ocean-primary text-white">
-          <p className="text-4xl font-syncopate">More scenes coming soon...</p>
-        </div>
+        {/* Scene 7 - Final Island */}
+        <Scene7 audioController={audioController} />
       </div>
     </>
   );

@@ -55,15 +55,17 @@ const characters = [
 
 export default function Scene1({ audioController }: Scene1Props) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const narration1Ref = useRef<HTMLDivElement>(null);
   const narration2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sceneRef.current || !audioController) return;
+    if (!sceneRef.current || !wrapperRef.current || !audioController) return;
 
     const ctx = gsap.context(() => {
-      // Set initial opacity to 0 for fade-in effect
+      // Root starts hidden and crossfades in over the frozen Intro; the
+      // Intro stays opaque for the whole window so no gradient shows
       gsap.set(sceneRef.current, { opacity: 0 });
 
       // Set all characters and dialogues to invisible initially
@@ -80,23 +82,13 @@ export default function Scene1({ audioController }: Scene1Props) {
 
       const scene1Timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sceneRef.current,
-          start: "center center",
-          end: "+=200%", // Reduced from 400% - tighter pacing
-          pin: true,
+          trigger: wrapperRef.current,
+          start: "top top",
+          end: "bottom bottom", // span driven by fixed 300vh wrapper
           scrub: 1,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          markers: process.env.NODE_ENV === "development",
           id: "scene1",
         },
-      });
-
-      // Fade in the entire scene first
-      scene1Timeline.to(sceneRef.current, {
-        opacity: 1,
-        duration: 0.8,
-        ease: "power2.inOut",
       });
 
       // Narration 1 appears
@@ -250,23 +242,26 @@ export default function Scene1({ audioController }: Scene1Props) {
         "+=1"
       );
 
-      // Fade out entire Scene 1 at the very end
+      // Whole-scene crossfade over the frozen Intro: spans exactly the 25vh
+      // overlap window (25 / (300 - 100) of the trigger span)
       scene1Timeline.to(
         sceneRef.current,
         {
-          opacity: 0,
-          duration: 1.2,
-          ease: "power2.inOut",
+          opacity: 1,
+          duration: scene1Timeline.duration() * (25 / 200),
+          ease: "none",
         },
-        "+=0.5"
+        0
       );
+
     }, sceneRef);
 
     return () => ctx.revert();
   }, [audioController]);
 
   return (
-    <div ref={sceneRef} className="scene1 relative w-full min-h-screen overflow-visible will-change-transform bg-linear-to-b from-ocean-medium to-ocean-light to-10%">
+    <div ref={wrapperRef} className="h-[300vh] -mt-[125vh]">
+    <div ref={sceneRef} className="scene1 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-linear-to-b from-ocean-medium to-ocean-light to-10%">
       {/* Beach Background with parallax */}
       <div ref={backgroundRef} className="absolute inset-0 z-10">
         <Image
@@ -285,7 +280,7 @@ export default function Scene1({ audioController }: Scene1Props) {
       {/* Narration boxes */}
       <div
         ref={narration1Ref}
-        className="absolute bottom-24 left-[50%] z-30 opacity-0"
+        className="absolute bottom-24 inset-x-0 z-30 opacity-0"
       >
         <NarrationBox>
           You wake to another calm morning on Cambio Island. The ocean is quiet,
@@ -295,7 +290,7 @@ export default function Scene1({ audioController }: Scene1Props) {
 
       <div
         ref={narration2Ref}
-        className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 opacity-0"
+        className="absolute bottom-24 inset-x-0 z-30 opacity-0"
       >
         <NarrationBox>
           But there's one thing everyone here knows: nothing in this ocean stays
@@ -314,15 +309,15 @@ export default function Scene1({ audioController }: Scene1Props) {
               data-character={character.name}
               className={`scene1-character absolute ${
                 index === 0
-                  ? "bottom-[15%] right-[10%]"
+                  ? "bottom-[-20%] right-[0%]"
                   : index === 1
-                  ? "bottom-[20%] right-[25%]"
+                  ? "bottom-[-30%] right-[20%]"
                   : index === 2
-                  ? "bottom-[15%] right-[40%]"
+                  ? "bottom-[-50%] right-[40%]"
                   : index === 3
-                  ? "bottom-[18%] left-[15%]"
-                  : "bottom-[22%] left-[30%]"
-              } w-40 h-40`}
+                  ? "bottom-[-45%] left-[25%]"
+                  : "bottom-[-55%] left-[10%]"
+              } w-[200px] md:w-[400px] h-full`}
             >
               <Image
                 src={character.image}
@@ -336,14 +331,14 @@ export default function Scene1({ audioController }: Scene1Props) {
               data-dialogue={character.name}
               className={`absolute ${
                 index === 0
-                  ? "bottom-[35%] right-[8%]"
+                  ? "bottom-[80%] right-[0%]"
                   : index === 1
-                  ? "bottom-[40%] right-[20%]"
+                  ? "bottom-[70%] right-[20%]"
                   : index === 2
-                  ? "bottom-[35%] right-[35%]"
+                  ? "bottom-[45%] right-[35%]"
                   : index === 3
-                  ? "bottom-[38%] left-[10%]"
-                  : "bottom-[42%] left-[25%]"
+                  ? "bottom-[48%] left-[20%]"
+                  : "bottom-[42%] left-[5%]"
               } z-30`}
             >
               <DialogueBox character={character.name}>
@@ -353,6 +348,7 @@ export default function Scene1({ audioController }: Scene1Props) {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

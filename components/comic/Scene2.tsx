@@ -14,36 +14,28 @@ interface Scene2Props {
 
 export default function Scene2({ audioController }: Scene2Props) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const skyOverlayRef = useRef<HTMLDivElement>(null);
   const narrationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sceneRef.current || !audioController) return;
+    if (!sceneRef.current || !wrapperRef.current || !audioController) return;
 
     const ctx = gsap.context(() => {
-      // Set initial opacity to 0 for fade-in effect
+      // Root starts hidden and crossfades in over the frozen Scene 1; the
+      // Scene 1 root stays opaque for the whole window so no gradient shows
       gsap.set(sceneRef.current, { opacity: 0 });
 
       const scene2Timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sceneRef.current,
+          trigger: wrapperRef.current,
           start: "top top",
-          end: "+=150%", // Shorter scene - just time passing
-          pin: true,
+          end: "bottom bottom", // span driven by fixed 250vh wrapper
           scrub: 1,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          markers: process.env.NODE_ENV === "development",
           id: "scene2",
         },
-      });
-
-      // Fade in the entire scene first
-      scene2Timeline.to(sceneRef.current, {
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.inOut",
       });
 
       // Gradually darken the sky overlay (brownish evening)
@@ -104,25 +96,28 @@ export default function Scene2({ audioController }: Scene2Props) {
         "+=1.5"
       );
 
-      // Fade entire scene to prepare for Scene 3
+      // Whole-scene crossfade over the frozen Scene 1: spans exactly the 25vh
+      // overlap window (25 / (250 - 100) of the trigger span)
       scene2Timeline.to(
         sceneRef.current,
         {
-          opacity: 0,
-          duration: 0.5,
-          ease: "power2.inOut",
+          opacity: 1,
+          duration: scene2Timeline.duration() * (25 / 150),
+          ease: "none",
         },
-        "+=0.5"
+        0
       );
+
     }, sceneRef);
 
     return () => ctx.revert();
   }, [audioController]);
 
   return (
+    <div ref={wrapperRef} className="h-[250vh] -mt-[125vh]">
     <div
       ref={sceneRef}
-      className="scene2 relative w-full h-screen overflow-hidden will-change-transform"
+      className="scene2 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-ocean-primary"
     >
       {/* Beach Background - same as Scene 1 */}
       <div ref={backgroundRef} className="absolute inset-0 z-10">
@@ -147,13 +142,14 @@ export default function Scene2({ audioController }: Scene2Props) {
       {/* Narration */}
       <div
         ref={narrationRef}
-        className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 opacity-0"
+        className="absolute bottom-24 inset-x-0 z-30 opacity-0"
       >
         <NarrationBox>
           The day passes, quiet as any other. But by evening, the sky and the sea
           begin to change.
         </NarrationBox>
       </div>
+    </div>
     </div>
   );
 }

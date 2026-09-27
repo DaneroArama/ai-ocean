@@ -29,16 +29,20 @@ const peekingCharacters = [
 
 export default function Scene4({ audioController }: Scene4Props) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const narrationRef = useRef<HTMLDivElement>(null);
   const sharkyRef = useRef<HTMLDivElement>(null);
+  const whiteOverlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sceneRef.current || !audioController) return;
+    if (!sceneRef.current || !wrapperRef.current || !audioController) return;
 
     const ctx = gsap.context(() => {
-      // Crossfade in from Scene 3
+      // Root starts hidden and crossfades in over the frozen Scene 3; the
+      // Scene 3 root stays opaque for the whole window so no gradient shows
       gsap.set(sceneRef.current, { opacity: 0 });
+      gsap.set(whiteOverlayRef.current, { opacity: 0 });
 
       // Sharky hidden initially
       if (sharkyRef.current) {
@@ -55,30 +59,26 @@ export default function Scene4({ audioController }: Scene4Props) {
 
       const scene4Timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sceneRef.current,
+          trigger: wrapperRef.current,
           start: "top top",
-          end: "+=180%",
-          pin: true,
+          end: "bottom bottom", // span driven by fixed 280vh wrapper
           scrub: 1,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          markers: process.env.NODE_ENV === "development",
           id: "scene4",
         },
       });
 
-      // Crossfade in to bright beach + swap storm audio back to beach
-      scene4Timeline.to(sceneRef.current, {
-        opacity: 1,
-        duration: 1,
-        ease: "power2.inOut",
-        onStart: () => {
+      // Beach audio swap at scene start (0-duration: no dead scroll)
+      scene4Timeline.call(
+        () => {
           audioController?.fadeOut("stormyNight", 2);
           setTimeout(() => {
             audioController?.fadeIn("beach", 2, 0.3);
           }, 800);
         },
-      });
+        [],
+        0
+      );
 
       // Narration appears top-left
       scene4Timeline
@@ -144,24 +144,40 @@ export default function Scene4({ audioController }: Scene4Props) {
         "+=1.5"
       );
 
+      // White out at the end so the gapless Scene 5 handoff slides white
+      // over white (mirrors the Scene 5 -> 6 transition)
       scene4Timeline.to(
-        sceneRef.current,
+        whiteOverlayRef.current,
         {
-          opacity: 0,
+          opacity: 1,
           duration: 1.2,
           ease: "power2.inOut",
         },
-        "-=0.3"
+        "+=0.3"
       );
+
+      // Whole-scene crossfade over the frozen Scene 3: spans exactly the 25vh
+      // overlap window (25 / (280 - 100) of the trigger span)
+      scene4Timeline.to(
+        sceneRef.current,
+        {
+          opacity: 1,
+          duration: scene4Timeline.duration() * (25 / 180),
+          ease: "none",
+        },
+        0
+      );
+
     }, sceneRef);
 
     return () => ctx.revert();
   }, [audioController]);
 
   return (
+    <div ref={wrapperRef} className="h-[280vh] -mt-[125vh]">
     <div
       ref={sceneRef}
-      className="scene4 relative w-full h-screen overflow-hidden will-change-transform"
+      className="scene4 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-ocean-primary"
     >
       {/* Beach Background - clear bright morning */}
       <div ref={backgroundRef} className="absolute inset-0 z-10">
@@ -205,7 +221,7 @@ export default function Scene4({ audioController }: Scene4Props) {
       </div>
 
       {/* Other four peeking from underneath */}
-      <div className="absolute inset-x-0 bottom-0 z-20 h-full pointer-events-none">
+      <div className="absolute inset-x-0 bottom-[40%] z-20 h-full pointer-events-none">
         {peekingCharacters.map((character) => (
           <div
             key={character.name}
@@ -224,6 +240,13 @@ export default function Scene4({ audioController }: Scene4Props) {
           </div>
         ))}
       </div>
+
+      {/* White overlay - fades out toward Scene 5 */}
+      <div
+        ref={whiteOverlayRef}
+        className="absolute inset-0 z-40 bg-white pointer-events-none opacity-0"
+      />
+    </div>
     </div>
   );
 }

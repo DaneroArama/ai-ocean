@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SkipButton from "@/components/comic/SkipButton";
 
 export const metadata: Metadata = {
   title: "Into the AI Ocean | Interactive Comic",
@@ -13,6 +14,7 @@ export default function ComicLayout({
 }) {
   return (
     <div className="comic-layout min-h-screen bg-ocean-foam">
+      <SkipButton />
       {children}
     </div>
   );

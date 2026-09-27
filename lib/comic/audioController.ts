@@ -7,7 +7,8 @@ type SoundEffect =
   | "typing"
   | "characterEntrance"
   | "dialogue"
-  | "glowing";
+  | "glowing"
+  | "michaelBay";
 
 export class AudioController {
   private sounds: Map<SoundEffect, HTMLAudioElement> = new Map();
@@ -27,6 +28,7 @@ export class AudioController {
       characterEntrance: "/assets/comic/Sound Effects/Charater Showup.mp3",
       dialogue: "/assets/comic/Sound Effects/Text Showup.mp3",
       glowing: "/assets/comic/Sound Effects/Shining Something.mp3",
+      michaelBay: "/assets/comic/Sound Effects/directed-by-michael-bay.mp3",
     };
 
     Object.entries(soundPaths).forEach(([key, path]) => {
@@ -80,6 +82,37 @@ export class AudioController {
     if (sound) {
       sound.pause();
       sound.currentTime = 0;
+    }
+  }
+
+  // Scroll-scrubbed one-shot: volume follows the scrubbed value. The clip
+  // starts the first time it becomes audible, pauses while muted, resumes
+  // in place, and never replays once it has ended.
+  scrubOneShot(soundEffect: SoundEffect, volume: number) {
+    if (!this.unlocked) return;
+
+    const sound = this.sounds.get(soundEffect);
+    if (!sound) return;
+
+    const v = Math.min(1, Math.max(0, volume));
+    sound.volume = v;
+
+    if (v > 0) {
+      if (!sound.paused || sound.ended) return;
+      const firstStart = sound.currentTime === 0;
+      sound
+        .play()
+        .then(() => {
+          console.log(
+            `One-shot ${soundEffect} ${firstStart ? "started" : "resumed"} (volume ${v.toFixed(2)})`
+          );
+        })
+        .catch(() => {
+          console.warn(`Autoplay blocked for ${soundEffect}`);
+        });
+    } else if (!sound.paused) {
+      sound.pause();
+      console.log(`One-shot ${soundEffect} paused by scroll`);
     }
   }
 

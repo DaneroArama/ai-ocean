@@ -25,35 +25,35 @@ const mascots = [
   {
     name: "Ali",
     src: Ali,
-    className: "right-[-18%] top-[6%] w-40 md:w-[500px]",
+    className: "right-[-40%] md:right-[-18%] top-[6%] w-72 md:w-[500px]",
     transform: "scaleX(-1) rotate(30deg)", // Flipped horizontally and rotated
     exit: { xPercent: 100, yPercent: -50 },
   },
   {
     name: "Crabi",
     src: Crabi,
-    className: "left-[-20%] -top-[24%] w-36 md:w-[600px]",
+    className: "left-[-30%] md:left-[-20%] top-[10%] md:top-[-24%] w-72 md:w-[600px]",
     transform: "rotate(18deg)",
     exit: { xPercent: -100, yPercent: -50 },
   },
   {
     name: "Octo",
     src: Octo,
-    className: "right-[-20%] bottom-[-18%] w-36 md:w-[500px]",
+    className: "right-[-45%] md:right-[-18%] bottom-[18%] w-72 md:w-[500px]",
     transform: "rotate(0deg)",
     exit: { xPercent: 100, yPercent: 50 },
   },
   {
     name: "Shark",
     src: Shark,
-    className: "left-[-17%] bottom-[-25%] w-32 md:w-[500px]",
+    className: "left-[-40%] md:left-[-17%] bottom-[18%] md:bottom-[-25%] w-72 md:w-[500px]",
     transform: "scaleX(-1) rotate(-30deg)", // Flipped horizontally and rotated
     exit: { xPercent: -100, yPercent: 50 },
   },
   {
     name: "Tuto",
     src: Tuto,
-    className: "left-[36%] bottom-[-30%] w-32 md:w-[500px]",
+    className: "left-[15%] md:left-[36%] bottom-[-20%] md:bottom-[-30%] w-72 md:w-[500px]",
     transform: "rotate(-60deg)",
     exit: { yPercent: 100 },
   },
@@ -61,12 +61,13 @@ const mascots = [
 
 export default function IntroScene({ audioController }: IntroSceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const charactersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sceneRef.current || !audioController) return;
+    if (!sceneRef.current || !wrapperRef.current || !audioController) return;
 
     // Try to unlock audio immediately on any interaction with this scene
     const handleInteraction = async () => {
@@ -105,14 +106,11 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
       // Pin the intro scene
       const introTimeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sceneRef.current,
+          trigger: wrapperRef.current,
           start: "top top",
-          end: "+=150%", // Extended to allow smooth transition
-          pin: true,
+          end: "bottom bottom", // span driven by fixed 250vh wrapper
           scrub: 1,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          markers: process.env.NODE_ENV === "development",
           id: "intro-scene",
           onEnter: () => {
             // Start beach sound when intro scene is entered
@@ -169,16 +167,6 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
         0
       );
 
-      // Fade entire scene to black (second half)
-      introTimeline.to(
-        sceneRef.current,
-        {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power2.inOut",
-        },
-        0.2 // Start after characters exit
-      );
     }, sceneRef);
 
     return () => {
@@ -190,9 +178,10 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
   }, [audioController]);
 
   return (
+    <div ref={wrapperRef} className="h-[250vh]">
     <div
       ref={sceneRef}
-      className="intro-scene relative w-full h-screen overflow-hidden will-change-transform"
+      className="intro-scene sticky top-0 w-full h-screen overflow-hidden will-change-transform"
     >
       {/* Beach Background */}
       <div className="absolute inset-0 z-0">
@@ -269,6 +258,7 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
           </svg>
         </div>
       </div>
+    </div>
     </div>
   );
 }

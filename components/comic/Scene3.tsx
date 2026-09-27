@@ -18,24 +18,26 @@ interface Scene3Props {
 }
 
 const characters = [
-  { name: "Sharky", image: Shark, className: "bottom-[-10%] left-[10%] scale-x-[-1] -rotate-20" },
-  { name: "Turty", image: Tuto, className: "bottom-[-20%] left-[30%] scale-x-[-1]" },
-  { name: "Otto", image: Octo, className: "bottom-[-20%] left-[70%]" },
-  { name: "Crabbi", image: Crabi, className: "bottom-[-20%] left-[50%]" },
-  { name: "Croco", image: Ali, className: "bottom-[-15%] left-[90%]" },
+  { name: "Sharky", image: Shark, className: "bottom-[20%] md:bottom-[10%] left-[15%] md:left-[10%] scale-x-[-1] rotate-20 md:-rotate-20" },
+  { name: "Otto", image: Octo, className: "bottom-[10%] md:bottom-[10%] left-[50%] md:left-[70%]" },
+    { name: "Turty", image: Tuto, className: "bottom-[10%] md:bottom-[10%] left-[20%] md:left-[30%] scale-x-[-1]" },
+  { name: "Crabbi", image: Crabi, className: "bottom-[-10%] md:bottom-[10%] left-[50%] md:left-[50%]" },
+  { name: "Croco", image: Ali, className: "bottom-[10%] md:bottom-[10%] left-[90%] md:left-[90%]" },
 ];
 
 export default function Scene3({ audioController }: Scene3Props) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const narrationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sceneRef.current || !audioController) return;
+    if (!sceneRef.current || !wrapperRef.current || !audioController) return;
 
     const ctx = gsap.context(() => {
-      // Start fully transparent - crossfades in as Scene 2 fades out
+      // Root starts hidden and crossfades in over the frozen Scene 2; the
+      // Scene 2 root stays opaque for the whole window so no gradient shows
       gsap.set(sceneRef.current, { opacity: 0 });
 
       // Glow starts hidden
@@ -57,30 +59,26 @@ export default function Scene3({ audioController }: Scene3Props) {
 
       const scene3Timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sceneRef.current,
+          trigger: wrapperRef.current,
           start: "top top",
-          end: "+=250%",
-          pin: true,
+          end: "bottom bottom", // span driven by fixed 350vh wrapper
           scrub: 1,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          markers: process.env.NODE_ENV === "development",
           id: "scene3",
         },
       });
 
-      // Crossfade in from Scene 2 + start storm-night audio
-      scene3Timeline.to(sceneRef.current, {
-        opacity: 1,
-        duration: 1,
-        ease: "power2.inOut",
-        onStart: () => {
+      // Storm-night audio swap at scene start (0-duration: no dead scroll)
+      scene3Timeline.call(
+        () => {
           audioController?.fadeOut("roughSea", 2);
           setTimeout(() => {
             audioController?.fadeIn("stormyNight", 2, 0.3);
           }, 800);
         },
-      });
+        [],
+        0
+      );
 
       // Narration appears top-left
       scene3Timeline
@@ -186,27 +184,28 @@ export default function Scene3({ audioController }: Scene3Props) {
         "+=1.5"
       );
 
+      // Whole-scene crossfade over the frozen Scene 2: spans exactly the 25vh
+      // overlap window (25 / (350 - 100) of the trigger span)
       scene3Timeline.to(
         sceneRef.current,
         {
-          opacity: 0,
-          duration: 1.2,
-          ease: "power2.inOut",
-          onStart: () => {
-            audioController?.fadeOut("stormyNight", 2);
-          },
+          opacity: 1,
+          duration: scene3Timeline.duration() * (25 / 250),
+          ease: "none",
         },
-        "-=0.3"
+        0
       );
+
     }, sceneRef);
 
     return () => ctx.revert();
   }, [audioController]);
 
   return (
+    <div ref={wrapperRef} className="h-[350vh] -mt-[125vh]">
     <div
       ref={sceneRef}
-      className="scene3 relative w-full h-screen overflow-hidden will-change-transform"
+      className="scene3 sticky top-0 w-full h-screen overflow-hidden will-change-transform"
     >
       {/* Stormy Night Background */}
       <div ref={backgroundRef} className="absolute inset-0 z-10">
@@ -236,7 +235,7 @@ export default function Scene3({ audioController }: Scene3Props) {
       {/* Narration - top-left */}
       <div
         ref={narrationRef}
-        className="absolute top-8 left-4 md:left-20 z-30 max-w-md md:max-w-6xl opacity-0"
+        className="absolute top-8 inset-x-4 md:inset-x-auto md:left-20 z-30 opacity-0"
       >
         <NarrationBox>
           That night, a strong new wave sweeps through the ocean, something no
@@ -246,13 +245,13 @@ export default function Scene3({ audioController }: Scene3Props) {
       </div>
 
       {/* Characters partially rising from underneath */}
-      <div className="absolute inset-x-0 bottom-0 z-20 h-full pointer-events-none">
+      <div className="absolute inset-x-0 z-20 h-full pointer-events-none">
         {characters.map((character) => (
           <div key={character.name} className={`absolute ${character.className} -translate-x-1/2`}>
             {/* Surprised !? mark */}
             <div
               data-mark={character.name}
-              className="absolute top-10 left-1/2 -translate-x-1/2 z-10 opacity-0"
+              className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 opacity-0"
             >
               <span className="text-3xl md:text-4xl font-syncopate font-bold text-yellow-300 drop-shadow-[2px_2px_0_rgba(0,0,0,0.6)]">
                 !?
@@ -262,7 +261,7 @@ export default function Scene3({ audioController }: Scene3Props) {
             {/* Character - mostly below viewport */}
             <div
               data-character={character.name}
-              className="scene3-character w-28 md:w-[400px] lg:w-[450px] opacity-0"
+              className="scene3-character w-[200px] md:w-[400px] lg:w-[450px] opacity-0"
             >
               <Image
                 src={character.image}
@@ -273,6 +272,7 @@ export default function Scene3({ audioController }: Scene3Props) {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }
