@@ -91,7 +91,9 @@ export default function Scene1({ audioController }: Scene1Props) {
         },
       });
 
-      // Narration 1 appears
+      // Narration 1 appears - starts after the whole-scene crossfade has
+      // finished (crossfade spans the first 25/200 of the trigger = timeline
+      // 0 -> ~5.75; absolute 7 leaves a beat after the scene settles)
       scene1Timeline
         .from(
           narration1Ref.current,
@@ -104,7 +106,7 @@ export default function Scene1({ audioController }: Scene1Props) {
               audioController.play("typing", 0.2);
             },
           },
-          "+=0.3"
+          7
         )
         .to(narration1Ref.current, {
           opacity: 1,
@@ -309,14 +311,14 @@ export default function Scene1({ audioController }: Scene1Props) {
               data-character={character.name}
               className={`scene1-character absolute ${
                 index === 0
-                  ? "bottom-[-20%] right-[0%]"
+                  ? "bottom-[-50%] right-[-10%] md:bottom-[-20%] md:right-[0%]"
                   : index === 1
-                  ? "bottom-[-30%] right-[20%]"
+                  ? "bottom-[-60%] right-[0%] md:bottom-[-30%] md:right-[20%]"
                   : index === 2
-                  ? "bottom-[-50%] right-[40%]"
+                  ? "bottom-[-50%] right-[60%] md:right-[40%]"
                   : index === 3
-                  ? "bottom-[-45%] left-[25%]"
-                  : "bottom-[-55%] left-[10%]"
+                  ? "bottom-[-70%] md:bottom-[-45%] left-[25%] md:left-[15%]"
+                  : "bottom-[-60%] md:bottom-[-55%] left-[0%]"
               } w-[200px] md:w-[400px] h-full`}
             >
               <Image
@@ -331,13 +333,13 @@ export default function Scene1({ audioController }: Scene1Props) {
               data-dialogue={character.name}
               className={`absolute ${
                 index === 0
-                  ? "bottom-[80%] right-[0%]"
+                  ? "bottom-[50%] md:bottom-[80%] right-[0%]"
                   : index === 1
-                  ? "bottom-[70%] right-[20%]"
+                  ? "bottom-[40%] md:bottom-[70%] right-[20%]"
                   : index === 2
-                  ? "bottom-[45%] right-[35%]"
+                  ? "bottom-[50%] md:bottom-[45%] right-[20%] md:right-[35%]"
                   : index === 3
-                  ? "bottom-[48%] left-[20%]"
+                  ? "bottom-[30%] md:bottom-[48%] left-[20%]"
                   : "bottom-[42%] left-[5%]"
               } z-30`}
             >

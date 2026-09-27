@@ -53,7 +53,7 @@ const mascots = [
   {
     name: "Tuto",
     src: Tuto,
-    className: "left-[15%] md:left-[36%] bottom-[-20%] md:bottom-[-30%] w-72 md:w-[500px]",
+    className: "left-[15%] md:left-[36%] bottom-[-10%] md:bottom-[-30%] w-72 md:w-[500px]",
     transform: "rotate(-60deg)",
     exit: { yPercent: 100 },
   },

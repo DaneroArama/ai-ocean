@@ -155,7 +155,7 @@ export default function Scene7({ audioController }: Scene7Props) {
         {
           autoAlpha: 1,
           y: 0,
-          duration: 1.2,
+          duration: 1,
           ease: "power2.out",
           onStart: () => {
             audioController?.play("typing", 0.2);
@@ -170,7 +170,7 @@ export default function Scene7({ audioController }: Scene7Props) {
         {
           autoAlpha: 1,
           y: 0,
-          duration: 1.2,
+          duration: 1,
           ease: "power2.out",
           onStart: () => {
             audioController?.play("typing", 0.2);
@@ -186,6 +186,18 @@ export default function Scene7({ audioController }: Scene7Props) {
         {
           opacity: 0,
           duration: 0.4,
+          ease: "power2.in",
+        },
+        9.2
+      );
+
+      // The narration texts clear out with the swimmers so the
+      // bookend (edge mascots + CTA) stands alone at the end
+      scene7Timeline.to(
+        [topTextRef.current, bottomTextRef.current],
+        {
+          autoAlpha: 0,
+          duration: 0.5,
           ease: "power2.in",
         },
         9.2

@@ -26,7 +26,7 @@ const characters = [
       "Don't just stand there watching. Get in and feel it yourselves!",
     ],
     position: "left-[-16%] md:left-[14%] scale-x-[-1]",
-    dialoguePosition: "left-[2%] md:left-[30%]",
+    dialoguePosition: "bottom-[30%] left-[2%] md:left-[30%]",
   },
   {
     name: "Croco",
@@ -35,7 +35,7 @@ const characters = [
       "We've swum rough water before. Now, with this push, we swim faster and better!",
     ],
     position: "left-[-16%] md:left-[18%] scale-x-[-1]",
-     dialoguePosition: "left-[2%] md:left-[30%]",
+     dialoguePosition: "bottom-[25%] left-[10%] md:left-[30%]",
   },
   {
     name: "Otto",
@@ -44,7 +44,7 @@ const characters = [
       "These waves can take us so much further now! Think of all the new islands we can reach!",
     ],
     position: "left-[-16%] md:left-[14%] scale-x-[-1]",
-     dialoguePosition: "left-[2%] md:left-[30%]",
+     dialoguePosition: "bottom-[25%] left-[10%] md:left-[30%]",
   },
   {
     name: "Crabbi",
@@ -53,7 +53,7 @@ const characters = [
       "Half the work means more time to build it right. Let's learn the waves first, so we move safely.",
     ],
     position: "left-[-16%] md:left-[18%] scale-x-[-1]",
-     dialoguePosition: "left-[2%] md:left-[30%]",
+     dialoguePosition: "bottom-[25%] left-[10%] md:left-[30%]",
   },
   {
     name: "Turty",
@@ -62,16 +62,16 @@ const characters = [
       "Fast isn't everything. Stay smart, stay focused, and we won't get lost.",
     ],
     position: "left-[-16%] md:left-[14%] scale-x-[-1]",
-     dialoguePosition: "left-[2%] md:left-[30%]",
+     dialoguePosition: "bottom-[25%] left-[10%] md:left-[30%]",
   },
 ];
 
 const groupSwimmers = [
   { name: "Sharky", image: Shark, className: "bottom-[-10%] md:bottom-[-50%] left-[10%] scale-x-[-1]" },
-  { name: "Otto", image: Octo, className: "bottom-[-40%] md:bottom-[-50%] left-[30%] md:left-[46%] scale-x-[-1]" },
-  { name: "Croco", image: Ali, className: "bottom-[-40%] md:bottom-[-50%] left-[0%] md:left-[28%] scale-x-[-1]" },
-  { name: "Crabbi", image: Crabi, className: "bottom-[-40%] md:bottom-[-50%] left-[64%]" },
-  { name: "Turty", image: Tuto, className: "bottom-[-40%] md:bottom-[-50%] left-[82%] scale-x-[-1]" },
+  { name: "Otto", image: Octo, className: "bottom-[-30%] md:bottom-[-50%] left-[30%] md:left-[46%] scale-x-[-1]" },
+  { name: "Croco", image: Ali, className: "bottom-[-30%] md:bottom-[-50%] left-[0%] md:left-[28%] scale-x-[-1]" },
+  { name: "Crabbi", image: Crabi, className: "bottom-[-30%] md:bottom-[-50%] left-[64%]" },
+  { name: "Turty", image: Tuto, className: "bottom-[-30%] md:bottom-[-50%] left-[82%] scale-x-[-1]" },
 ];
 
 export default function Scene5({ audioController }: Scene5Props) {
@@ -331,7 +331,7 @@ export default function Scene5({ audioController }: Scene5Props) {
 
             {/* Dialogues - one per line, stacked so only one shows at a time */}
             <div
-              className={`absolute bottom-[40%] ${character.dialoguePosition} w-[min(420px,80vw)]`}
+              className={`absolute md:bottom-[40%] ${character.dialoguePosition} w-[min(420px,80vw)]`}
             >
               {character.dialogues.map((dialogue, index) => (
                 <div

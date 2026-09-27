@@ -18,11 +18,11 @@ interface Scene3Props {
 }
 
 const characters = [
-  { name: "Sharky", image: Shark, className: "bottom-[20%] md:bottom-[10%] left-[15%] md:left-[10%] scale-x-[-1] rotate-20 md:-rotate-20" },
-  { name: "Otto", image: Octo, className: "bottom-[10%] md:bottom-[10%] left-[50%] md:left-[70%]" },
-    { name: "Turty", image: Tuto, className: "bottom-[10%] md:bottom-[10%] left-[20%] md:left-[30%] scale-x-[-1]" },
-  { name: "Crabbi", image: Crabi, className: "bottom-[-10%] md:bottom-[10%] left-[50%] md:left-[50%]" },
-  { name: "Croco", image: Ali, className: "bottom-[10%] md:bottom-[10%] left-[90%] md:left-[90%]" },
+  { name: "Sharky", image: Shark, className: "bottom-[0%] md:bottom-[-20%] left-[15%] md:left-[10%] scale-x-[-1] rotate-20 md:-rotate-20" },
+  { name: "Otto", image: Octo, className: "bottom-[-5%] md:bottom-[-20%] left-[50%] md:left-[70%]" },
+    { name: "Turty", image: Tuto, className: "bottom-[-5%] md:bottom-[-20%] left-[20%] md:left-[30%] scale-x-[-1]" },
+  { name: "Crabbi", image: Crabi, className: "bottom-[-5%] md:bottom-[-20%] left-[80%] md:left-[50%]" },
+  { name: "Croco", image: Ali, className: "bottom-[-5%] md:bottom-[-20%] left-[100%] md:left-[90%]" },
 ];
 
 export default function Scene3({ audioController }: Scene3Props) {
@@ -235,7 +235,7 @@ export default function Scene3({ audioController }: Scene3Props) {
       {/* Narration - top-left */}
       <div
         ref={narrationRef}
-        className="absolute top-8 inset-x-4 md:inset-x-auto md:left-20 z-30 opacity-0"
+        className="absolute top-8 inset-x-0 left-20 md:inset-x-auto md:left-20 z-30 opacity-0"
       >
         <NarrationBox>
           That night, a strong new wave sweeps through the ocean, something no
@@ -251,7 +251,7 @@ export default function Scene3({ audioController }: Scene3Props) {
             {/* Surprised !? mark */}
             <div
               data-mark={character.name}
-              className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 opacity-0"
+              className="absolute top-10 md:top-20 left-1/2 -translate-x-1/2 z-10 opacity-0"
             >
               <span className="text-3xl md:text-4xl font-syncopate font-bold text-yellow-300 drop-shadow-[2px_2px_0_rgba(0,0,0,0.6)]">
                 !?

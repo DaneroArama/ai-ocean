@@ -221,11 +221,11 @@ export default function Scene4({ audioController }: Scene4Props) {
       </div>
 
       {/* Other four peeking from underneath */}
-      <div className="absolute inset-x-0 bottom-[40%] z-20 h-full pointer-events-none">
+      <div className="absolute inset-x-0 z-20 h-full pointer-events-none">
         {peekingCharacters.map((character) => (
           <div
             key={character.name}
-            className={`absolute bottom-0 ${character.className} -translate-x-1/2`}
+            className={`absolute bottom-[0%] ${character.className} -translate-x-1/2`}
           >
             <div
               data-character={character.name}

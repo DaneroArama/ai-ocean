@@ -142,7 +142,7 @@ export default function Scene2({ audioController }: Scene2Props) {
       {/* Narration */}
       <div
         ref={narrationRef}
-        className="absolute bottom-24 inset-x-0 z-30 opacity-0"
+        className="absolute bottom-[20%] inset-x-0 z-30 opacity-0"
       >
         <NarrationBox>
           The day passes, quiet as any other. But by evening, the sky and the sea
