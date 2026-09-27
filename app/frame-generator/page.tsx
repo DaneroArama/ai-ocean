@@ -6,6 +6,7 @@ import surfingPost from "@/app/assets/frames/Ai Frame I’m surfing.png";
 import buildingStory from "@/app/assets/frames/myday Ai Frame I’m building.png";
 import competingStory from "@/app/assets/frames/myday Ai Frame I’m Competing.png";
 import surfingStory from "@/app/assets/frames/myday Ai Frame I’m surfing.png";
+import NextImage, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +18,7 @@ interface FrameFormat {
   id: FormatId;
   label: string;
   badge: string;
+  use: string;
   width: number;
   height: number;
   outWidth: number;
@@ -31,6 +33,7 @@ const FRAME_FORMATS: Record<FormatId, FrameFormat> = {
     id: "post",
     label: "Post",
     badge: "4:5",
+    use: "Feed post · works everywhere",
     width: 2400,
     height: 3000,
     outWidth: 1080,
@@ -41,6 +44,7 @@ const FRAME_FORMATS: Record<FormatId, FrameFormat> = {
     id: "story",
     label: "MyDay Story",
     badge: "9:16",
+    use: "Stories · MyDay · full screen",
     width: 2400,
     height: 4250,
     outWidth: 1080,
@@ -49,16 +53,26 @@ const FRAME_FORMATS: Record<FormatId, FrameFormat> = {
   },
 };
 
+const FORMAT_ORDER: FormatId[] = ["post", "story"];
+
 const FRAME_VARIANTS: { id: VariantId; label: string }[] = [
   { id: "building", label: "I’m building" },
   { id: "competing", label: "I’m competing" },
   { id: "surfing", label: "I’m surfing" },
 ];
 
-const FRAME_IMAGES: Record<FormatId, Record<VariantId, string>> = {
-  post: { building: buildingPost.src, competing: competingPost.src, surfing: surfingPost.src },
-  story: { building: buildingStory.src, competing: competingStory.src, surfing: surfingStory.src },
+const FRAME_IMAGES: Record<FormatId, Record<VariantId, StaticImageData>> = {
+  post: { building: buildingPost, competing: competingPost, surfing: surfingPost },
+  story: { building: buildingStory, competing: competingStory, surfing: surfingStory },
 };
+
+const MASCOTS = [
+  { id: "ali", name: "Ali", src: "/assets/Mascots/Ali.png" },
+  { id: "crabi", name: "Crabi", src: "/assets/Mascots/Crabi.png" },
+  { id: "octo", name: "Octo", src: "/assets/Mascots/Octo.png" },
+  { id: "shark", name: "Shark", src: "/assets/Mascots/Shark.png" },
+  { id: "tuto", name: "Tuto", src: "/assets/Mascots/Tuto.png" },
+];
 
 const AI_PROMPT = `Create ONE finished premium anime/game character illustration of the person in Image 1, inspired by the character and archetype in Image 2.
 
@@ -74,11 +88,27 @@ BACKGROUND: Clean ocean-blue environment matching Image 1, with subtle waves, bu
 
 ASPECT RATIO: 1.1`;
 
+const AI_TOOLS = [
+  { name: "ChatGPT", url: "https://chatgpt.com/" },
+  { name: "Google Gemini", url: "https://gemini.google.com/" },
+  { name: "Grok", url: "https://grok.com/" },
+  { name: "Midjourney", url: "https://www.midjourney.com/" },
+  { name: "Leonardo.Ai", url: "https://leonardo.ai/" },
+  { name: "Ideogram", url: "https://www.ideogram.ai/" },
+];
+
+const GUIDE_STEPS = [
+  "Download one of the five mascots below — that is your Image 2.",
+  "Have your own photo ready — that is your Image 1.",
+  "Open any AI tool, upload both images, paste the prompt and generate.",
+  "Download the result, then upload it here. Done — no sign-in needed.",
+];
+
 const STEPS = [
-  { title: "Add Photo", hint: "Upload the image you want to frame" },
-  { title: "Choose Frame", hint: "Pick a size and caption style" },
-  { title: "Adjust Photo", hint: "Position your photo, then continue" },
-  { title: "Download", hint: "Save your finished frame" },
+  { title: "Upload", hint: "Upload your image to get started" },
+  { title: "Caption", hint: "Pick the caption that fits you" },
+  { title: "Adjust", hint: "Move and zoom your photo into place" },
+  { title: "Finish", hint: "Choose your format, then download" },
 ];
 
 /** Frame preview with the empty photo opening replaced by a drop-in indicator. */
@@ -93,7 +123,7 @@ function FrameThumb({ format, variant, className = "" }: { format: FormatId; var
   return (
     <span className={`flex h-full w-full items-center justify-center ${className}`}>
       <span className="relative block h-full" style={{ aspectRatio: `${fmt.width} / ${fmt.height}` }}>
-        <img src={FRAME_IMAGES[format][variant]} alt="" className="absolute inset-0 h-full w-full rounded-xl object-cover shadow-sm" />
+        <NextImage src={FRAME_IMAGES[format][variant]} alt="" fill sizes="(min-width: 1024px) 320px, (min-width: 640px) 220px, 34vw" className="rounded-xl object-cover shadow-sm" />
         <span
           style={opening}
           className="absolute flex flex-col items-center justify-center gap-0.5 rounded-md border-2 border-dashed border-ocean-primary/70 bg-gradient-to-br from-cyan-100/95 to-sky-50/95 text-ocean-deep"
@@ -109,10 +139,138 @@ function FrameThumb({ format, variant, className = "" }: { format: FormatId; var
   );
 }
 
+/** Optional, non-blocking instructions: mascots + prompt + AI tools. */
+function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(AI_PROMPT);
+    } catch {
+      const area = document.createElement("textarea");
+      area.value = AI_PROMPT;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      try { document.execCommand("copy"); } catch { /* clipboard unavailable */ }
+      document.body.removeChild(area);
+    }
+    setCopied(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <button type="button" aria-label="Close guide" onClick={onClose} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+      <div className="relative z-10 flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:mx-4 sm:rounded-3xl">
+        <header className="flex shrink-0 items-start gap-3 border-b border-slate-100 bg-gradient-to-r from-cyan-50 to-sky-50 px-4 py-3 sm:px-5 sm:py-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-xl shadow-sm ring-1 ring-cyan-100">✨</span>
+          <div className="min-w-0 flex-1">
+            <h2 id="guide-title" className="font-bold text-ocean-deep">Generate your image with AI <span className="text-xs font-semibold text-ocean-medium">(optional)</span></h2>
+            <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">Skip this if you already have a picture — the only real step is uploading it.</p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close guide" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white bg-white/80 text-slate-500 transition hover:text-ocean-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          </button>
+        </header>
+
+        <div className="min-h-0 flex-1 space-y-5 overflow-auto px-4 py-4 sm:px-5 sm:py-5">
+          <section>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">How it works</h3>
+            <ol className="mt-2 space-y-2">
+              {GUIDE_STEPS.map((step, index) => (
+                <li key={step} className="flex items-start gap-2.5 text-xs leading-snug text-slate-600 sm:text-sm">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ocean-primary text-[10px] font-bold text-white">{index + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">1 · Download a mascot</h3>
+            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+              {MASCOTS.map((mascot) => (
+                <a
+                  key={mascot.id}
+                  href={mascot.src}
+                  download={`ai-ocean-mascot-${mascot.id}.png`}
+                  className="group flex flex-col items-center gap-1 rounded-2xl border border-slate-200 bg-white p-2 text-center transition hover:-translate-y-0.5 hover:border-ocean-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary"
+                >
+                  <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-b from-cyan-50 to-sky-50 sm:h-20 sm:w-20">
+                    <NextImage src={mascot.src} alt={mascot.name} width={80} height={80} className="h-full w-full object-contain transition group-hover:scale-105" />
+                  </span>
+                  <span className="text-xs font-bold text-ocean-deep">{mascot.name}</span>
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500 transition group-hover:bg-ocean-primary group-hover:text-white">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3 w-3"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 18h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    Save
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">2 · Copy the prompt</h3>
+            <div className="mt-2 flex max-h-56 flex-col overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-inner sm:max-h-64">
+              <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-slate-800/80 px-3 py-2">
+                <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M8 7L4 12l4 5M16 7l4 5-4 5M13.5 5l-3 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  AI prompt
+                </span>
+                <button type="button" onClick={copyPrompt} className={`inline-flex min-h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${copied ? "bg-emerald-500 text-white" : "bg-cyan-500 text-white hover:bg-cyan-400"}`}>
+                  {copied ? (
+                    <><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>Copied!</>
+                  ) : (
+                    <><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M15 5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v8A1.5 1.5 0 0 0 5.5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Copy prompt</>
+                  )}
+                </button>
+              </div>
+              <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap break-words px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-slate-100 sm:px-4 sm:text-xs">{AI_PROMPT}</pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">3 · Paste it into any AI tool</h3>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {AI_TOOLS.map((tool) => (
+                <a key={tool.name} href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1 rounded-full border border-cyan-200 bg-white px-3 text-xs font-semibold text-ocean-primary shadow-sm transition hover:border-ocean-primary hover:bg-cyan-50">
+                  {tool.name}
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3 w-3"><path d="M14 5h5v5M19 5l-8 8M18 14v4a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 5 18V8a1.5 1.5 0 0 1 1.5-1.5H11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </a>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] leading-snug text-slate-500">
+              Tip: generate at <span className="font-semibold text-ocean-medium">1:1</span> if you plan to use the Post frame, or <span className="font-semibold text-ocean-medium">9:16</span> for the MyDay Story frame — you pick the format later.
+            </p>
+          </section>
+        </div>
+
+        <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-slate-100 bg-white px-4 py-3 sm:px-5">
+          <p className="hidden text-xs text-slate-400 sm:block">Anything you generate stays on your device.</p>
+          <button type="button" onClick={onClose} className="ml-auto min-h-10 rounded-xl bg-gradient-to-r from-ocean-deep via-ocean-primary to-ocean-light px-5 text-sm font-bold text-white shadow-md shadow-cyan-500/25 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary">
+            Got it — upload my image
+          </button>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
 function FrameGenerator() {
   const { isAuthenticated } = useConvexAuth();
-  const [instructionsOpen, setInstructionsOpen] = useState(true);
-  const [promptCopied, setPromptCopied] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   const [photoName, setPhotoName] = useState("");
   const [format, setFormat] = useState<FormatId>("post");
@@ -129,29 +287,10 @@ function FrameGenerator() {
   const dragRef = useRef<{ x: number; y: number } | null>(null);
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const pinchDistanceRef = useRef<number | null>(null);
-  const previewFormat: FormatId = currentStep === 2 ? "post" : format;
-  const frameFormat = FRAME_FORMATS[previewFormat];
+  const frameFormat = FRAME_FORMATS[format];
   const stepStates = [Boolean(photo), Boolean(photo && variant), adjustmentComplete, downloaded];
   const furthestStep = !photo ? 0 : !variant ? 1 : !adjustmentComplete ? 2 : 3;
-  const progress = Math.max((currentStep / (STEPS.length - 1)) * 100, (stepStates.filter(Boolean).length / STEPS.length) * 100);
-
-  const dismissInstructions = () => setInstructionsOpen(false);
-
-  const copyPrompt = async () => {
-    try {
-      await navigator.clipboard.writeText(AI_PROMPT);
-    } catch {
-      const area = document.createElement("textarea");
-      area.value = AI_PROMPT;
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.appendChild(area);
-      area.select();
-      try { document.execCommand("copy"); } catch { /* clipboard unavailable */ }
-      document.body.removeChild(area);
-    }
-    setPromptCopied(true);
-  };
+  const progress = Math.max(stepStates.filter(Boolean).length / STEPS.length, furthestStep / (STEPS.length - 1)) * 100;
 
   const navigateToStep = (index: number) => {
     if (index > furthestStep) return;
@@ -160,8 +299,9 @@ function FrameGenerator() {
 
   const nextStep = () => {
     const next = currentStep + 1;
-    if (next > furthestStep && !(currentStep === 2 && photo && variant)) return;
+    if (next > STEPS.length - 1) return;
     if (currentStep === 2) setAdjustmentComplete(true);
+    else if (next > furthestStep) return;
     setCurrentStep(next);
   };
 
@@ -170,16 +310,15 @@ function FrameGenerator() {
   useEffect(() => {
     let cancelled = false;
     const image = new Image();
-    setFrameImage(null);
     image.onload = () => {
       if (!cancelled) setFrameImage(image);
     };
     image.onerror = () => {
       if (!cancelled) setError("The selected frame could not be loaded.");
     };
-    image.src = FRAME_IMAGES[previewFormat][variant ?? "building"];
+    image.src = FRAME_IMAGES[format][variant ?? "building"].src;
     return () => { cancelled = true; };
-  }, [previewFormat, variant]);
+  }, [format, variant]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -240,12 +379,12 @@ function FrameGenerator() {
       setPosition({ x: 0, y: 0 });
       setDownloaded(false);
       setAdjustmentComplete(false);
-      setCurrentStep(1);
+      setCurrentStep((step) => (variant ? step : 1));
       URL.revokeObjectURL(url);
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      setError("That image could not be opened. Try another photo.");
+      setError("That image could not be opened. Try another image.");
     };
     image.src = url;
   };
@@ -275,7 +414,7 @@ function FrameGenerator() {
   const download = () => {
     const canvas = canvasRef.current;
     if (!canvas || !photo || !variant) {
-      setError(!photo ? "Add a photo to continue." : "Choose a frame to continue.");
+      setError(!photo ? "Upload an image to continue." : "Choose a caption to continue.");
       return;
     }
     const link = document.createElement("a");
@@ -353,6 +492,20 @@ function FrameGenerator() {
 
   const clampZoom = (value: number) => Math.max(1, Math.min(3, value));
 
+  const previewCanvas = (interactive: boolean, label: string) => (
+    <canvas
+      ref={canvasRef}
+      style={{ aspectRatio: `${frameFormat.outWidth} / ${frameFormat.outHeight}` }}
+      aria-label={label}
+      className={`block h-full max-h-full w-auto max-w-full rounded-2xl bg-cyan-50 shadow-lg ring-1 ring-slate-200/80 ${interactive ? "cursor-grab touch-none active:cursor-grabbing" : ""}`}
+      onPointerDown={interactive ? handlePreviewPointerDown : undefined}
+      onPointerMove={interactive ? handlePreviewPointerMove : undefined}
+      onPointerUp={interactive ? handlePreviewPointerEnd : undefined}
+      onPointerCancel={interactive ? handlePreviewPointerEnd : undefined}
+      onWheel={interactive ? handleWheelZoom : undefined}
+    />
+  );
+
   const stepButtonClass = (index: number) =>
     `flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:h-10 sm:w-10 ${
       currentStep === index
@@ -375,7 +528,7 @@ function FrameGenerator() {
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-50 to-sky-100 font-bold text-ocean-primary ring-1 ring-cyan-100">{index + 1}</span>
       <div className="min-w-0 flex-1">
         <h2 id={`step-${index}-title`} className="font-bold text-ocean-deep">{title}</h2>
-        <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
+        <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">{subtitle}</p>
       </div>
       {action}
     </div>
@@ -401,6 +554,14 @@ function FrameGenerator() {
                   Dashboard
                 </Link>
               )}
+              <button
+                type="button"
+                onClick={() => setShowGuide(true)}
+                aria-label="Open the optional AI image guide"
+                className="inline-flex min-h-8 items-center gap-1 rounded-full border border-cyan-100 bg-white/80 px-2.5 text-xs font-semibold text-ocean-medium shadow-sm backdrop-blur transition hover:border-cyan-300 hover:text-ocean-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:min-h-9 sm:px-3 sm:text-sm"
+              >
+                <span aria-hidden="true">✨</span><span className="hidden sm:inline">AI guide</span>
+              </button>
             </div>
           </div>
           <div className="mt-1.5 flex items-end justify-between gap-3 sm:mt-2">
@@ -408,9 +569,8 @@ function FrameGenerator() {
               <h1 className="font-syncopate text-base font-bold leading-tight text-ocean-deep sm:text-xl">
                 Create your <span className="bg-gradient-to-r from-ocean-primary via-sky-500 to-cyan-400 bg-clip-text text-transparent">event frame</span>
               </h1>
-              <p className="mt-0.5 truncate text-xs text-slate-500 sm:text-sm">Upload your image, choose a frame, adjust it, and download — everything stays in your browser.</p>
+              <p className="mt-0.5 truncate text-xs text-slate-500 sm:text-sm">Upload a picture, caption it, adjust it and download — everything stays in your browser.</p>
             </div>
-            <button type="button" onClick={() => setInstructionsOpen(true)} aria-label="Open prompt" className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-cyan-200 bg-white/85 px-3 text-xs font-bold text-ocean-primary shadow-sm transition hover:bg-white sm:text-sm"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-50 text-sm">?</span><span className="hidden sm:inline">Prompt</span></button>
           </div>
         </header>
 
@@ -441,8 +601,21 @@ function FrameGenerator() {
 
         <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
           {currentStep === 0 && (
-            <section id="add-photo-step" onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-5" aria-labelledby="step-1-title">
-              {stepHeader(0, "Add your image", "Upload the picture your AI generated. A square photo works best.")}
+            <section id="upload-step" onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-0-title">
+              {stepHeader(0, "Upload your image", "Use any picture you like — an AI character, a photo, anything.")}
+              <button
+                type="button"
+                onClick={() => setShowGuide(true)}
+                className="mb-3 flex shrink-0 items-center gap-3 rounded-2xl border border-cyan-200 bg-gradient-to-r from-cyan-50 to-sky-50 px-3 py-2.5 text-left transition hover:border-ocean-primary hover:from-cyan-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:px-4"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm ring-1 ring-cyan-100">✨</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-xs font-bold text-ocean-deep sm:text-sm">No image yet? Make one with AI <span className="font-medium text-ocean-medium">(optional)</span></span>
+                  <span className="block truncate text-[11px] text-slate-500 sm:text-xs">Mascot download + prompt + AI tools — then come back and upload</span>
+                </span>
+                <span className="shrink-0 rounded-lg bg-ocean-primary px-3 py-1.5 text-[11px] font-bold text-white shadow-sm">Open guide</span>
+              </button>
+
               <label
                 htmlFor="frame-photo"
                 className={`group flex min-h-0 flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-4 text-center transition focus-within:ring-2 focus-within:ring-cyan-400 ${
@@ -457,32 +630,32 @@ function FrameGenerator() {
                 </span>
                 <span className="flex flex-col items-center gap-1">
                   <span className="max-w-full truncate px-2 text-sm font-bold text-ocean-deep sm:text-base">
-                    {photoName ? photoName : isDragging ? "Drop it here!" : "Choose your AI image or drag & drop it here"}
+                    {photoName ? photoName : isDragging ? "Drop it here!" : "Choose an image or drag & drop it here"}
                   </span>
-                  <span className="text-xs font-medium text-slate-500 sm:text-sm">PNG or JPG · stays on your device</span>
+                  <span className="text-xs font-medium text-slate-500">PNG or JPG · stays on your device</span>
                 </span>
                 <span className="inline-flex min-h-10 items-center rounded-xl bg-ocean-primary px-4 text-sm font-bold text-white shadow-md shadow-cyan-500/25 transition group-hover:brightness-110">
                   {photoName ? "Change image" : "Browse files"}
                 </span>
                 <input id="frame-photo" type="file" accept="image/*" onChange={handlePhoto} className="sr-only" />
               </label>
+
               <div className="mt-3 flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="flex items-center gap-1.5 text-xs text-slate-500">
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0 text-emerald-500"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   100% private — your image never leaves this device.
                 </p>
-                <button type="button" onClick={nextStep} disabled={!photo} className={primaryButtonClass}>Next: Choose frame <span aria-hidden="true">→</span></button>
+                <button type="button" onClick={nextStep} disabled={!photo} className={primaryButtonClass}>Next: Pick a caption <span aria-hidden="true">→</span></button>
               </div>
               {error && <p role="alert" className="mt-2 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
             </section>
           )}
 
           {currentStep === 1 && (
-            <section id="choose-frame-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-2-title">
-              {stepHeader(1, "Choose caption style", "Pick the caption that fits you. Choose Post or MyDay Story when you download.")}
-
-              <fieldset className="mt-3 flex min-h-0 flex-1 flex-col">
-                <legend className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">Caption style</legend>
+            <section id="caption-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-1-title">
+              {stepHeader(1, "Select a caption", "Which one are you today?")}
+              <fieldset className="flex min-h-0 flex-1 flex-col">
+                <legend className="sr-only">Available captions</legend>
                 <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 sm:gap-3">
                   {FRAME_VARIANTS.map((item) => (
                     <button
@@ -497,21 +670,19 @@ function FrameGenerator() {
                       }`}
                     >
                       {variant === item.id && (
-                        <span className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-ocean-primary px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+                        <span className="absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded-full bg-ocean-primary px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm sm:right-2 sm:top-2 sm:px-2 sm:py-1 sm:text-[10px]">
                           <span aria-hidden="true">✓</span> Selected
                         </span>
                       )}
                       <span className={`flex min-h-24 flex-1 items-center justify-center overflow-hidden rounded-xl p-1 transition sm:min-h-32 ${variant === item.id ? "bg-gradient-to-b from-cyan-100 to-sky-50" : "bg-slate-50 group-hover:bg-cyan-50/60"}`}>
-                        <FrameThumb format="post" variant={item.id} />
+                        <FrameThumb format={format} variant={item.id} />
                       </span>
-                      <span className="mt-1.5 block shrink-0 text-center text-xs font-semibold leading-tight text-ocean-deep sm:mt-2 sm:text-sm">{item.label}</span>
+                      <span className="mt-1.5 block shrink-0 text-center text-[11px] font-semibold leading-tight text-ocean-deep sm:mt-2 sm:text-sm">{item.label}</span>
                     </button>
                   ))}
                 </div>
               </fieldset>
-
               {error && <p role="alert" className="mt-2 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-
               <div className="mt-3 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
                 <button type="button" onClick={nextStep} disabled={!variant} className={primaryButtonClass}>Next: Adjust photo <span aria-hidden="true">→</span></button>
@@ -520,31 +691,19 @@ function FrameGenerator() {
           )}
 
           {currentStep === 2 && (
-            <section id="adjust-photo-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-3-title">
+            <section id="adjust-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-2-title">
               {stepHeader(
                 2,
                 "Adjust your photo",
-                `Move and zoom your photo; it will adapt to the format you choose at download.`,
+                "Move and zoom until it sits perfectly inside the frame.",
                 <button type="button" onClick={resetAdjustment} disabled={!photo} aria-label="Reset photo to automatic fit" title="Reset photo to automatic fit" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-ocean-primary shadow-sm transition hover:border-cyan-400 hover:bg-cyan-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary disabled:cursor-not-allowed disabled:opacity-40">
                   <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 20 20" fill="none"><path d="M4.2 8a6 6 0 1 1-.1 4M4 4.5V8h3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
               )}
               {photo ? (
-                <div className="flex min-h-0 flex-1 items-center justify-center">
-                  <canvas
-                    ref={canvasRef}
-                    onPointerDown={handlePreviewPointerDown}
-                    onPointerMove={handlePreviewPointerMove}
-                    onPointerUp={handlePreviewPointerEnd}
-                    onPointerCancel={handlePreviewPointerEnd}
-                    onWheel={handleWheelZoom}
-                    style={{ aspectRatio: `${frameFormat.outWidth} / ${frameFormat.outHeight}` }}
-                    className="block h-full max-h-full w-auto max-w-full cursor-grab rounded-2xl bg-cyan-50 shadow-lg ring-1 ring-slate-200/80 touch-none active:cursor-grabbing"
-                    aria-label="Generated AI Ocean frame preview"
-                  />
-                </div>
+                <div className="flex min-h-0 flex-1 items-center justify-center">{previewCanvas(true, "AI Ocean frame preview — drag to reposition")}</div>
               ) : (
-                <div className="mx-auto flex min-h-0 max-w-[460px] flex-1 items-center justify-center rounded-2xl border border-dashed border-cyan-200 bg-cyan-50/60 px-4 text-center text-sm text-slate-500">Add a photo first to preview your frame.</div>
+                <div className="mx-auto flex min-h-0 max-w-[460px] flex-1 items-center justify-center rounded-2xl border border-dashed border-cyan-200 bg-cyan-50/60 px-4 text-center text-sm text-slate-500">Upload an image first to preview your frame.</div>
               )}
               <div className="mt-3 flex shrink-0 items-center gap-3 rounded-2xl border border-cyan-100 bg-gradient-to-r from-cyan-50/80 to-sky-50/60 px-3 py-2">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0 text-ocean-primary"><circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" /><path d="M16 16l4 4M8.5 11h5M11 8.5v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -561,47 +720,61 @@ function FrameGenerator() {
                 />
                 <span className="w-12 shrink-0 text-right text-xs font-bold tabular-nums text-ocean-deep">{Math.round(zoom * 100)}%</span>
               </div>
-              <p className="mt-1.5 shrink-0 text-center text-[10px] leading-tight text-slate-500 sm:text-xs">Drag to reposition · pinch or scroll to zoom · use the slider for fine control.</p>
+              <p className="mt-1.5 shrink-0 text-center text-[10px] leading-tight text-slate-500 sm:text-xs">
+                Drag to reposition · pinch or scroll to zoom.
+                <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-ocean-medium">Previewing {frameFormat.label} · format comes next</span>
+              </p>
               <div className="mt-2 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
-                <button type="button" onClick={nextStep} className={primaryButtonClass}>Next: Download <span aria-hidden="true">→</span></button>
+                <button type="button" onClick={nextStep} disabled={!photo || !variant} className={primaryButtonClass}>Next: Format &amp; download <span aria-hidden="true">→</span></button>
               </div>
             </section>
           )}
 
           {currentStep === 3 && (
-            <section id="download-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-4-title">
-              {stepHeader(3, "Download your photo", "Save your finished frame as a PNG, ready to share.")}
-              <fieldset className="mb-2 shrink-0">
-                <legend className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">Choose download format</legend>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  {(["post", "story"] as FormatId[]).map((id) => {
-                    const item = FRAME_FORMATS[id];
+            <section id="format-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-3-title">
+              {stepHeader(3, "Format & download", "Pick the size that matches where you will post it, then save the PNG.")}
+              <div className="flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+                <div className="grid shrink-0 grid-cols-2 gap-2 sm:gap-3 lg:w-[46%] lg:grid-cols-1">
+                  {FORMAT_ORDER.map((id) => {
+                    const fmt = FRAME_FORMATS[id];
                     const active = format === id;
                     return (
-                      <button key={id} type="button" onClick={() => { setFormat(id); setDownloaded(false); }} aria-pressed={active}
-                        className={`flex min-h-12 items-center gap-2 rounded-xl border-2 px-3 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:gap-3 ${active ? "border-ocean-primary bg-cyan-50 shadow-sm ring-2 ring-cyan-100" : "border-slate-200 bg-white hover:border-cyan-300"}`}>
-                        <span className="flex h-9 w-7 shrink-0 items-center justify-center rounded border border-cyan-200 bg-gradient-to-b from-cyan-100 to-sky-50 text-[9px] font-bold text-ocean-primary">{item.badge}</span>
-                        <span className="min-w-0"><span className="block text-xs font-bold text-ocean-deep sm:text-sm">{item.label}</span><span className="block text-[10px] text-slate-500 sm:text-xs">{item.outWidth} × {item.outHeight}</span></span>
-                        {active && <span className="ml-auto text-sm font-bold text-ocean-primary" aria-hidden="true">✓</span>}
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => { setFormat(id); setDownloaded(false); }}
+                        aria-pressed={active}
+                        className={`relative flex items-center gap-3 rounded-2xl border-2 p-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:gap-4 sm:p-3 ${
+                          active ? "border-ocean-primary bg-cyan-50/70 shadow-md shadow-cyan-500/15 ring-2 ring-cyan-100" : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md"
+                        }`}
+                      >
+                        {active && (
+                          <span className="absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded-full bg-ocean-primary px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm sm:right-2 sm:top-2 sm:px-2 sm:py-1 sm:text-[10px]">
+                            <span aria-hidden="true">✓</span> Selected
+                          </span>
+                        )}
+                        <span className="flex h-24 shrink-0 items-center justify-center sm:h-28">
+                          <FrameThumb format={id} variant={variant ?? "building"} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-bold text-ocean-deep sm:text-base">{fmt.label}</span>
+                          <span className="block text-xs font-semibold text-ocean-medium">{fmt.badge} · {fmt.outWidth}×{fmt.outHeight}</span>
+                          <span className="mt-0.5 hidden text-xs leading-snug text-slate-500 sm:block">{fmt.use}</span>
+                        </span>
                       </button>
                     );
                   })}
                 </div>
-              </fieldset>
-              {photo && variant && (
-                <div className="flex min-h-0 flex-1 items-center justify-center py-1">
-                  <canvas
-                    ref={canvasRef}
-                    style={{ aspectRatio: `${frameFormat.outWidth} / ${frameFormat.outHeight}` }}
-                    className="block h-full max-h-full w-auto max-w-full rounded-2xl bg-cyan-50 shadow-lg ring-1 ring-slate-200/80"
-                    aria-label="Finished AI Ocean frame preview"
-                  />
+                <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-dashed border-cyan-100 bg-gradient-to-b from-cyan-50/70 to-sky-50/50 p-2 sm:p-3">
+                  {photo && variant ? previewCanvas(false, `Preview in ${frameFormat.label} format`) : (
+                    <div className="max-w-[320px] px-4 text-center text-sm text-slate-500">Upload an image and pick a caption to see the preview.</div>
+                  )}
                 </div>
-              )}
+              </div>
               {downloaded && (
                 <div role="status" className="mt-2 flex shrink-0 items-center gap-2 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2.5 text-xs font-medium text-emerald-800 sm:px-4 sm:text-sm">
-                  <span aria-hidden="true">🎉</span> Your framed photo is saved. Adjust it and download again anytime.
+                  <span aria-hidden="true">🎉</span> Saved! Change the caption or format and download again anytime.
                 </div>
               )}
               <div className="mt-2 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
@@ -617,27 +790,8 @@ function FrameGenerator() {
           )}
         </div>
       </div>
-      {instructionsOpen && (
-        <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-4" role="presentation">
-          <section role="dialog" aria-modal="true" aria-labelledby="instructions-title" className="flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/80 bg-white p-4 shadow-2xl shadow-sky-950/30 sm:p-6">
-            <div className="flex shrink-0 items-start justify-between gap-3">
-              <div>
-                <h2 id="instructions-title" className="font-syncopate text-base font-bold text-ocean-deep sm:text-xl">Start with the AI prompt</h2>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600">Copy this prompt into an AI image tool with your photo and archetype image. When your image is ready, come back and add it here.</p>
-              </div>
-              <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-100 to-sky-100 text-xl text-ocean-primary">✦</span>
-            </div>
-            <div className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-inner">
-              <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-slate-800/80 px-3 py-2">
-                <span className="text-[11px] font-bold uppercase tracking-wide text-cyan-300">AI image prompt</span>
-                <button type="button" onClick={copyPrompt} className={`min-h-9 rounded-lg px-3 text-xs font-bold text-white transition ${promptCopied ? "bg-emerald-500" : "bg-cyan-500 hover:bg-cyan-400"}`}>{promptCopied ? "Copied!" : "Copy prompt"}</button>
-              </div>
-              <pre className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap break-words px-3 py-3 font-mono text-[10px] leading-relaxed text-slate-100 sm:px-4 sm:text-xs">{AI_PROMPT}</pre>
-            </div>
-            <button type="button" autoFocus onClick={dismissInstructions} className="mt-4 min-h-12 w-full shrink-0 rounded-xl bg-gradient-to-r from-ocean-deep via-ocean-primary to-ocean-light px-5 font-bold text-white shadow-md shadow-cyan-500/25 transition hover:brightness-110">Got it / Start <span aria-hidden="true">→</span></button>
-          </section>
-        </div>
-      )}
+
+      <GuideModal open={showGuide} onClose={() => setShowGuide(false)} />
     </main>
   );
 }
