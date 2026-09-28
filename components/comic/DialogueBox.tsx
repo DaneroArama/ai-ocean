@@ -1,3 +1,5 @@
+import TypingText from "./TypingText";
+
 interface DialogueBoxProps {
   character: string;
   children: React.ReactNode;
@@ -24,7 +26,7 @@ export default function DialogueBox({
       />
 
       <p className="relative py-4 px-6 text-comic-dark font-quicksand font-medium text-sm md:text-base leading-relaxed">
-        {children}
+        <TypingText>{children}</TypingText>
       </p>
 
       {/* Speech bubble tail - sketchy style (dark outline behind white fill,

@@ -340,8 +340,8 @@ export default function Scene1({ audioController }: Scene1Props) {
                   ? "bottom-[50%] md:bottom-[45%] right-[20%] md:right-[35%]"
                   : index === 3
                   ? "bottom-[30%] md:bottom-[48%] left-[20%]"
-                  : "bottom-[42%] left-[5%]"
-              } z-30`}
+                : "bottom-[42%] left-[5%]"
+            } z-30 opacity-0`}
             >
               <DialogueBox character={character.name}>
                 {character.dialogue}

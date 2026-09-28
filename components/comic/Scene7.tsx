@@ -321,7 +321,7 @@ export default function Scene7({ audioController }: Scene7Props) {
       {/* Top text */}
       <div
         ref={topTextRef}
-        className="absolute top-6 inset-x-0 z-30 px-6 md:px-28 text-center invisible opacity-0"
+        className="absolute top-20 md:top-6 inset-x-0 z-30 px-6 md:px-28 text-center invisible opacity-0"
       >
         <p className="text-white font-quicksand text-lg md:text-2xl leading-relaxed drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">
           The AI wave is here, and it&apos;s changing the ocean for everyone.
@@ -333,7 +333,7 @@ export default function Scene7({ audioController }: Scene7Props) {
       {/* Bottom-right quote */}
       <div
         ref={bottomTextRef}
-        className="absolute bottom-6 right-6 z-30 text-right invisible opacity-0"
+        className="absolute bottom-20 md:bottom-6 right-6 z-30 text-right invisible opacity-0"
       >
         <p className="text-white font-quicksand text-base md:text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">
           The wave was never something to fear.
