@@ -105,7 +105,7 @@ const STEPS = [
 ];
 
 /** Frame preview with the empty photo opening replaced by a drop-in indicator. */
-function FrameThumb({ format, variant, className = "" }: { format: FormatId; variant: VariantId; className?: string }) {
+function FrameThumb({ format, variant, className = "", boxClassName = "max-h-full max-w-full w-full sm:h-48 sm:w-auto md:h-60 lg:h-80 xl:h-96" }: { format: FormatId; variant: VariantId; className?: string; boxClassName?: string }) {
   const fmt = FRAME_FORMATS[format];
   const opening = {
     left: `${(fmt.opening.x / fmt.width) * 100}%`,
@@ -115,7 +115,7 @@ function FrameThumb({ format, variant, className = "" }: { format: FormatId; var
   };
   return (
     <span className={`flex h-full w-full items-center justify-center ${className}`}>
-      <span className="relative block h-full" style={{ aspectRatio: `${fmt.width} / ${fmt.height}` }}>
+      <span className={`relative block ${boxClassName}`} style={{ aspectRatio: `${fmt.width} / ${fmt.height}` }}>
         <NextImage src={FRAME_IMAGES[format][variant]} alt="" fill sizes="(min-width: 1024px) 320px, (min-width: 640px) 220px, 34vw" className="rounded-xl object-cover shadow-sm" />
         <span
           style={opening}
@@ -178,10 +178,10 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </button>
         </header>
 
-          <div data-lenis-prevent className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
+          <div data-lenis-prevent className="min-h-0 flex-1 space-y-8 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
           <section>
             <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">1 · Prepare your photo (Image 1)</h3>
-            <div className="mt-2 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-ocean-primary shadow-sm ring-1 ring-cyan-100">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <circle cx="12" cy="8.5" r="3.6" stroke="currentColor" strokeWidth="1.7" />
@@ -196,7 +196,7 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
           <section>
             <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">2 · Download a mascot you like (Image 2)</h3>
-            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
               {MASCOTS.map((mascot) => (
                 <a
                   key={mascot.id}
@@ -219,7 +219,7 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
           <section>
             <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">3 · Copy the prompt and generate</h3>
-            <div className="mt-2 flex max-h-56 flex-col overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-inner sm:max-h-64">
+            <div className="mt-4 flex max-h-56 flex-col overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-inner sm:max-h-64">
               <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-slate-800/80 px-3 py-2">
                 <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300">
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M8 7L4 12l4 5M16 7l4 5-4 5M13.5 5l-3 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -235,10 +235,10 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               <pre data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain whitespace-pre-wrap break-words px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-slate-100 sm:px-4 sm:text-xs">{AI_PROMPT}</pre>
             </div>
-            <p className="mt-2 text-xs leading-snug text-slate-500 sm:text-sm">
+            <p className="mt-4 text-xs leading-snug text-slate-500 sm:text-sm">
               Open any tool below, upload <span className="font-semibold text-ocean-deep">your photo + the mascot</span>, paste the prompt, generate and save the result.
             </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <div className="mt-4 flex flex-wrap gap-1.5">
               {AI_TOOLS.map((tool) => (
                 <a key={tool.name} href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1 rounded-full border border-cyan-200 bg-white px-3 text-xs font-semibold text-ocean-primary shadow-sm transition hover:border-ocean-primary hover:bg-cyan-50">
                   {tool.name}
@@ -250,7 +250,7 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
           <section>
             <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">4 · Bring it back and add the frame</h3>
-            <div className="mt-2 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-cyan-50 p-3">
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-cyan-50 p-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-500 shadow-sm ring-1 ring-emerald-100">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
@@ -567,11 +567,11 @@ function FrameGenerator() {
                 aria-label="Open the optional AI image guide"
                 className="inline-flex min-h-8 items-center gap-1 rounded-full border border-cyan-100 bg-white/80 px-2.5 text-xs font-semibold text-ocean-medium shadow-sm backdrop-blur transition hover:border-cyan-300 hover:text-ocean-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:min-h-9 sm:px-3 sm:text-sm"
               >
-                <span aria-hidden="true">✨</span><span className="hidden sm:inline">AI guide</span>
+                <span aria-hidden="true">✨</span><span className="hidden sm:inline">How to Create Character Image</span>
               </button>
             </div>
           </div>
-          <div className="mt-1.5 flex items-end justify-between gap-3 sm:mt-2">
+          <div className="mt-1.5 flex items-end justify-between gap-3 sm:mt-4">
             <div className="min-w-0">
               <h1 className="font-syncopate text-base font-bold leading-tight text-ocean-deep sm:text-xl">
                 Create your <span className="bg-gradient-to-r from-ocean-primary via-sky-500 to-cyan-400 bg-clip-text text-transparent">event frame</span>
@@ -591,7 +591,7 @@ function FrameGenerator() {
               </li>
             ))}
           </ol>
-          <div aria-hidden="true" className="mx-[10%] mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/80">
+          <div aria-hidden="true" className="mx-[10%] mt-4 h-1.5 overflow-hidden rounded-full bg-slate-200/80">
             <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-ocean-primary to-cyan-400 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
           </div>
           <ol aria-label="Frame creation steps" className="mt-1 grid grid-cols-4">
@@ -603,7 +603,6 @@ function FrameGenerator() {
               </li>
             ))}
           </ol>
-          <p aria-live="polite" className={`mt-1 text-center text-[10px] font-medium leading-tight sm:text-xs ${downloaded ? "text-emerald-600" : "text-ocean-medium"}`}>{downloaded ? "Ready to share — select any step to revisit it" : STEPS[currentStep].hint}</p>
         </section>
 
         <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
@@ -617,10 +616,10 @@ function FrameGenerator() {
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm ring-1 ring-cyan-100">✨</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-bold text-ocean-deep sm:text-sm">No image yet? Make one with AI <span className="font-medium text-ocean-medium">(optional)</span></span>
-                  <span className="block truncate text-[11px] text-slate-500 sm:text-xs">Mascot download + prompt + AI tools — then come back and upload</span>
+                  <span className="block text-xs font-bold text-ocean-deep sm:text-sm">Haven’t created your image yet? <span className="font-medium text-ocean-medium">(optional)</span></span>
+                  <span className="block truncate text-[11px] text-slate-500 sm:text-xs">Follow the quick guide to generate your character image.</span>
                 </span>
-                <span className="shrink-0 rounded-lg bg-ocean-primary px-3 py-1.5 text-[11px] font-bold text-white shadow-sm">Open guide</span>
+                <span className="shrink-0 rounded-lg bg-ocean-primary px-3 py-1.5 text-[11px] font-bold text-white shadow-sm">View Instructions</span>
               </button>
 
               <label
@@ -654,23 +653,23 @@ function FrameGenerator() {
                 </p>
                 <button type="button" onClick={nextStep} disabled={!photo} className={primaryButtonClass}>Next: Pick a caption <span aria-hidden="true">→</span></button>
               </div>
-              {error && <p role="alert" className="mt-2 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+              {error && <p role="alert" className="mt-4 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
             </section>
           )}
 
           {currentStep === 1 && (
             <section id="caption-step" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 p-3 shadow-xl shadow-sky-500/10 backdrop-blur sm:p-4" aria-labelledby="step-1-title">
-              {stepHeader(1, "Select a caption", "Which one are you today?")}
+              {stepHeader(1, "Select a caption", "Pick a caption that fits you")}
               <fieldset className="flex min-h-0 flex-1 flex-col">
                 <legend className="sr-only">Available captions</legend>
-                <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid min-h-0 flex-1 grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                   {FRAME_VARIANTS.map((item) => (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => { setVariant(item.id); setDownloaded(false); setError(""); }}
                       aria-pressed={variant === item.id}
-                      className={`group relative flex min-h-0 min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border-2 p-1.5 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:p-2.5 ${
+                      className={`group relative flex min-h-0 min-w-0 flex-col items-stretch justify-center overflow-hidden rounded-2xl border-2 p-1.5 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-primary sm:p-2.5 ${
                         variant === item.id
                           ? "border-ocean-primary bg-cyan-50/70 shadow-lg shadow-cyan-500/15 ring-2 ring-cyan-100"
                           : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md"
@@ -684,12 +683,12 @@ function FrameGenerator() {
                       <span className={`flex min-h-24 flex-1 items-center justify-center overflow-hidden rounded-xl p-1 transition sm:min-h-32 ${variant === item.id ? "bg-gradient-to-b from-cyan-100 to-sky-50" : "bg-slate-50 group-hover:bg-cyan-50/60"}`}>
                         <FrameThumb format={format} variant={item.id} />
                       </span>
-                      <span className="mt-1.5 block shrink-0 text-center text-[11px] font-semibold leading-tight text-ocean-deep sm:mt-2 sm:text-sm">{item.label}</span>
+                      <span className="mt-1.5 block shrink-0 text-center text-[11px] font-semibold leading-tight text-ocean-deep sm:mt-4 sm:text-sm">{item.label}</span>
                     </button>
                   ))}
                 </div>
               </fieldset>
-              {error && <p role="alert" className="mt-2 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+              {error && <p role="alert" className="mt-4 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
               <div className="mt-3 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
                 <button type="button" onClick={nextStep} disabled={!variant} className={primaryButtonClass}>Next: Adjust photo <span aria-hidden="true">→</span></button>
@@ -731,7 +730,7 @@ function FrameGenerator() {
                 Drag to reposition · pinch or scroll to zoom.
                 <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-ocean-medium">Previewing {frameFormat.label} · format comes next</span>
               </p>
-              <div className="mt-2 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
+              <div className="mt-4 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
                 <button type="button" onClick={nextStep} disabled={!photo || !variant} className={primaryButtonClass}>Next: Format &amp; download <span aria-hidden="true">→</span></button>
               </div>
@@ -762,7 +761,7 @@ function FrameGenerator() {
                           </span>
                         )}
                         <span className="flex h-24 shrink-0 items-center justify-center sm:h-28">
-                          <FrameThumb format={id} variant={variant ?? "building"} />
+                          <FrameThumb format={id} variant={variant ?? "building"} boxClassName="h-full w-auto" />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-bold text-ocean-deep sm:text-base">{fmt.label}</span>
@@ -780,11 +779,11 @@ function FrameGenerator() {
                 </div>
               </div>
               {downloaded && (
-                <div role="status" className="mt-2 flex shrink-0 items-center gap-2 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2.5 text-xs font-medium text-emerald-800 sm:px-4 sm:text-sm">
+                <div role="status" className="mt-4 flex shrink-0 items-center gap-2 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-2.5 text-xs font-medium text-emerald-800 sm:px-4 sm:text-sm">
                   <span aria-hidden="true">🎉</span> Saved! Change the caption or format and download again anytime.
                 </div>
               )}
-              <div className="mt-2 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
+              <div className="mt-4 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
                 <button type="button" onClick={download} disabled={!photo || !variant} className={primaryButtonClass}>
                   <span className="inline-flex items-center justify-center gap-2">
