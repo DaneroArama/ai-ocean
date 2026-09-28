@@ -34,7 +34,7 @@ export function AboutSection() {
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:gap-x-12">
               {[
-                { icon: N1, value: '50+', label: 'icons Hosted' },
+                { icon: N1, value: '50+', label: 'Events Hosted' },
                 { icon: N2, value: '2500+', label: 'Total Participants' },
                 { icon: N3, value: '320+', label: 'Trained Mentees' },
                 { icon: N4, value: '65+', label: 'Volunteers Engaged' },
@@ -57,8 +57,7 @@ export function AboutSection() {
             About the Event
           </h2>
           <p className="font-quicksand font-medium text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-3">
-            During the AI Ocean icon, you&apos;ll work alongside people from all backgrounds, experiment with
-            user-friendly tools, and experience the thrill of building your own products
+            During the AI Ocean event, you’ll work alongside people from all backgrounds, experiment with user-friendly tools, and experience the thrill of building your own products
           </p>
         </div>
 
