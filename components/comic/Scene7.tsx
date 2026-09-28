@@ -237,7 +237,7 @@ export default function Scene7({ audioController }: Scene7Props) {
           duration: Math.max(scene7Timeline.duration() - 9.2, 0.5),
           ease: "none",
           onUpdate: () => {
-            audioController?.scrubOneShot("michaelBay", bayVolume.value);
+            audioController?.scrubOneShot("ending", bayVolume.value);
           },
         },
         9.2

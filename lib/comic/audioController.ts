@@ -8,7 +8,7 @@ type SoundEffect =
   | "characterEntrance"
   | "dialogue"
   | "glowing"
-  | "michaelBay";
+  | "ending";
 
 export class AudioController {
   private sounds: Map<SoundEffect, HTMLAudioElement> = new Map();
@@ -28,7 +28,7 @@ export class AudioController {
       characterEntrance: "/assets/comic/Sound Effects/Charater Showup.mp3",
       dialogue: "/assets/comic/Sound Effects/Text Showup.mp3",
       glowing: "/assets/comic/Sound Effects/Shining Something.mp3",
-      michaelBay: "/assets/comic/Sound Effects/directed-by-michael-bay.mp3",
+      ending: "/assets/comic/Sound Effects/Beach Ending Song.mp3",
     };
 
     Object.entries(soundPaths).forEach(([key, path]) => {
