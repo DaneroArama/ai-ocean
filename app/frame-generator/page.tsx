@@ -97,13 +97,6 @@ const AI_TOOLS = [
   { name: "Ideogram", url: "https://www.ideogram.ai/" },
 ];
 
-const GUIDE_STEPS = [
-  "Download one of the five mascots below — that is your Image 2.",
-  "Have your own photo ready — that is your Image 1.",
-  "Open any AI tool, upload both images, paste the prompt and generate.",
-  "Download the result, then upload it here. Done — no sign-in needed.",
-];
-
 const STEPS = [
   { title: "Upload", hint: "Upload your image to get started" },
   { title: "Caption", hint: "Pick the caption that fits you" },
@@ -171,7 +164,7 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <div data-lenis-prevent className="fixed inset-0 z-50 flex items-end justify-center overscroll-contain sm:items-center" role="dialog" aria-modal="true" aria-labelledby="guide-title">
       <button type="button" aria-label="Close guide" onClick={onClose} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
       <div className="relative z-10 flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:mx-4 sm:rounded-3xl">
         <header className="flex shrink-0 items-start gap-3 border-b border-slate-100 bg-gradient-to-r from-cyan-50 to-sky-50 px-4 py-3 sm:px-5 sm:py-4">
@@ -185,21 +178,24 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 space-y-5 overflow-auto px-4 py-4 sm:px-5 sm:py-5">
+          <div data-lenis-prevent className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">How it works</h3>
-            <ol className="mt-2 space-y-2">
-              {GUIDE_STEPS.map((step, index) => (
-                <li key={step} className="flex items-start gap-2.5 text-xs leading-snug text-slate-600 sm:text-sm">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ocean-primary text-[10px] font-bold text-white">{index + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">1 · Prepare your photo (Image 1)</h3>
+            <div className="mt-2 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-ocean-primary shadow-sm ring-1 ring-cyan-100">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                  <circle cx="12" cy="8.5" r="3.6" stroke="currentColor" strokeWidth="1.7" />
+                  <path d="M5 19.5c1.4-3.2 4-4.8 7-4.8s5.6 1.6 7 4.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                </svg>
+              </span>
+              <p className="text-xs leading-relaxed text-slate-600 sm:text-sm">
+                Any picture with <span className="font-semibold text-ocean-deep">your face</span> in it — a clear selfie, a portrait or a photo you already love. One person, front-facing, works best. It stays on your device.
+              </p>
+            </div>
           </section>
 
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">1 · Download a mascot</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">2 · Download a mascot you like (Image 2)</h3>
             <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
               {MASCOTS.map((mascot) => (
                 <a
@@ -222,7 +218,7 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </section>
 
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">2 · Copy the prompt</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">3 · Copy the prompt and generate</h3>
             <div className="mt-2 flex max-h-56 flex-col overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-inner sm:max-h-64">
               <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-slate-800/80 px-3 py-2">
                 <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300">
@@ -237,12 +233,11 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                   )}
                 </button>
               </div>
-              <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap break-words px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-slate-100 sm:px-4 sm:text-xs">{AI_PROMPT}</pre>
+              <pre data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain whitespace-pre-wrap break-words px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-slate-100 sm:px-4 sm:text-xs">{AI_PROMPT}</pre>
             </div>
-          </section>
-
-          <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">3 · Paste it into any AI tool</h3>
+            <p className="mt-2 text-xs leading-snug text-slate-500 sm:text-sm">
+              Open any tool below, upload <span className="font-semibold text-ocean-deep">your photo + the mascot</span>, paste the prompt, generate and save the result.
+            </p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {AI_TOOLS.map((tool) => (
                 <a key={tool.name} href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1 rounded-full border border-cyan-200 bg-white px-3 text-xs font-semibold text-ocean-primary shadow-sm transition hover:border-ocean-primary hover:bg-cyan-50">
@@ -251,9 +246,21 @@ function GuideModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 </a>
               ))}
             </div>
-            <p className="mt-2 text-[11px] leading-snug text-slate-500">
-              Tip: generate at <span className="font-semibold text-ocean-medium">1:1</span> if you plan to use the Post frame, or <span className="font-semibold text-ocean-medium">9:16</span> for the MyDay Story frame — you pick the format later.
-            </p>
+          </section>
+
+          <section>
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400">4 · Bring it back and add the frame</h3>
+            <div className="mt-2 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-cyan-50 p-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-500 shadow-sm ring-1 ring-emerald-100">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                  <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                  <path d="M4 15.5l4.5-4 3.5 3 3.5-3.5L20 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <p className="text-xs leading-relaxed text-slate-600 sm:text-sm">
+                Upload the picture you just generated on this page, pick a caption, adjust it, choose <span className="font-semibold text-ocean-deep">Post</span> or <span className="font-semibold text-ocean-deep">MyDay Story</span> and download your framed photo — about a minute, no sign-in needed.
+              </p>
+            </div>
           </section>
         </div>
 
