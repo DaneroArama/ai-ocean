@@ -538,7 +538,7 @@ export function CommunityPartnersSection() {
           {/* Spotlight beams shining down from the top edge */}
           <div
             aria-hidden="true"
-            className="cta-beam pointer-events-none absolute right-[4%] top-0 h-[78%] w-[52%] max-w-[420px] bg-linear-to-b from-white/60 via-white/40 to-transparent sm:-top-4 sm:right-[6%] sm:h-[130%] sm:w-[44%] z-10 shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] blur-sm"
+            className="cta-beam pointer-events-none absolute right-[4%] -top-5 h-[78%] w-[52%] max-w-[420px] bg-linear-to-b from-white/60 via-white/40 to-transparent sm:-top-4 sm:right-[6%] sm:h-[130%] sm:w-[44%] z-10 shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] blur-sm"
             style={{ clipPath: 'polygon(40% 0, 62% 0, 100% 100%, 0 100%)', transform: 'rotate(6deg)' }}
           />
 
@@ -552,8 +552,8 @@ export function CommunityPartnersSection() {
           <Sparkle className="cta-star absolute bottom-[7%] right-[3%] w-14 text-[#FFC93C] drop-shadow-[0_0_10px_rgba(255,201,60,0.6)] md:w-24" style={{ animationDuration: '3.6s', animationDelay: '0.5s' }} />
 
           {/* Floating white square card under the spotlight */}
-          <div aria-hidden="true" className="pointer-events-none absolute right-4 top-5 z-0 sm:right-[9%] sm:top-1/2 sm:-translate-y-1/2">
-            <div className="cta-square relative flex h-24 w-24 items-center justify-center rounded-[18px] bg-gradient-to-b from-white to-[#EDF8FE] shadow-[0_18px_40px_rgba(9,86,146,0.3)] sm:h-48 sm:w-48 sm:rounded-[26px] md:h-60 md:w-60 lg:h-64 lg:w-64 -rotate-12">
+          <div aria-hidden="true" className="pointer-events-none absolute right-[18%] top-[35%] md:top-5 z-0 sm:right-[9%] sm:top-1/2 sm:-translate-y-1/2">
+            <div className="cta-square relative flex h-28 w-28 items-center justify-center rounded-[18px] bg-gradient-to-b from-white to-[#EDF8FE] shadow-[0_18px_40px_rgba(9,86,146,0.3)] sm:h-48 sm:w-48 sm:rounded-[26px] md:h-60 md:w-60 lg:h-64 lg:w-64 -rotate-12">
               <span className="absolute inset-2 rounded-[12px] border-2 border-dashed border-[#63C6F1] sm:inset-3 sm:rounded-[18px] sm:border-[3px]" />
               <svg viewBox="0 0 100 100" className="relative h-7 w-7 sm:h-14 sm:w-14 md:h-16 md:w-16">
                 <path d="M50 24v52M24 50h52" stroke="#5FC8F5" strokeWidth="16" strokeLinecap="round" />
