@@ -108,24 +108,36 @@ export function Navbar() {
               </div>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
+              <div className="hidden lg:flex items-center space-x-4 xl:space-x-8">
                 <button
-                  onClick={() => scrollTo('hero')}
-                  className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                  onClick={() => scrollTo('agenda')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
-                  Home
+                  Agenda
                 </button>
                 <button
-                  onClick={() => scrollTo('event')}
-                  className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                  onClick={() => scrollTo('speakers')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
-                  Event
+                  Speakers
                 </button>
                 <button
-                  onClick={() => scrollTo('characters')}
-                  className="font-syne text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                  onClick={() => scrollTo('sponsors')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
-                  Characters
+                  Sponsors
+                </button>
+                <Link
+                  href="/archetype"
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                >
+                  Archetypes
+                </Link>
+                <button
+                  onClick={() => scrollTo('about')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                >
+                  About
                 </button>
               </div>
 
@@ -142,7 +154,7 @@ export function Navbar() {
               </div>
 
               {/* Mobile Menu Button */}
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <button
                   onClick={toggleMobileMenu}
                   className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
@@ -166,25 +178,38 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-ocean-primary/95 backdrop-blur-sm border-t border-white/10 animate-slide-in-top">
+          <div className="lg:hidden bg-ocean-primary/95 backdrop-blur-sm border-t border-white/10 animate-slide-in-top">
             <div className="px-4 py-4 space-y-3">
               <button
-                onClick={() => scrollTo('hero')}
+                onClick={() => scrollTo('agenda')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
-                Home
+                Agenda
               </button>
               <button
-                onClick={() => scrollTo('event')}
+                onClick={() => scrollTo('speakers')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
-                Event
+                Speakers
               </button>
               <button
-                onClick={() => scrollTo('characters')}
+                onClick={() => scrollTo('sponsors')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
-                Characters
+                Sponsors
+              </button>
+              <Link
+                href="/archetype"
+                onClick={closeMobileMenu}
+                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
+              >
+                Archetypes
+              </Link>
+              <button
+                onClick={() => scrollTo('about')}
+                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
+              >
+                About
               </button>
 
               {/* Mobile Register Button */}

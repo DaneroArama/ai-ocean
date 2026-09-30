@@ -525,7 +525,7 @@ export const ScheduleSection = () => {
   }
 
   return (
-    <section className="py-20 px-4 bg-[#F0FBFF] relative overflow-hidden">
+    <section id="agenda" className="scroll-mt-16 py-20 px-4 bg-[#F0FBFF] relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
