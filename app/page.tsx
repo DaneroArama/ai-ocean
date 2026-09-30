@@ -64,7 +64,7 @@ export default function Home() {
       {/* Community Partners - Section 8 */}
       <CommunityPartnersSection/>
 
-      {/* About - Section 9 */}
+      {/* About UXMM */}
       <AboutSection/>
     </PublicLayout>
   )

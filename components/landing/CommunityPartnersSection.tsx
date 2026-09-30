@@ -502,7 +502,7 @@ export function CommunityPartnersSection() {
   return (
     <div ref={rootRef} className="dotted-bg">
       {/* ============ Sponsors & Partners ============ */}
-      <section ref={sponsorsSectionRef} className="relative py-20 overflow-hidden">
+      <section id="sponsors" ref={sponsorsSectionRef} className="relative scroll-mt-16 py-20 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2
             ref={sponsorsTitleRef}
