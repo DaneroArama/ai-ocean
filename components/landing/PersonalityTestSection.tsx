@@ -118,7 +118,7 @@ export function PersonalityTestSection() {
             Ocean Archetype
           </h2>
           
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
             <Link
               href="/archetype"
               className="group whitespace-nowrap shrink-0 w-fit flex items-center gap-2 bg-[#FFA726] hover:bg-[#FFB02E] text-white font-syne font-semibold text-sm md:text-base px-7 md:px-8 py-3 rounded-full border border-white shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"

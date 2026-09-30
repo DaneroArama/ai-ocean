@@ -50,10 +50,10 @@ export function EventCTASection() {
       </div>
 
       {/* Marquee rows - w-full overflow-hidden to not affect CTA width */}
-      <div className="relative max-w-7xl mx-auto mt-12 md:mt-16 lg:mt-20 w-full overflow-hidden">
+      <div className="relative max-w-7xl mx-auto mt-12 md:mt-16 lg:mt-20 px-4 w-full overflow-hidden">
         {/* ABOUT THE Event */}
         <div className="text-center mt-8 md:mt-10">
-          <h2 className="font-dela-gothic-one text-[#0B4A8A] text-xl md:text-4xl lg:text-5xl tracking-wide">
+          <h2 className="font-dela-gothic-one text-[#0B4A8A] text-4xl md:text-5xl tracking-wide">
             About the Event
           </h2>
           <p className="font-quicksand font-semibold text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-6">
@@ -89,7 +89,7 @@ export function EventCTASection() {
               key={c.title}
               className="bg-[#F2F9FF] border-3 border-dashed border-ocean-surface rounded-3xl p-4 md:p-5 flex gap-3 md:gap-4 items-start"
             >
-              <Image src={c.icon} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+              <Image src={c.icon} alt="about_icon" className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0" />
               <div>
                 <div className="font-dela-gothic-one text-[#0B4A8A] text-base md:text-[16px] lg:text-xl leading-tight">
                   {c.title}
@@ -103,7 +103,7 @@ export function EventCTASection() {
 
           {/* Full width last card */}
           <div className="md:col-span-2 bg-[#F2F9FF] border-3 border-dashed border-ocean-surface rounded-3xl p-4 md:p-5 flex gap-3 md:gap-4 items-start">
-            <Image src={A5} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+            <Image src={A5} alt="about_icon" className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0" />
             <div>
               <div className="font-dela-gothic-one text-[#0B4A8A] text-base md:text-[16px] lg:text-xl leading-tight">
                 Building Products with AI

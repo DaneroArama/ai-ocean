@@ -286,11 +286,13 @@ function FrameGenerator() {
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [downloaded, setDownloaded] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [adjustmentComplete, setAdjustmentComplete] = useState(false);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const exportingRef = useRef(false);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const pinchDistanceRef = useRef<number | null>(null);
@@ -418,17 +420,40 @@ function FrameGenerator() {
     loadFile(event.dataTransfer.files?.[0]);
   };
 
-  const download = () => {
+  const download = async () => {
     const canvas = canvasRef.current;
     if (!canvas || !photo || !variant) {
       setError(!photo ? "Upload an image to continue." : "Choose a caption to continue.");
       return;
     }
-    const link = document.createElement("a");
-    link.download = `ai-ocean-${format}-${variant}-frame.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-    setDownloaded(true);
+    if (exportingRef.current) return;
+    exportingRef.current = true;
+    setExporting(true);
+    setError("");
+    let url = "";
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) throw new Error("PNG export failed");
+      url = URL.createObjectURL(blob);
+      // Safari/iOS ignores `download` on data: URLs and needs the anchor
+      // inside the document, so use a blob URL with an attached <a>.
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `ai-ocean-${format}-${variant}-frame.png`;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setDownloaded(true);
+    } catch {
+      // Last resort (old iOS): show the image so it can be long-press saved.
+      if (url) window.open(url, "_blank");
+      setError("Couldn't start the download — press and hold the image, then choose “Save to Photos”.");
+    } finally {
+      if (url) window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      exportingRef.current = false;
+      setExporting(false);
+    }
   };
 
   const handlePreviewPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -783,12 +808,13 @@ function FrameGenerator() {
                   <span aria-hidden="true">🎉</span> Saved! Change the caption or format and download again anytime.
                 </div>
               )}
+              {error && <p role="alert" className="mt-3 shrink-0 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700 sm:text-sm">{error}</p>}
               <div className="mt-4 flex shrink-0 flex-col-reverse gap-2 pt-1 sm:mt-3 sm:flex-row sm:justify-between sm:gap-3">
                 <button type="button" onClick={previousStep} className={secondaryButtonClass}><span aria-hidden="true">←</span> Previous</button>
-                <button type="button" onClick={download} disabled={!photo || !variant} className={primaryButtonClass}>
+                <button type="button" onClick={download} disabled={!photo || !variant || exporting} className={primaryButtonClass}>
                   <span className="inline-flex items-center justify-center gap-2">
                     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 18h14" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    {downloaded ? "Download again" : "Download framed photo"}
+                    {exporting ? "Preparing your PNG…" : downloaded ? "Download again" : "Download framed photo"}
                   </span>
                 </button>
               </div>
