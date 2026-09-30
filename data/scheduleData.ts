@@ -1,4 +1,4 @@
-﻿// Types for Schedule Data
+// Types for Schedule Data
 export type CardType = 'finished' | 'confirmed' | 'upcoming'
 
 export interface Person {
@@ -52,9 +52,9 @@ export const phases: PhaseCard[] = [
   { phase: 'Phase 1', title: 'Pre Event', date: '20', month: 'SEP' },
   { phase: 'Phase 2', title: 'Main Event Day 1' },
   { phase: 'Phase 2', title: 'Main Event Day 2' },
-  { phase: 'Phase 3', title: 'Buildathon' },
+  { phase: 'Phase 3', title: 'Mentorship & Buildathon' },
   { phase: 'Phase 4', title: 'Evaluation & Cross-Border Judging' },
-  { phase: 'Phase 5', title: 'Judge Panel Discussion' },
+  { phase: 'Phase 5', title: 'Judge Insights' },
   { phase: 'Phase 6', title: 'Awards Ceremony' },
 ]
 
@@ -66,7 +66,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     title: 'Pre-event Online Panel',
     scheduleItems: [
       {
-        time: '7:30 - 8:30 PM',
+        time: '7:00 - 8:30 PM',
         events: [
           {
             title: 'Panel Discussion',
@@ -126,7 +126,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
   3: {
     type: 'upcoming',
     backgroundColor: 'from-gray-300 to-gray-400',
-    title: 'Buildathon',
+    title: 'Mentorship & Buildathon',
     description: 'Continuous expert mentorship support',
     scheduleItems: [],
     upcomingItems: [
@@ -150,7 +150,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
   5: {
     type: 'upcoming',
     backgroundColor: 'from-gray-300 to-gray-400',
-    title: 'Judge Panel Discussion',
+    title: 'Judge Insights',
     description: 'Inside the judge\'s mind : what makes a product succeed',
     scheduleItems: [],
     upcomingItems: [

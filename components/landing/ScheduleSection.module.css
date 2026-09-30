@@ -1,0 +1,89 @@
+.section {
+  background: #fff;
+  color: #00558d;
+  padding: 76px 36px 64px;
+  overflow: clip;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+.heading { position: relative; width: fit-content; max-width: 100%; text-align: center; margin: 0 auto 58px; }
+.heading h2 { font-family: var(--font-quicksand), sans-serif; font-size: clamp(32px, 4.9vw, 60px); font-weight: 800; letter-spacing: -2px; line-height: 1.2; }
+.badge { position: absolute; z-index: 1; padding: 7px 23px; border: 2px solid #ffffff90; border-radius: 999px; color: white; font-size: 12px; font-weight: 700; box-shadow: inset 0 0 9px #ffffffa0, 0 3px 12px #00000016; white-space: nowrap; }
+.phaseBadge { top: -27px; left: -82px; background: linear-gradient(#ffa27d, #ff7845); }
+.eventBadge { right: -78px; bottom: -5px; background: linear-gradient(#8ae8ff, #26bdf0); }
+.phases { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; padding: 0 0 4px; }
+.phase { position: relative; display: flex; flex-direction: column; text-align: left; min-height: 160px; padding: 14px 14px 12px; background: #fff; border: 1px solid #f8f8f8; border-radius: 16px; box-shadow: 0 0 6px #00000006; cursor: pointer; transition: background .2s, box-shadow .2s; }
+.phase:hover { box-shadow: 0 4px 16px #00aeeb20; }
+.phaseLabel { font-size: 11px; color: #ff9c00; font-weight: 600; margin-bottom: 3px; }
+.phaseTitle { font-family: var(--font-syne), sans-serif; font-size: 15px; font-weight: 600; line-height: 1.2; max-width: 135px; }
+.phaseLogo { width: 44px; height: 44px; object-fit: contain; margin-top: auto; opacity: .55; padding-top: 3px; }
+.selected { background: #04b5eb; color: #fff; border-color: #04b5eb; }
+.selected::after { content: ''; position: absolute; inset: 3px; border: 2px dashed white; border-radius: 12px; pointer-events: none; }
+.selected .phaseLabel { color: #fff; }
+.selected .phaseLogo { filter: brightness(0) invert(1); opacity: .8; }
+.rays { position: absolute; width: 90px; height: 34px; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); background: repeating-conic-gradient(from -65deg at 50% 100%, #fff7a3 0deg 16deg, transparent 16deg 30deg); mask-image: linear-gradient(transparent, #000); clip-path: polygon(0 45%, 16% 15%, 39% 0, 63% 0, 85% 18%, 100% 48%, 50% 100%); }
+.date { margin-top: auto; padding-top: 18px; font-family: var(--font-syne), sans-serif; font-size: 30px; font-weight: 700; line-height: 1; }
+.date span { display: block; margin-top: 3px; font-size: 18px; }
+.agenda { margin: 49px 20px 0; padding: 0 14px 18px; border-radius: 24px; background: linear-gradient(180deg, #25bff0 0%, #a0e8fc 32%, #fff 89%); box-shadow: inset 0 0 14px 3px #ffffffb3, 0 5px 22px #00558d03; }
+.agendaHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 50px; padding: 10px 7px; color: white; }
+.agendaHeader h3 { font-family: var(--font-quicksand), sans-serif; font-size: 20px; font-weight: 800; }
+.logos { display: flex; gap: 8px; flex-shrink: 0; }
+.logos img { object-fit: contain; filter: brightness(0) invert(1); }
+.agendaBody { padding: 36px 23px 32px; border-radius: 16px; background: radial-gradient(circle, #ededed 1.4px, transparent 1.6px) 10px 0 / 24px 24px, white; }
+.scheduleItem { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; padding: 16px 15px; border: 2px dashed #ddd; outline: 4px solid #fff; border-radius: 14px; background: #fff; box-shadow: 0 0 9px #0000000a; }
+.scheduleItem + .scheduleItem { margin-top: 20px; }
+.time { font-size: 18px; font-weight: 700; white-space: nowrap; }
+.events { display: flex; flex-direction: column; gap: 26px; }
+.event { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.eventCopy { min-width: 0; }
+.event h4, .upcoming h4 { font-family: var(--font-quicksand), sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+.event p, .upcoming p { color: #454545; font-size: 13px; line-height: 1.3; font-weight: 500; }
+.avatars { display: flex; justify-content: flex-end; flex-shrink: 0; padding-top: 1px; }
+.person { position: relative; margin-left: -12px; }
+.person:first-child { margin-left: 0; }
+.person:hover, .person:focus-within { z-index: 2; }
+.avatar { display: block; width: 38px; height: 38px; border: 2px solid #fff; border-radius: 50%; background: #eee; box-shadow: 0 0 0 2px #f0f0f0; cursor: pointer; }
+.avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; object-position: top; }
+.tooltip { position: absolute; z-index: 5; right: -12px; bottom: calc(100% + 20px); width: max-content; max-width: 245px; display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 14px; background: #ffaf08; box-shadow: 0 4px 12px #0000001c; color: #fff; pointer-events: none; }
+.tooltip::after { content: ''; position: absolute; right: 22px; bottom: -20px; width: 17px; height: 17px; border-radius: 50%; background: #ffaf08; }
+.tooltip strong { font-size: 15px; }
+.tooltip span { font-size: 11px; }
+.tooltip small { color: #73500a; font-size: 11px; margin-top: 4px; }
+.upcoming { background: white; border: 2px dashed #ddd; border-radius: 14px; padding: 22px; }
+.upcomingLabel { display: block; margin-bottom: 10px; color: #d58400; font-size: 12px; font-weight: 700; }
+.upcoming ul { display: grid; gap: 10px; margin: 20px 0 0; padding-left: 20px; list-style: disc; font-size: 14px; }
+.upcoming li::marker { color: #00b6eb; }
+@media (min-width: 1200px) { .phase { min-height: 180px; } }
+@media (max-width: 1100px) {
+  .section { padding: 68px 20px 48px; }
+  .heading { margin-bottom: 48px; }
+  .phaseBadge { left: -24px; }
+  .eventBadge { right: -24px; bottom: -22px; }
+  .phases { display: flex; overflow-x: auto; padding: 36px 4px 12px; margin-top: -20px; gap: 10px; scroll-snap-type: x mandatory; scroll-padding-inline: 4px; scrollbar-width: thin; scrollbar-color: #9ddff3 transparent; -webkit-overflow-scrolling: touch; }
+  .phase { flex: 0 0 140px; scroll-snap-align: start; }
+  .agenda { margin: 30px 0 0; }
+  .scheduleItem { grid-template-columns: 1fr; gap: 18px; }
+  .agendaBody { padding: 28px 16px; }
+}
+@media (max-width: 600px) {
+  .section { padding-inline: 16px; }
+  .heading h2 { font-size: clamp(26px, 7vw, 36px); letter-spacing: -1px; }
+  .phaseBadge { left: 0; top: -34px; padding: 5px 16px; }
+  .eventBadge { right: 0; padding: 5px 18px; }
+  .agenda { padding: 0 9px 12px; }
+  .agendaHeader h3 { font-size: 17px; }
+  .logos { gap: 4px; }
+  .logos img { width: 18px; height: 18px; }
+  .agendaBody { padding: 25px 10px; }
+  .scheduleItem { padding: 16px 12px; }
+  .event { flex-direction: column; gap: 12px; }
+  .avatars { position: relative; align-self: flex-start; flex-wrap: wrap; justify-content: flex-start; max-width: 100%; gap: 8px; }
+  .person { position: static; margin-left: 0; }
+  .avatar { width: 44px; height: 44px; }
+  .tooltip { left: 0; right: auto; max-width: min(245px, calc(100vw - 110px)); }
+  .tooltip::after { left: 14px; right: auto; }
+  .event p, .upcoming p { font-size: 14px; line-height: 1.5; }
+  .upcoming { padding: 18px 14px; }
+  .agendaHeader { align-items: flex-start; }
+  .logos { padding-top: 2px; }
+  .events { gap: 24px; }
+}
