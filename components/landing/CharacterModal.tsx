@@ -1,13 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
+import XIcon from '@/app/assets/X.svg'
+import CaretLeftIcon from '@/app/assets/CaretLeft.svg'
+import CaretRightIcon from '@/app/assets/CaretRight.svg'
 
 // Import mascot images (animated GIFs)
 import Shark from '@/app/assets/Mascots GIF/Sharkie.gif'
@@ -53,7 +52,7 @@ const TRAIT_ICONS: Record<string, typeof BoldIcon> = {
 }
 
 // Character data with unique background colors
-const characters = [
+export const characters = [
   {
     id: 'shark',
     name: 'Sharkie (The Catalyst)',
@@ -121,19 +120,10 @@ function extractHexColor(bgRight: string) {
 }
 
 /**
- * Single character slide - full viewport section
+ * Single character panel — reused inside the full-width modal.
+ * Left: character & quote, right: name + bio + traits
  */
-function CharacterSlide({
-  character,
-  scrollTween,
-  index,
-}: {
-  character: typeof characters[number]
-  scrollTween: gsap.core.Tween | null
-  index: number
-}) {
-  const sectionRef = useRef<HTMLElement>(null)
-  const slideContentRef = useRef<HTMLDivElement>(null)
+function CharacterSlide({ character }: { character: typeof characters[number] }) {
   const bioRef = useRef<HTMLDivElement>(null)
   const scrollbarThumbRef = useRef<HTMLDivElement>(null)
   const scrollbarTrackRef = useRef<HTMLDivElement>(null)
@@ -144,37 +134,6 @@ function CharacterSlide({
 
   const bgRightColor = extractHexColor(character.bgRight)
   const [startColor, endColor] = colorMap[character.bgLeft] || ['#02A4E3', '#0045A1']
-
-  // Desktop: exit animation only (scale down as it scrolls out)
-  useEffect(() => {
-    if (!scrollTween) return
-    const node = sectionRef.current
-    if (!node) return
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        slideContentRef.current,
-        { scale: 1, opacity: 1 },
-        {
-          scale: 0.85,
-          opacity: 0.3,
-          duration: 1,
-          ease: 'power2.in',
-          immediateRender: true,
-          scrollTrigger: {
-            trigger: node,
-            containerAnimation: scrollTween,
-            horizontal: true,
-            start: 'center left',
-            end: 'right left',
-            scrub: 1,
-          },
-        }
-      )
-    })
-
-    return () => ctx.revert()
-  }, [scrollTween, index])
 
   // Bio scrollbar handlers
   const handleBioScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -260,11 +219,10 @@ function CharacterSlide({
   }, [isScrollbarDragging])
 
   return (
-    <section
-      ref={sectionRef}
-      className={`relative min-h-[100svh] md:h-screen md:min-h-screen md:w-screen md:flex-none bg-gradient-to-b ${character.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
+    <div
+      className={`relative w-full min-h-full md:h-full bg-gradient-to-b ${character.bgLeft} overflow-hidden transition-colors duration-700 flex flex-col justify-center py-6 md:py-0`}
     >
-      <div ref={slideContentRef} className="relative w-full h-auto md:h-full flex-1 md:flex-none flex items-center py-0 md:py-0 md:min-h-0">
+      <div className="relative w-full h-auto md:h-full flex-1 md:flex-none flex items-center py-0 md:py-0 md:min-h-0">
         <div className="w-full h-auto md:h-full flex flex-col md:flex-row relative md:min-h-0">
 
           {/* LEFT SIDE - Character & Quote */}
@@ -391,7 +349,7 @@ function CharacterSlide({
           </svg>
 
           {/* RIGHT SIDE CONTENT */}
-          <div className="flex-none w-full md:w-[52%] lg:w-5/9 h-auto md:h-full md:min-h-0 md:self-stretch relative flex flex-col justify-center p-6 md:p-10 md:pl-14 lg:pl-20 z-20 shrink-0 rounded-4xl md:rounded-none -mt-6 md:mt-0">
+          <div className="flex-none w-full md:w-[52%] lg:w-5/9 h-auto md:h-full md:min-h-0 md:self-stretch relative flex flex-col justify-center p-6 md:p-10 md:pr-20 lg:pr-24 md:pl-14 lg:pl-20 z-20 shrink-0 rounded-4xl md:rounded-none -mt-6 md:mt-0">
             {/* Character As Background */}
             <div className="absolute z-0 right-[-20%]">
               <Image
@@ -505,99 +463,168 @@ function CharacterSlide({
 
       {/* Bottom wave decoration */}
       <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/10 to-transparent pointer-events-none"></div>
-    </section>
+    </div>
   )
 }
 
+interface CharacterModalProps {
+  index: number
+  onClose: () => void
+}
+
 /**
- * Character Introduction Section
+ * Full-width character modal
  *
- * Features:
- * - Desktop (>=768px): horizontal scroll — the track pins in place and
- *   translates left as the user scrolls down, snapping one character per
- *   "screen" of scroll, with a scale/opacity transition as each slide
- *   crosses in and out of view.
- * - Mobile (<768px): unchanged, natural vertical stack.
- * - Each slide: left character + quote, right name + bio + traits
- * - Scroll-triggered GSAP entrance animations
- * - Floating trapezium shape on desktop
- * - Custom scrollbar with draggable event logo indicator
+ * - Covers the whole viewport (edge to edge)
+ * - Left / right arrows (and arrow keys) cycle through all characters
+ * - Escape / close button dismisses it
+ * - Lenis page scrolling is paused while it is open
  */
-export function CharacterSection() {
-  const outerRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [scrollTween, setScrollTween] = useState<gsap.core.Tween | null>(null)
-  const totalSlides = characters.length
+export function CharacterModal({ index, onClose }: CharacterModalProps) {
+  const [current, setCurrent] = useState(index)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const isOpeningRef = useRef(true)
+  const directionRef = useRef(1)
 
-  useEffect(() => {
-    const mm = gsap.matchMedia()
+  const character = characters[current]
 
-    mm.add('(min-width: 768px)', () => {
-      const outer = outerRef.current
-      const track = trackRef.current
-      if (!outer || !track) return
-
-      const getTranslateX = () => track.scrollWidth - outer.clientWidth
-
-      const tween = gsap.to(track, {
-        x: () => -getTranslateX(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: outer,
-          start: 'center',
-          end: 'bottom bottom',
-          scrub: 1,
-          invalidateOnRefresh: true,
-          snap: {
-            snapTo: 1 / (characters.length - 1),
-            duration: { min: 0.2, max: 0.6 },
-            ease: 'power1.inOut',
-          },
-        },
-      })
-
-      setScrollTween(tween)
-
-      return () => {
-        tween.scrollTrigger?.kill()
-        tween.kill()
-        setScrollTween(null)
-      }
-    })
-
-    mm.add('(max-width: 767px)', () => {
-      if (trackRef.current) gsap.set(trackRef.current, { clearProps: 'x' })
-      setScrollTween(null)
-    })
-
-    const refreshId = requestAnimationFrame(() => ScrollTrigger.refresh())
-
-    return () => {
-      cancelAnimationFrame(refreshId)
-      mm.revert()
-    }
+  const navigate = useCallback((direction: number) => {
+    if (isOpeningRef.current) return
+    directionRef.current = direction
+    setCurrent((prev) => (prev + direction + characters.length) % characters.length)
   }, [])
 
+  // Entrance animation
+  useEffect(() => {
+    if (!overlayRef.current || !panelRef.current) return
+    const ctx = gsap.context(() => {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
+      gsap.fromTo(
+        panelRef.current,
+        { opacity: 0, scale: 0.94, y: 24 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.45,
+          ease: 'back.out(1.3)',
+          delay: 0.05,
+          onComplete: () => { isOpeningRef.current = false },
+        }
+      )
+    })
+    return () => ctx.revert()
+  }, [])
+
+  // Slide transition between characters
+  useEffect(() => {
+    if (!contentRef.current) return
+    gsap.fromTo(
+      contentRef.current,
+      { opacity: 0, x: directionRef.current * 80 },
+      { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' }
+    )
+  }, [current])
+
+  const handleClose = useCallback(() => {
+    if (isOpeningRef.current || !overlayRef.current || !panelRef.current) return
+    isOpeningRef.current = true
+    const ctx = gsap.context(() => {
+      gsap.to(panelRef.current, { opacity: 0, scale: 0.95, y: 16, duration: 0.22, ease: 'power2.in' })
+      gsap.to(overlayRef.current, { opacity: 0, duration: 0.28, ease: 'power2.in', onComplete: onClose })
+    })
+    return () => ctx.revert()
+  }, [onClose])
+
+  // Escape / arrow keys + lock background scroll (incl. Lenis)
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose()
+      if (e.key === 'ArrowLeft') navigate(-1)
+      if (e.key === 'ArrowRight') navigate(1)
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [handleClose, navigate])
+
   return (
-    <>
-      {/* Desktop: tall container + sticky horizontal scroll */}
-      <div ref={outerRef} className="relative hidden md:block" style={{ height: `${totalSlides * 100}vh` }}>
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <div ref={trackRef} className="flex h-screen will-change-transform">
-            {characters.map((character, i) => (
-              <CharacterSlide key={character.id} character={character} scrollTween={scrollTween} index={i} />
-            ))}
-          </div>
+    <div
+      ref={overlayRef}
+      data-lenis-prevent
+      data-lenis-prevent-touch
+      role="dialog"
+      aria-modal="true"
+      aria-label={character.name}
+      className="fixed inset-0 z-[1100] bg-black/70 backdrop-blur-sm flex items-center justify-center"
+      onClick={handleClose}
+    >
+      <div
+        ref={panelRef}
+        className="relative w-full h-full overflow-hidden bg-black shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Character content */}
+        <div ref={contentRef} className="h-full w-full overflow-y-auto">
+          <CharacterSlide key={character.id} character={character} />
         </div>
-      </div>
-      {/* Mobile: normal vertical flow */}
-      <div className="md:hidden">
-        <div className="flex flex-col">
-          {characters.map((character, i) => (
-            <CharacterSlide key={character.id} character={character} scrollTween={null} index={i} />
+
+        {/* Close */}
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 md:top-6 md:right-6 z-50 p-2 md:p-2.5 bg-white/20 hover:bg-white/40 border border-white/40 backdrop-blur-md rounded-full text-white hover:rotate-90 hover:scale-110 active:scale-95 transition-all duration-500 ease-out shadow-lg"
+        >
+          <Image src={XIcon} alt="" width={18} height={18} />
+        </button>
+
+        {/* Previous character */}
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="Previous character"
+          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 w-10 h-10 md:w-14 md:h-14 bg-black/25 hover:bg-black/45 border border-white/40 backdrop-blur-md rounded-full text-white flex items-center justify-center hover:scale-110 hover:-translate-x-1 active:scale-95 transition-all duration-300 ease-out shadow-lg"
+        >
+          <Image src={CaretLeftIcon} alt="" width={22} height={22} />
+        </button>
+
+        {/* Next character */}
+        <button
+          type="button"
+          onClick={() => navigate(1)}
+          aria-label="Next character"
+          className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 w-10 h-10 md:w-14 md:h-14 bg-black/25 hover:bg-black/45 border border-white/40 backdrop-blur-md rounded-full text-white flex items-center justify-center hover:scale-110 hover:translate-x-1 active:scale-95 transition-all duration-300 ease-out shadow-lg"
+        >
+          <Image src={CaretRightIcon} alt="" width={22} height={22} />
+        </button>
+
+        {/* Position indicator */}
+        <div className="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-50 items-center gap-2 bg-black/30 backdrop-blur-md border border-white/30 rounded-full px-3 py-1.5">
+          {characters.map((c, i) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => {
+                directionRef.current = i > current ? 1 : -1
+                setCurrent(i)
+              }}
+              aria-label={`Go to ${c.name}`}
+              className={`rounded-full transition-all duration-300 ${
+                i === current ? 'w-6 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
+              }`}
+            />
           ))}
         </div>
       </div>
-    </>
+    </div>
   )
 }

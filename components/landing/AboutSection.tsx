@@ -7,13 +7,6 @@ import N1 from '@/app/assets/num_icons_1.png'
 import N2 from '@/app/assets/num_icons_2.png'
 import N3 from '@/app/assets/num_icons_3.png'
 import N4 from '@/app/assets/num_icons_4.png'
-import A1 from '@/app/assets/about_icon_1.png'
-import A2 from '@/app/assets/about_icon_2.png'
-import A3 from '@/app/assets/about_icon_3.png'
-import A4 from '@/app/assets/about_icon_4.png'
-import A5 from '@/app/assets/about_icon_5.png'
-
-import Starfish from '@/app/assets/Starfish.png'
 
 export function AboutSection() {
   return (
@@ -47,70 +40,6 @@ export function AboutSection() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ABOUT THE Event */}
-        <div className="text-center mt-8 md:mt-10">
-          <h2 className="font-syncopate font-extrabold text-[#0B4A8A] text-xl md:text-2xl lg:text-3xl tracking-wide">
-            About the Event
-          </h2>
-          <p className="font-quicksand font-medium text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-3">
-            During the AI Ocean event, you’ll work alongside people from all backgrounds, experiment with user-friendly tools, and experience the thrill of building your own products
-          </p>
-        </div>
-
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-6 md:mt-8">
-          {[
-            {
-              icon: A1,
-              title: 'Access to Mentors & Experts',
-              desc: 'Create opportunities for mentorship and industry engagement',
-            },
-            {
-              icon: A2,
-              title: 'Promoting Inclusive Collaboration',
-              desc: 'Promote collaboration among every sector',
-            },
-            {
-              icon: A3,
-              title: 'Sparking Innovation with AI',
-              desc: 'Encourage innovation and experimentation using AI tools',
-            },
-            {
-              icon: A4,
-              title: 'Real-World Impact',
-              desc: 'Inspire participants to build real-world AI-powered solutions',
-            },
-          ].map((c) => (
-            <div
-              key={c.title}
-              className="bg-[#F2F9FF] border border-[#D6EEFF] rounded-xl p-4 md:p-5 flex gap-3 md:gap-4 items-start"
-            >
-              <Image src={c.icon} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
-              <div>
-                <h3 className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-[16px] lg:text-[17px] leading-tight">
-                  {c.title}
-                </h3>
-                <p className="font-quicksand text-[#2A6A9E] text-sm md:text-[13px] lg:text-[14px] leading-relaxed mt-1">
-                  {c.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-
-          {/* Full width last card */}
-          <div className="md:col-span-2 bg-[#F2F9FF] border border-[#D6EEFF] rounded-xl p-4 md:p-5 flex gap-3 md:gap-4 items-start">
-            <Image src={A5} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
-            <div>
-              <div className="font-quicksand font-bold text-[#0B4A8A] text-base md:text-[16px] lg:text-[17px] leading-tight">
-                Building Products with AI
-              </div>
-              <p className="font-quicksand text-[#2A6A9E] text-sm md:text-[13px] lg:text-[14px] leading-relaxed mt-1">
-                Introduce participants for how we can create from idea to product using AI technologies and frameworks
-              </p>
             </div>
           </div>
         </div>

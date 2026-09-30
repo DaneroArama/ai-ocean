@@ -4,7 +4,6 @@ import {PublicLayout} from '@/components/layout'
 import {
   HeroSection,
   BentoSection,
-  CharacterSection,
   PersonalityTestSection,
   EventCTASection,
   AboutSection,
@@ -32,7 +31,7 @@ export default function Home() {
         {/* BUBBLES — floating to top + pop */}
         <FloatingBubbles
           count={120}
-          className="inset-x-0 top-0 h-full z-15"
+          className="inset-x-0 top-0 h-full z-50"
           sizeRange={[9, 38]}
           durationRange={[5.5, 11]}
           opacityRange={[0.28, 0.6]}
@@ -44,15 +43,14 @@ export default function Home() {
 
         {/* About OCEAN Test - Section 2 */}
         <div id="event"><BentoSection/></div>
+
+        {/* Personality Test - Section 3 */}
+        <PersonalityTestSection/>
+
       </div>
 
-      {/* Character Introduction - Section 3 */}
-      <div id="characters">
-        <CharacterSection/>
-      </div>
-
-      {/* Personality Test - Section 4 */}
-      <PersonalityTestSection/>
+      {/* Event CTA + About Event - Section 4 */}
+      <EventCTASection/>
 
       {/* Merchandise Section - Section 5 */}
       <MerchandiseSection/>
@@ -63,14 +61,11 @@ export default function Home() {
       {/* Speakers - Section 7 */}
       <SpeakersSection/>
 
-      {/* Event CTA + Marquee - Section 8 */}
-      <EventCTASection/>
+      {/* Community Partners - Section 8 */}
+      <CommunityPartnersSection/>
 
       {/* About - Section 9 */}
       <AboutSection/>
-
-      {/* Community Partners - Section 10 */}
-      <CommunityPartnersSection/>
     </PublicLayout>
   )
 }

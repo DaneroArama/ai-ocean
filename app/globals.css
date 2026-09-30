@@ -90,6 +90,9 @@
   --font-family-body: var(--font-quicksand), "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --font-family-sans: var(--font-quicksand), "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   
+  /* Dela Gothic One for chunky, heavy display text */
+  --font-family-dela-gothic-one: var(--font-dela-gothic-one), "Impact", "Arial Black", sans-serif;
+  
   /* Monospace for code/technical content */
   --font-family-mono: "Courier New", "Courier", monospace;
   
@@ -159,6 +162,10 @@
 
 .font-dynapuff {
   font-family: var(--font-dynapuff), "Comic Sans MS", "Marker Felt", cursive !important;
+}
+
+.font-dela-gothic-one {
+  font-family: var(--font-family-dela-gothic-one) !important;
 }
 
 /* Z-index utilities */

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syncopate, Quicksand, Syne, DynaPuff } from "next/font/google";
+import { Syncopate, Quicksand, Syne, DynaPuff, Dela_Gothic_One } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex/ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
@@ -35,6 +35,14 @@ const syne = Syne({
 const dynapuff = DynaPuff({
   weight: ["400", "500", "600", "700"],
   variable: "--font-dynapuff",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Dela Gothic One for chunky, heavy display text
+const delaGothicOne = Dela_Gothic_One({
+  weight: "400",
+  variable: "--font-dela-gothic-one",
   subsets: ["latin"],
   display: "swap",
 });
@@ -130,7 +138,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${syncopate.variable} ${quicksand.variable} ${syne.variable} ${dynapuff.variable} h-full antialiased`}
+      className={`${syncopate.variable} ${quicksand.variable} ${syne.variable} ${dynapuff.variable} ${delaGothicOne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-quicksand">
         <ConvexAuthNextjsServerProvider>

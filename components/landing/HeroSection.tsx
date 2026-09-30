@@ -284,7 +284,7 @@ export function HeroSection() {
               MAIN TITLE
           ====================================================== */}
           <div className="hero-animate opacity-0 will-change-[transform,filter] flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-            <h2 className="font-syncopate text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
+            <h2 className="font-dela-gothic-one text-3xl md:text-5xl lg:text-6xl font-normal text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
               From{' '}
               <span
                 id="hero-word-swap"
@@ -309,7 +309,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            <h2 className="font-syncopate text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
+            <h2 className="font-dela-gothic-one text-3xl md:text-5xl lg:text-6xl font-normal text-white tracking-wider [text-shadow:0px_0px_8.07px_rgba(0,0,0,0.25),38.93px_24.51px_8.07px_rgba(255,255,255,0.25),0px_2.88px_5.77px_rgba(77,75,75,0.25)]">
               Product
             </h2>
           </div>

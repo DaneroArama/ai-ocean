@@ -1,177 +1,18 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
+import { useRef, useState } from 'react'
 
 import Title from '@/app/assets/Title_coloured.png'
-import Tuto from '@/app/assets/Mascots/Tuto.png'
-import Shark from '@/app/assets/Mascots/Shark.png'
-import Crabi from '@/app/assets/Mascots/Crabi.png'
-import Octo from '@/app/assets/Mascots/Octo.png'
-import Ali from '@/app/assets/Mascots/Ali.png'
 
-const mascots = [Tuto, Shark, Crabi, Octo, Ali]
-const popupMascots = [Shark, Crabi, Octo, Ali, Tuto]
-
-function ComingSoonPopup({ open, onClose }: { open: boolean; onClose: () => void }) {
-  useEffect(() => {
-    if (!open) return
-    const tl = gsap.timeline()
-    tl.fromTo('.ecs-backdrop', { opacity: 0 }, { opacity: 1, duration: 0.25 })
-    tl.fromTo('.ecs-card', { scale: 0.6, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.1')
-  }, [open])
-
-  const handleClose = () => {
-    const tl = gsap.timeline({ onComplete: onClose })
-    tl.to('.ecs-card', { scale: 0.85, opacity: 0, y: 20, duration: 0.3, ease: 'power2.in' })
-    tl.to('.ecs-backdrop', { opacity: 0, duration: 0.2 }, '-=0.1')
-  }
-
-  if (!open) return null
-
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center" onClick={handleClose}>
-      <div className="ecs-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div
-        className="ecs-card relative z-10 bg-gradient-to-br from-[#FFA726] via-[#FF9800] to-[#F57C00] rounded-3xl p-8 md:p-10 max-w-md mx-4 text-center shadow-2xl border border-white/20"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 select-none">
-          <Image src={Crabi} alt="Crabi mascot" width={80} height={80} className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg mx-auto" />
-        </div>
-        <h2 className="font-syne text-2xl md:text-3xl font-bold text-white mb-3">
-          Whoa, slow down, crab!
-        </h2>
-        <p className="font-quicksand text-white/90 text-sm md:text-base leading-relaxed">
-          Registration is cooking like a deep-sea treasure.
-          <br />
-          It&apos;ll be worth the wait — pinky promise!
-        </p>
-        <div className="flex justify-center gap-3 pt-3">
-          {popupMascots.map((src, i) => (
-            <div key={i}>
-              <Image src={src} alt="" width={36} height={36} className="w-9 h-9 object-contain" />
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={handleClose}
-          className="mt-6 px-6 py-2 bg-white/20 hover:bg-white/30 text-white font-syne font-semibold rounded-full border border-white/30 transition-colors"
-        >
-          Awesome!
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// Build row sequences like design — shuffled patterns
-const row1 = [Shark, Tuto, Crabi, Octo, Ali, Crabi, Octo, Crabi, Ali, Shark, Octo, Tuto, Crabi, Ali]
-const row2 = [Octo, Tuto, Crabi, Ali, Crabi, Tuto, Octo, Crabi, Shark, Crabi, Octo, Ali, Crabi, Ali]
-const row3 = [Shark, Octo, Ali, Crabi, Tuto, Crabi, Octo, Crabi, Ali, Shark, Ali, Crabi, Octo]
-
-function Row({
-  items,
-  reverse = false,
-  innerRef,
-}: {
-  items: typeof mascots
-  reverse?: boolean
-  innerRef: React.RefObject<HTMLDivElement | null>
-}) {
-  const doubled = [...items, ...items]
-  return (
-    <div className="w-full overflow-hidden">
-      <div
-        ref={innerRef}
-        className="flex gap-2 md:gap-3 w-max will-change-transform"
-        style={{ transform: reverse ? 'translateX(-50%)' : 'translateX(0%)' }}
-      >
-        {doubled.map((src, i) => (
-          <div
-            key={i}
-            className="shrink-0 w-[62px] h-[62px] md:w-[72px] md:h-[72px] rounded-xl bg-white border border-[#E6EEF5] shadow-sm flex items-center justify-center p-2"
-          >
-            <Image
-              src={src}
-              alt=""
-              width={64}
-              height={64}
-              className="w-full h-full object-contain"
-              draggable={false}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+import A1 from '@/app/assets/about_icon_1.png'
+import A2 from '@/app/assets/about_icon_2.png'
+import A3 from '@/app/assets/about_icon_3.png'
+import A4 from '@/app/assets/about_icon_4.png'
+import A5 from '@/app/assets/about_icon_5.png'
 
 export function EventCTASection() {
-  const row1Ref = useRef<HTMLDivElement>(null)
-  const row2Ref = useRef<HTMLDivElement>(null)
-  const row3Ref = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
-  const [showPopup, setShowPopup] = useState(false)
-
-  useEffect(() => {
-    const rows = [row1Ref.current, row2Ref.current, row3Ref.current]
-    if (rows.some((r) => !r)) return
-
-    const baseDurations = [28, 34, 26] // seconds per full loop
-    const tweens: gsap.core.Tween[] = []
-
-    rows.forEach((el, i) => {
-      if (!el) return
-      const isReverse = i === 1 // middle row opposite
-      const start = isReverse ? -50 : 0
-      const end = isReverse ? 0 : -50
-      gsap.set(el, { xPercent: start })
-      const tween = gsap.to(el, {
-        xPercent: end,
-        duration: baseDurations[i],
-        ease: 'none',
-        repeat: -1,
-      })
-      tweens.push(tween)
-    })
-
-    let lastY = window.scrollY
-    let ticking = false
-
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        const curY = window.scrollY
-        const delta = Math.abs(curY - lastY)
-        lastY = curY
-        // boost 0 .. 3x based on scroll speed, cap
-        const boost = Math.min(delta * 0.035, 3.5)
-        const targetScale = 1 + boost
-
-        tweens.forEach((t) => {
-          gsap.to(t, { timeScale: targetScale, duration: 0.25, ease: 'power2.out', overwrite: true })
-        })
-
-        // ease back to 1 when scrolling stops
-        gsap.delayedCall(0.35, () => {
-          tweens.forEach((t) => {
-            gsap.to(t, { timeScale: 1, duration: 0.8, ease: 'power2.out', overwrite: true })
-          })
-        })
-
-        ticking = false
-      })
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      tweens.forEach((t) => t.kill())
-    }
-  }, [])
 
   return (
     <>
@@ -209,23 +50,72 @@ export function EventCTASection() {
       </div>
 
       {/* Marquee rows - w-full overflow-hidden to not affect CTA width */}
-      <div className="relative mt-12 md:mt-16 lg:mt-20 w-full overflow-hidden">
-        {/* Edge fade - white blur gradient */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-20 md:w-28 lg:w-40 bg-gradient-to-r from-white via-white/90 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-20 md:w-28 lg:w-40 bg-gradient-to-l from-white via-white/90 to-transparent z-10" />
-        {/* optional subtle blur */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 md:w-12 bg-white/60 backdrop-blur-[2px] z-10 hidden md:block" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 md:w-12 bg-white/60 backdrop-blur-[2px] z-10 hidden md:block" />
+      <div className="relative max-w-7xl mx-auto mt-12 md:mt-16 lg:mt-20 w-full overflow-hidden">
+        {/* ABOUT THE Event */}
+        <div className="text-center mt-8 md:mt-10">
+          <h2 className="font-dela-gothic-one text-[#0B4A8A] text-xl md:text-4xl lg:text-5xl tracking-wide">
+            About the Event
+          </h2>
+          <p className="font-quicksand font-semibold text-[#2A6A9E] text-sm md:text-[15px] lg:text-base leading-relaxed max-w-3xl mx-auto mt-6">
+            During the AI Ocean event, you’ll work alongside people from all backgrounds, experiment with user-friendly tools, and experience the thrill of building your own products
+          </p>
+        </div>
 
-        <div className="space-y-3 md:space-y-4 w-full overflow-hidden">
-          <Row items={row1} innerRef={row1Ref} />
-          <Row items={row2} reverse innerRef={row2Ref} />
-          <Row items={row3} innerRef={row3Ref} />
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mt-6 md:mt-8">
+          {[
+            {
+              icon: A1,
+              title: 'Access to Mentors & Experts',
+              desc: 'Create opportunities for mentorship and industry engagement',
+            },
+            {
+              icon: A2,
+              title: 'Promoting Inclusive Collaboration',
+              desc: 'Promote collaboration among every sector',
+            },
+            {
+              icon: A3,
+              title: 'Sparking Innovation with AI',
+              desc: 'Encourage innovation and experimentation using AI tools',
+            },
+            {
+              icon: A4,
+              title: 'Real-World Impact',
+              desc: 'Inspire participants to build real-world AI-powered solutions',
+            },
+          ].map((c) => (
+            <div
+              key={c.title}
+              className="bg-[#F2F9FF] border-3 border-dashed border-ocean-surface rounded-3xl p-4 md:p-5 flex gap-3 md:gap-4 items-start"
+            >
+              <Image src={c.icon} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+              <div>
+                <div className="font-dela-gothic-one text-[#0B4A8A] text-base md:text-[16px] lg:text-xl leading-tight">
+                  {c.title}
+                </div>
+                <p className="font-quicksand font-semibold text-[#2A6A9E] text-sm md:text-[13px] lg:text-[14px] leading-relaxed mt-1">
+                  {c.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Full width last card */}
+          <div className="md:col-span-2 bg-[#F2F9FF] border-3 border-dashed border-ocean-surface rounded-3xl p-4 md:p-5 flex gap-3 md:gap-4 items-start">
+            <Image src={A5} alt="about_icon" className="w-5 h-5 md:w-12 md:h-12 object-contain" />
+            <div>
+              <div className="font-dela-gothic-one text-[#0B4A8A] text-base md:text-[16px] lg:text-xl leading-tight">
+                Building Products with AI
+              </div>
+              <p className="font-quicksand font-semibold text-[#2A6A9E] text-sm md:text-[13px] lg:text-[14px] leading-relaxed mt-1">
+                Introduce participants for how we can create from idea to product using AI technologies and frameworks
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-
-    <ComingSoonPopup open={showPopup} onClose={() => setShowPopup(false)} />
     </>
   )
 }
