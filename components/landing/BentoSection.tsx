@@ -204,7 +204,7 @@ export function BentoSection() {
               </p>
               <p className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">
                 Speakers<br />
-                <span className="text-5xl">+++</span>
+                <span className="text-5xl">9+</span>
               </p>
               <Image src={logo} alt="Event icon" width={48} height={48} className="absolute -bottom-2 -right-2 object-contain w-12 h-12" />
             </div>

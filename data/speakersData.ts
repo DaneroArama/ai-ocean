@@ -7,7 +7,7 @@ import AungMinSoePhoto from '@/app/assets/Persons/Speakers/69ff9fa3-b1cf-4cfe-9c
 import AikoHuangPhoto from '@/app/assets/Persons/Speakers/1784143360016 - Aiko Huang.webp'
 import MinKhantPhoto from '@/app/assets/Persons/Speakers/Image MK - Alean Mk.webp'
 import KayPhoto from '@/app/assets/Persons/Speakers/0810_Kay6359_resized - Khin Moet Moet Nyein (Kay).webp'
-import PyitSoneOoPhoto from '@/app/assets/Persons/Speakers/Profile Pyit - Pyit Sone Oo.webp'
+import PyitSoneOoPhoto from '@/app/assets/Persons/Speakers/Pyit Sone Oo.png'
 import ShuMawaSoePhoto from '@/app/assets/Persons/Speakers/Shu Soe Profile Pic 2026 - Shu Mawa Soe.webp'
 import AungKoKoThetPhoto from '@/app/assets/Persons/Speakers/Aung Ko Ko Thet.webp'
 import KyawMyoThetPhoto from '@/app/assets/Persons/Speakers/Kyaw Myo Thet.webp'
@@ -15,7 +15,7 @@ import MyaThandarOoPhoto from '@/app/assets/Persons/Speakers/Mya Thandar Oo.webp
 import WaiYiMonSoePhoto from '@/app/assets/Persons/Speakers/Wai Yi Mon Soe 2025 - Phyo Thiri Thu.webp'
 import HendraPhoto from '@/app/assets/Persons/Speakers/Hendra.webp'
 import EricGloverPhoto from '@/app/assets/Persons/Speakers/Eric Glover - Phyo Thiri Thu.webp'
-import SittYeYintTunPhoto from '@/app/assets/Persons/Speakers/Sitt Ye Yint Tun - Sittye Yint Tun.webp'
+import SittYeYintTunPhoto from '@/app/assets/Persons/Speakers/Sitt Ye Yint Tun.png'
 import KyisinHsutharPhoto from '@/app/assets/Persons/Kyisin Hsuthar.jpeg'
 import SannLynnHtunPhoto from '@/app/assets/Persons/Sann Lynn Htun.jpg'
 import HaymarAungPhoto from '@/app/assets/Persons/Haymar Aung.jpeg'
@@ -69,7 +69,7 @@ export const speakers: Speaker[] = [
     id: 'aung-min-soe',
     day: 1,
     name: 'AUNG MIN SOE ( Kinn )',
-    position: 'Lead Product Designer',
+    position: 'Lead UI/UX Designer',
     organization: 'Klink Enterprise Solution',
     bio: 'Aung Min Soe (Kinn) is a Lead Product Designer with 8+ years of experience across Fintech, Enterprise SaaS, EdTech, and AI-powered products. He specializes in product design, scalable design systems, conversational UX, and bridging the gap between design and development. His recent work focuses on AI-assisted product experiences, workflow automation, and design-to-code practices that help teams move from ideas to production more effectively.',
     photo: AungMinSoePhoto,
@@ -114,7 +114,7 @@ export const speakers: Speaker[] = [
     id: 'shu-mawa-soe',
     day: 2,
     name: 'Shu Mawa Soe',
-    position: 'Executive UXUI Specialist',
+    position: 'Product Designer',
     organization: 'AYA Innovation Lab',
     bio: 'Shu is an AI-driven product designer specializing in humanizing complex systems. She received her MSc in HCI at the University of St Andrews and is now currently consulting for an AI SaaS startup. Shu’s core mission is to drive human-centered design by grounding product decisions in actual research and proven models. Her specialty is bringing soul back into digital experiences to avoid AI slop by centering real user needs and accessibility.',
     photo: ShuMawaSoePhoto,
@@ -123,8 +123,8 @@ export const speakers: Speaker[] = [
     id: 'aung-ko-ko-thet',
     day: 2,
     name: 'Aung Ko Ko Thet',
-    position: 'Founder, Solution Architect',
-    organization: 'Magixx Genesis Value Network',
+    position: 'Founder',
+    organization: 'Flutter Builder Professional Industry Program',
     bio: 'Aung Ko Ko Thet is a technology professional and the Myanmar Chapter Representative of theBuilderPros network, passionate about helping developers take the leap from learning to actually building. Through the Flutter Builder Professional Industry Program, he creates opportunities for developers to gain hands-on production experience, learn through real feedback and collaboration, and build evidence of what they can truly contribute. His work sits at the intersection of technology, professional learning, and industry readiness—helping developers turn skills into real-world capability.',
     photo: AungKoKoThetPhoto,
   },
@@ -141,7 +141,7 @@ export const speakers: Speaker[] = [
     id: 'mya-thandar-oo',
     day: 2,
     name: 'Mya Thandar Oo',
-    position: 'Chief Marketing Officer',
+    position: 'Chairwoman & Chief Marketing Officer',
     organization: 'MyJobs',
     bio: 'Mya Thandar Oo is a business leader and Chairwoman & Chief Business Officer of MyJobs Myanmar, with extensive experience spanning recruitment, workforce development, and talent intelligence. She works at the intersection of people, business, and the future of work, helping organizations navigate evolving talent needs while contributing to skills development and employment opportunities in Myanmar. With a deep understanding of the local workforce landscape, she brings valuable insights into what employers really look for, how professionals can stay relevant in a changing market, and how to build careers with long-term value.',
     photo: MyaThandarOoPhoto,
