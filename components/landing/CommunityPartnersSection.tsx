@@ -39,15 +39,15 @@ const SPONSORS: Sponsor[] = [
   { name: 'CTZPay', type: 'Venue Sponsor', src: CTZPay, color: '#FF0E88', main: true, pill: 'top-left' },
   { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right' },
   { name: 'Myanmar Citizens Bank', type: 'Event Support Partner', src: MCB, color: '#0A7CFF' },
-  { name: 'Beyond 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
+  { name: 'BEYOND 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
   { name: 'MyJobs Myanmar', type: 'Talent Development Partner', src: MyJobs, color: '#FF7A18' },
-  { name: 'UD', type: 'Refreshment Partner', src: UD, color: '#556730' },
+  { name: 'Untitled Space & Dessert Studio', type: 'Refreshment Partner', src: UD, color: '#556730' },
   { name: 'Genplex.Ai', type: 'Knowledge Partner', src: Genplex, color: '#2E5BE8' },
   { name: 'Technortal', type: 'Knowledge Partner', src: Technortal, color: '#A8DD22' },
 ]
 
 const PARTNERS = [
-  { name: 'We Grow Myanmar', src: WeGrow },
+  { name: 'WeGrow Myanmar', src: WeGrow },
   { name: 'The Productive Schedule', src: TPS },
   { name: 'PM x PO Learning & Development Hub', src: PMPPO },
   { name: "Let's Tech Club", src: LetsTech },
@@ -552,7 +552,7 @@ export function CommunityPartnersSection() {
           <Sparkle className="cta-star absolute bottom-[7%] right-[3%] w-14 text-[#FFC93C] drop-shadow-[0_0_10px_rgba(255,201,60,0.6)] md:w-24" style={{ animationDuration: '3.6s', animationDelay: '0.5s' }} />
 
           {/* Floating white square card under the spotlight */}
-          <div aria-hidden="true" className="pointer-events-none absolute right-[18%] top-[35%] md:top-5 z-0 sm:right-[9%] sm:top-1/2 sm:-translate-y-1/2">
+          <div aria-hidden="true" className="pointer-events-none absolute right-[9%] bottom-[35%] md:bottom-[0%] z-0 md:right-[12%] sm:top-1/2 sm:-translate-y-1/2">
             <div className="cta-square relative flex h-28 w-28 items-center justify-center rounded-[18px] bg-gradient-to-b from-white to-[#EDF8FE] shadow-[0_18px_40px_rgba(9,86,146,0.3)] sm:h-48 sm:w-48 sm:rounded-[26px] md:h-60 md:w-60 lg:h-64 lg:w-64 -rotate-12">
               <span className="absolute inset-2 rounded-[12px] border-2 border-dashed border-[#63C6F1] sm:inset-3 sm:rounded-[18px] sm:border-[3px]" />
               <svg viewBox="0 0 100 100" className="relative h-7 w-7 sm:h-14 sm:w-14 md:h-16 md:w-16">

@@ -127,12 +127,12 @@ export function Navbar() {
                 >
                   Sponsors
                 </button>
-                <Link
-                  href="/archetype"
+                <button
+                  onClick={() => scrollTo('archetypes')}
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
                   Archetypes
-                </Link>
+                </button>
                 <button
                   onClick={() => scrollTo('about')}
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"

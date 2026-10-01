@@ -45,21 +45,21 @@ export default function Home() {
         <div id="event"><BentoSection/></div>
 
         {/* Personality Test - Section 3 */}
-        <PersonalityTestSection/>
+        <div id="archetypes"><PersonalityTestSection/></div>
 
       </div>
 
       {/* Event CTA + About Event - Section 4 */}
       <EventCTASection/>
 
-      {/* Merchandise Section - Section 5 */}
-      <MerchandiseSection/>
+      {/* Schedule Section - Section 5 */}
+      <div id="agenda"><ScheduleSection/></div>
 
-      {/* Schedule Section - Section 6 */}
-      <ScheduleSection/>
-
-      {/* Speakers - Section 7 */}
+      {/* Speakers - Section 6 */}
       <SpeakersSection/>
+
+      {/* Merchandise Section - Section 7 */}
+      <MerchandiseSection/>
 
       {/* Community Partners - Section 8 */}
       <CommunityPartnersSection/>
