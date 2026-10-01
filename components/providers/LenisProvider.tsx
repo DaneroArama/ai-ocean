@@ -17,7 +17,10 @@ export function LenisProvider({ children }: LenisProviderProps) {
       anchors: true,
       lerp: 0.08,
       smoothWheel: true,
-      syncTouch: true,
+      // syncTouch preventDefaults touchmove/touchend during any finger drift,
+      // which makes iOS Safari cancel the tap's click (double-tap needed). Touch
+      // scroll stays native — Lenis still smooths the wheel.
+      syncTouch: false,
     });
 
     const updateLenis = (time: number) => {

@@ -198,13 +198,12 @@ export function Navbar() {
               >
                 Sponsors
               </button>
-              <Link
-                href="/archetype"
-                onClick={closeMobileMenu}
+              <button
+                onClick={() => scrollTo('archetypes')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
                 Archetypes
-              </Link>
+              </button>
               <button
                 onClick={() => scrollTo('about')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"

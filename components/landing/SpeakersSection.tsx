@@ -14,7 +14,6 @@ import Octo from '@/app/assets/Mascots/Octo.png'
 import Shark from '@/app/assets/Mascots/Shark.png'
 import Tuto from '@/app/assets/Mascots/Tuto.png'
 import { speakers } from '@/data/speakersData'
-import { judges } from '@/data/judgesData'
 import { phaseSchedules } from '@/data/scheduleData'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -60,7 +59,9 @@ const panelists: Profile[] = phaseSchedules[0].scheduleItems
   }))
 
 /** One roster for all three lists — a person with several roles is merged
- *  by name and shows every role badge while appearing in each of their tabs. */
+ *  by name and shows every role badge while appearing in each of their tabs.
+ *  NOTE: judges are intentionally not added yet (not announced publicly).
+ *  data/judgesData.ts is ready — re-add the judges.forEach(add) block when revealed. */
 const roster: Profile[] = (() => {
   const map = new Map<string, Profile>()
   const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -86,17 +87,6 @@ const roster: Profile[] = (() => {
     })
   )
   panelists.forEach(add)
-  judges.forEach(j =>
-    add({
-      id: j.id,
-      name: j.name,
-      position: j.position,
-      organization: j.organization,
-      bio: j.bio,
-      photo: j.photo,
-      roles: ['Judge'],
-    })
-  )
   return [...map.values()]
 })()
 
@@ -123,7 +113,7 @@ function BriefCard({ profile, index, onSelect }: { profile: Profile; index: numb
           onSelect(profile)
         }
       }}
-      className="relative flex h-full cursor-pointer flex-col rounded-[18px] bg-white p-[18px] text-[#00558c] shadow-[0_8px_14px_#007fa92b] outline-none focus-visible:ring-2 focus-visible:ring-[#08b8f1] focus-visible:ring-offset-2"
+      className="relative flex h-full cursor-pointer touch-manipulation flex-col rounded-[18px] bg-white p-[18px] text-[#00558c] shadow-[0_8px_14px_#007fa92b] outline-none focus-visible:ring-2 focus-visible:ring-[#08b8f1] focus-visible:ring-offset-2"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-[7px] rounded-[12px] border-[1.5px] border-dashed border-[#08b8f1]" />
       <div className="relative aspect-square overflow-hidden rounded-[22px] bg-[#e5f3f7]">
@@ -253,7 +243,8 @@ function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => voi
     <div
       ref={backdropRef}
       onClick={close}
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-[#062c49]/70 p-4 backdrop-blur-sm"
+      data-lenis-prevent
+      className="fixed inset-0 z-[70] flex touch-manipulation items-center justify-center bg-[#062c49]/70 p-4 backdrop-blur-sm"
     >
       <div
         ref={cardRef}
@@ -262,20 +253,21 @@ function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => voi
         aria-label={`${profile.name} details`}
         onClick={event => event.stopPropagation()}
         data-lenis-prevent
-        className="relative max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-[26px] bg-linear-to-b from-[#16b8ef] to-white shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] px-4 pt-8 pb-4"
+        className="relative flex max-h-[80dvh] w-full max-w-3xl flex-col rounded-[26px] bg-linear-to-b from-[#16b8ef] to-white shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] px-4 pt-8 pb-4"
       >
         <button
           type="button"
           onClick={close}
           aria-label="Close details"
-          className="absolute right-4 top-1 z-10 flex h-9 w-9 items-center justify-center text-white transition-transform hover:scale-110"
+          className="absolute right-4 top-1 z-20 flex h-9 w-9 items-center justify-center text-white transition-transform hover:scale-110"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
           </svg>
         </button>
 
-        <div className="grid gap-5 rounded-[18px] bg-white p-4 sm:grid-cols-[minmax(0,230px)_minmax(0,1fr)] sm:p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="grid gap-5 rounded-[18px] bg-white p-4 sm:grid-cols-[minmax(0,230px)_minmax(0,1fr)] sm:p-6">
           <div className="flex flex-col items-center gap-4 sm:items-start">
             <div
               data-detail-photo
@@ -333,6 +325,7 @@ function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => voi
                 )}
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
