@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useId } from "react";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import {
   motion,
   useTransform,
@@ -19,7 +19,7 @@ export const AnimatedTooltip = ({
     name: string;
     designation: string;
     company?: string;
-    image: string;
+    image: string | StaticImageData;
   }[];
 }) => {
   const tooltipId = useId();
@@ -139,7 +139,7 @@ export const AnimatedTooltip = ({
             onMouseMove={handleMouseMove}
             height={100}
             width={100}
-            src={item.image}
+            src={typeof item.image === "string" ? item.image : item.image.src}
             alt={item.name}
             className="relative !m-0 h-10 w-10 rounded-full border-2 border-white bg-gray-300 object-cover object-top !p-0 transition duration-500 group-hover:z-30 group-hover:scale-110"
           />

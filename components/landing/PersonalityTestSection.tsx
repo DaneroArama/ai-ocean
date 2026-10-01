@@ -128,7 +128,7 @@ export function PersonalityTestSection() {
             </Link>
 
             <Link
-              href="/frame-generator"
+              href="/aioceanframe"
               className="bg-white/20 block w-full font-syne font-semibold px-6 py-3 text-center text-white border border-white/30 rounded-full shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] hover:brightness-110 transition-all"
             >
             Create Your Event Frame

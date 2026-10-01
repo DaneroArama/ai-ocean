@@ -13,12 +13,11 @@ import Crabi from '@/app/assets/Mascots/Crabi.png'
 import Octo from '@/app/assets/Mascots/Octo.png'
 import Shark from '@/app/assets/Mascots/Shark.png'
 import Tuto from '@/app/assets/Mascots/Tuto.png'
-import { speakers } from '@/data/speakersData'
-import { phaseSchedules } from '@/data/scheduleData'
+import { rolesById, speakers } from '@/data/speakersData'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type Role = 'Speaker' | 'Panelist' | 'Judge'
+type Role = 'Speaker' | 'Panelist' | 'Moderator' | 'Judge'
 type Category = 'Speakers' | 'Panelists' | 'Judges'
 
 type Profile = {
@@ -40,26 +39,15 @@ const categories: { label: Category; icon: StaticImageData }[] = [
 const roleBadgeClass: Record<Role, string> = {
   Speaker: 'bg-linear-to-b from-[#ffb28b] to-[#ff7849]',
   Panelist: 'bg-linear-to-b from-[#d59aff] to-[#ac2eeb]',
+  Moderator: 'bg-linear-to-b from-[#8ec5ff] to-[#3b82f6]',
   Judge: 'bg-linear-to-b from-[#a0ddb1] to-[#42ad79]',
 }
 
 const MASCOTS = [Ali, Crabi, Octo, Shark, Tuto]
 
-const panelists: Profile[] = phaseSchedules[0].scheduleItems
-  .flatMap(item => item.events)
-  .filter(event => event.title === 'Panelists')
-  .flatMap(event => event.people)
-  .map(person => ({
-    id: `panelist-${person.id}`,
-    name: person.name,
-    position: person.designation,
-    organization: person.company,
-    photo: person.image,
-    roles: ['Panelist'] as Role[],
-  }))
-
-/** One roster for all three lists — a person with several roles is merged
- *  by name and shows every role badge while appearing in each of their tabs.
+/** One roster for all three lists — a person with several roles (e.g. Speaker
+ *  + Panelist, Speaker + Moderator) is merged by name and shows every role
+ *  badge while appearing in each of their tabs.
  *  NOTE: judges are intentionally not added yet (not announced publicly).
  *  data/judgesData.ts is ready — re-add the judges.forEach(add) block when revealed. */
 const roster: Profile[] = (() => {
@@ -83,16 +71,20 @@ const roster: Profile[] = (() => {
       organization: s.organization,
       bio: s.bio,
       photo: s.photo,
-      roles: ['Speaker'],
+      roles: rolesById[s.id] ?? ['Speaker'],
     })
   )
-  panelists.forEach(add)
   return [...map.values()]
 })()
 
 const profilesFor = (category: Category): Profile[] => {
-  const singular: Role =
-    category === 'Speakers' ? 'Speaker' : category === 'Panelists' ? 'Panelist' : 'Judge'
+  if (category === 'Panelists') {
+    // moderators run the panel sessions, so they live in this tab too
+    return roster.filter(
+      profile => profile.roles.includes('Panelist') || profile.roles.includes('Moderator')
+    )
+  }
+  const singular: Role = category === 'Speakers' ? 'Speaker' : 'Judge'
   return roster.filter(profile => profile.roles.includes(singular))
 }
 

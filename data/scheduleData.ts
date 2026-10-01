@@ -1,4 +1,13 @@
 ﻿// Types for Schedule Data
+import type { StaticImageData } from 'next/image'
+
+import ChawSuHlaingPhoto from '@/app/assets/Persons/Chaw Su Hlaing.png'
+import SannLynnHtunPhoto from '@/app/assets/Persons/Sann Lynn Htun.jpg'
+import HaymarAungPhoto from '@/app/assets/Persons/Haymar Aung.jpeg'
+import KyisinHsutharPhoto from '@/app/assets/Persons/Kyisin Hsuthar.jpeg'
+import ThaeSuAyePhoto from '@/app/assets/Persons/Thae Su Aye.jpg'
+import PhyoThiriThuPhoto from '@/app/assets/Persons/Phyo Thiri Thu.png'
+
 export type CardType = 'finished' | 'confirmed' | 'upcoming'
 
 export interface Person {
@@ -6,7 +15,7 @@ export interface Person {
   name: string
   designation: string
   company: string
-  image: string
+  image: string | StaticImageData
 }
 
 export interface ScheduleEvent {
@@ -77,18 +86,18 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
             title: 'Panelists',
             description: 'Ma Chaw Su Hlaing, Ma Hnin Hay Mar Aung, Ma Kyi Sin Hsu Thar, Ko Sann Lynn Htun, Ma Thae Su Aye, Ma Phyo Thiri Thu',
             people: [
-            { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'CODIGO', image: '/assets/Persons/Chaw Su Hlaing.png' },
-            { id: 2, name: 'Sann Lynn Htun', designation: 'Senior Software Engineer', company: 'ACE Data Systems', image: '/assets/Persons/San Lynn.png' },
-            { id: 3, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPro', image: '/assets/Persons/Hay Mar.png' },
-            { id: 4, name: 'Kyi Sin Hsu Thar', designation: 'Head of Programs', company: 'UXMM', image: '/assets/Persons/Kyi Sin.png' },
-            { id: 5, name: 'Thae Su Aye', designation: 'Project Researcher', company: 'LOMTech', image: '/assets/Persons/Thae Su Aye.png' },
+            { id: 1, name: 'Chaw Su Hlaing', designation: 'UX Designer (Design Systems)', company: 'CODIGO', image: ChawSuHlaingPhoto },
+            { id: 2, name: 'Sann Lynn Htun', designation: 'Senior Software Engineer', company: 'ACE Data Systems', image: SannLynnHtunPhoto },
+            { id: 3, name: 'Hnin Hay Mar Aung', designation: 'Founder', company: 'EzyPro', image: HaymarAungPhoto },
+            { id: 4, name: 'Kyi Sin Hsu Thar', designation: 'Head of Programs', company: 'UXMM', image: KyisinHsutharPhoto },
+            { id: 5, name: 'Thae Su Aye', designation: 'Project Researcher', company: 'LOMTech', image: ThaeSuAyePhoto },
             ]
           },
           {
             title: 'Moderator',
             description: 'Ma Phyo Thiri Thu',
             people: [
-              { id: 6, name: 'Phyo Thiri Thu', designation: 'Moderator', company: 'Codigo', image: '/assets/Persons/Phyo Thiri.png' },
+              { id: 6, name: 'Phyo Thiri Thu', designation: 'Moderator', company: 'Codigo', image: PhyoThiriThuPhoto },
             ]
           }
         ]

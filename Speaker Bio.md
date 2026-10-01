@@ -143,3 +143,146 @@ Here is the extracted data containing the Name, Position, Company, and Bio for e
 * **Position:** UX/UI Designer
 * **Company:** BIM Group of Companies
 * **Bio:** Sitt Ye Yint Tun is a UX/UI Designer focused on systems thinking and designing clear, usable experiences for complex products and services. He brings together user needs, business goals, and technical considerations to turn complex workflows into practical digital solutions. Beyond his design work, he actively contributes to UXMM, helping run research programs that generate meaningful insights for Myanmar’s design and tech community.
+
+---
+
+### 1. Kyi Sin Hsu Thar
+
+* **Full Name:** Kyi Sin Hsu Thar
+* **Email Address:** hsutharkyisin@gmail.com
+* **Contact Number:** +49 1791557647
+* **Contact Viber Number:** 09441465602
+* **Contact Telegram Username:** @notur_kenna
+* **LinkedIn Profile URL:** [LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/kyi-sin-hsu-thar-kenna%3Futm_source%3Dshare_via%26utm_content%3Dprofile%26utm_medium%3Dmember_ios)
+* **Current Job Title:** Head of Programs
+* **Current Company / Organization:** UXMM
+* **Years of Experience:** 3
+* **Currently Based:** Germany
+* **Areas of Expertise:** UX/UI, Product Management, Data Science & AI
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=1b5yABHmvcqb51uUrmf6ohUc2pHQNFcug)
+* **Brief Bio:** A versatile UI/UX Designer and product professional with international experience, including remote contributions to high-security government digital transformation projects for a Singapore-based firm. She currently serves as Head of Programs at UXMM, where she leads initiatives that create opportunities for learning, mentorship, and professional growth within the design community. As a Women in Tech Scholarship recipient, she has returned to academia to pursue an M.Sc. in Data Science and AI, embracing a new chapter of continuous learning and expanding her expertise beyond design into technology, data, and strategic thinking.
+* **What participants can expect to learn:**
+* Share real-world experience (UI/UX, product, international teams, digital transformation)
+* Provide honest, constructive feedback
+* Challenge thinking and assumptions
+* Connect design with data and technology
+* Help turn ideas into action
+* Support career growth (portfolio, interviews, collaboration)
+* Create a safe space to learn
+
+
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
+
+---
+
+### 2. Sann Lynn Htun
+
+* **Full Name:** Sann Lynn Htun
+* **Email Address:** sannlynnhtun.developer@gmail.com
+* **Contact Number:** 09 980 7360 56
+* **Contact Viber Number:** 09 980 7360 56
+* **Contact Telegram Username:** sann_lynn_htun
+* **LinkedIn Profile URL:** sannlynnhtun
+* **Current Job Title:** Senior Software Engineer
+* **Current Company / Organization:** ACE Data Systems
+* **Years of Experience:** 11
+* **Currently Based:** Myanmar
+* **Areas of Expertise:** Development
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=1L456ieVmBZgjHiUAR_BL1oPGfn7Ep5rx)
+* **Brief Bio:** Sann Lynn Htun is a Senior Software Engineer with over 11 years of experience at ACE Data Systems, where he has contributed to the development of digital solutions for the banking and financial industry. Throughout his career, he has enjoyed collaborating with teams, solving real-world challenges, and supporting the growth of aspiring professionals through mentoring and knowledge sharing.
+* **What participants can expect to learn:** Practical problem-solving skills, career growth strategies, real-world insights, working effectively in teams, stakeholder communication, and workplace confidence.
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
+
+---
+
+### 3. Hnin Hay Mar Aung
+
+* **Full Name:** Hnin Hay Mar Aung
+* **Email Address:** haymara2021@gmail.com
+* **Contact Number:** 09782680745
+* **Contact Viber Number:** 09782680745
+* **Contact Telegram Username:** 09782680745
+* **LinkedIn Profile URL:** [LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/hnin-hay-mar-aung-0a4321167%3Futm_source%3Dshare_via%26utm_content%3Dprofile%26utm_medium%3Dmember_ios)
+* **Current Job Title:** Founder
+* **Current Company / Organization:** EzyPro
+* **Years of Experience:** Over 6 years
+* **Currently Based:** Myanmar
+* **Areas of Expertise:** UX/UI, Product Management, Business
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=1CSseR8fePjujxvpivN9H_AAFPyPhr5Rz)
+* **Brief Bio:** Coming from a background in Tourism & Business Management, Hnin Hay Mar Aung is a Product Designer who has been crafting user-centered digital solutions across Corporate and Start-Up environments since 2020. She excels at bridging business goals with intuitive user experiences. As a Founder of EzyPro, she empowers traditional SMEs to transition smoothly into digital-first businesses. She is also the founder of EzyPet and EzyStamp.
+* **What participants can expect to learn:**
+* End-to-End UIUX Design
+* Product Ideation & Business Strategy
+* Product Development & Operation Management
+* Project Management
+* Digital Transformation & Execution
+* Career Navigation & Mentorship
+
+
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
+
+---
+
+### 4. Phyo Thiri Thu
+
+* **Full Name:** Phyo Thiri Thu
+* **Email Address:** phyothirithu16@gmail.com
+* **Contact Number:** 09972381970
+* **Contact Viber Number:** 09972381970
+* **Contact Telegram Username:** https://t.me/kaffeinic (@kaffeinic)
+* **LinkedIn Profile URL:** [LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/phyo-thiri-thu/)
+* **Current Job Title:** Research & Development Manager
+* **Current Company / Organization:** KBZ Bank
+* **Years of Experience:** 8 years
+* **Currently Based:** Myanmar
+* **Areas of Expertise:** Product Management, Business
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=173jfr3B9i0oDiuug5nB_6S49z2vEs5PL)
+* **Brief Bio:** Business Research & Development Manager at a local fintech corporation with over 7 years of experience spanning product management, project delivery, digital products, learning platforms, media, and content development. Strong background in product/project management, user needs, business requirements, product development lifecycles, and data-informed decision-making.
+* **What participants can expect to learn:** Project Management knowledge and experience, Product Management & experience, Research and Development knowledge and experience.
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
+
+---
+
+### 5. Chaw Su Hlaing
+
+* **Full Name:** Chaw Su Hlaing
+* **Email Address:** chawsuhlaingc7@gmail.com
+* **Contact Number:** 09797558110
+* **Contact Viber Number:** 09797558115
+* **Contact Telegram Username:** cshcaroline
+* **LinkedIn Profile URL:** [LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/chaw-su-hlaing-99b3b7176%3Futm_source%3Dshare_via%26utm_content%3Dprofile%26utm_medium%3Dmember_ios)
+* **Current Job Title:** UX Designer (Design Systems)
+* **Current Company / Organization:** CODIGO
+* **Years of Experience:** 6 years
+* **Currently Based:** Myanmar
+* **Areas of Expertise:** UX/UI, AI, Design Systems
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=1G_x7pFZacLAD0uls7nWAbJsboz6tjm8k)
+* **Brief Bio:** Chaw Su Hlaing is a Senior Product Designer with 6 years of experience. At Codigo, she builds enterprise systems for Porsche and Tiong Bahru Bakery, and a design system running across 8 products that her team builds production UI from with AI. She also runs The Productive Schedule, teaching design systems to designers in Myanmar.
+* **What participants can expect to learn:**
+* Systems thinking for products with more than one type of user
+* Design systems that AI can build from
+* Scoping under a deadline from client work
+* Teaching and presenting ideas effectively
+
+
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
+
+---
+
+### 6. Thae Su Aye
+
+* **Full Name:** Thae Su Aye
+* **Email Address:** thaesuaye33@gmail.com
+* **Contact Number:** 09753520459
+* **Contact Viber Number:** 09753520459
+* **Contact Telegram Username:** @s_rishere
+* **LinkedIn Profile URL:** [LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/thae-su-16281420a/)
+* **Current Job Title:** Project Researcher
+* **Current Company / Organization:** LOMTech
+* **Years of Experience:** 5+
+* **Currently Based:** Myanmar
+* **Areas of Expertise:** AI, Business
+* **Mentor's Photo:** [Drive Photo Link](https://drive.google.com/open?id=13K9JFXJF-RaHt9Ap6hUsIm3RwGUrFiQw)
+* **Brief Bio:** Project Researcher at LOMTech focused on social impact, inclusion, and making AI accessible to non-technical builders and diverse communities. Her background spans research, operations, and youth leadership across Myanmar and international platforms (SEARA member, SEALNet mentor, LP4Y coach, R&D at Indonesia's Halal Science Center).
+* **What participants can expect to learn:** Project and Community Development, Partnership, Vibe Coding.
+* **Information & Media Consent:** Yes, I agree. (ဟုတ်ကဲ့၊ သဘောတူပါသည်။)
