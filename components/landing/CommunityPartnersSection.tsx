@@ -22,6 +22,12 @@ import MyJobs from '@/app/assets/Partners/Myjobs.png'
 import UD from '@/app/assets/Partners/Untitled.png'
 import Genplex from '@/app/assets/Partners/Genplex.png'
 import Technortal from '@/app/assets/Partners/Technortal.png'
+import Sandp1t from '@/app/assets/Partners/Sandp1t.png'
+import H3VEA from '@/app/assets/Partners/H3VEA.png'
+import Mobbin from '@/app/assets/Partners/Mobbin.png'
+import Oway from '@/app/assets/Partners/Oway.png'
+import TheBuilderPros from '@/app/assets/Partners/TheBuilderPros.png'
+import MealPartners from '@/app/assets/Partners/Meal Partners.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -33,17 +39,27 @@ type Sponsor = {
   /** main sponsors get a bigger card with the type pill around it */
   main?: boolean
   pill?: 'top-left' | 'bottom-right'
+  /** override the default blue pill gradient (main sponsors in the design use brand colors) */
+  pillStyle?: CSSProperties
+  /** wide strip card (multiple logos in one long container) */
+  wide?: boolean
 }
 
 const SPONSORS: Sponsor[] = [
   { name: 'CTZPay', type: 'Venue Sponsor', src: CTZPay, color: '#FF0E88', main: true, pill: 'top-left' },
-  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right' },
+  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
+  { name: 'SANDP1T', type: 'People Development Partner', src: Sandp1t, color: '#6B7A2E', main: true, pill: 'top-left', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #A97BEA, #8B52D4)' } },
+  { name: 'H3VEA', type: 'Logistics Track Partner', src: H3VEA, color: '#0F8A45', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
   { name: 'Myanmar Citizens Bank', type: 'Event Support Partner', src: MCB, color: '#0A7CFF' },
   { name: 'BEYOND 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
   { name: 'MyJobs Myanmar', type: 'Talent Development Partner', src: MyJobs, color: '#FF7A18' },
   { name: 'Untitled Space & Dessert Studio', type: 'Refreshment Partner', src: UD, color: '#556730' },
   { name: 'Genplex.Ai', type: 'Knowledge Partner', src: Genplex, color: '#2E5BE8' },
   { name: 'Technortal', type: 'Knowledge Partner', src: Technortal, color: '#A8DD22' },
+  { name: 'Mobbin', type: 'Global Knowledge Partner', src: Mobbin, color: '#171717' },
+  { name: 'Oway Travel', type: 'Credit Partner', src: Oway, color: '#1D63D8' },
+  { name: 'TheBuilderPros', type: 'Knowledge Partner', src: TheBuilderPros, color: '#F97316' },
+  { name: 'Meal Partners', type: 'Meal Partner', src: MealPartners, color: '#16437E', wide: true },
 ]
 
 const PARTNERS = [
@@ -68,13 +84,58 @@ const PILL =
  */
 function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
   const isMain = !!sponsor.main
+  const isWide = !!sponsor.wide
   const pillRot = isMain ? (sponsor.pill === 'top-left' ? -6 : 6) : 0
+
+  /* Wide strip: one long white container holding a row of logos */
+  if (isWide) {
+    return (
+      <div className="sponsor-card sponsor-card--wide opacity-0 flex w-full max-w-[720px] flex-col items-center">
+        <div className="relative h-[130px] w-full md:h-[170px]">
+          <div
+            aria-hidden="true"
+            data-base
+            style={{ backgroundColor: sponsor.color }}
+            className="absolute inset-0 rounded-2xl shadow-[0_6px_16px_rgba(11,74,138,0.18)]"
+          />
+          <div
+            data-white
+            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white p-5 shadow-[0_6px_18px_rgba(11,74,138,0.12)] md:p-7"
+          >
+            <div
+              data-frame
+              className="pointer-events-none absolute inset-3 rounded-xl border-2 border-dashed bg-transparent"
+              style={{ borderColor: `${sponsor.color}80` }}
+            />
+            <Image
+              data-logo
+              src={sponsor.src}
+              alt={`${sponsor.name} logo`}
+              width={640}
+              height={140}
+              className="h-full w-full object-contain"
+            />
+          </div>
+          <div
+            data-tip
+            className="absolute -top-4 left-[60%] z-50 whitespace-nowrap rounded-2xl bg-[#FFAE14] px-4 py-2 text-sm font-bold text-white opacity-0 shadow-lg pointer-events-none"
+          >
+            {sponsor.name}
+            <div className="absolute -bottom-2 left-[10%] h-4 w-4 -translate-x-1/2 rounded-full bg-[#FFAE14]" />
+          </div>
+        </div>
+        <span data-pill data-rot={pillRot} className={`${PILL} mt-4 text-[11px] md:text-xs`}>
+          {sponsor.type}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div
       className={`sponsor-card opacity-0 ${
         isMain
-          ? 'relative w-[220px] h-[220px] md:w-[280px] md:h-[280px]'
+          ? 'relative w-[200px] h-[200px] md:w-[220px] md:h-[220px]'
           : 'flex w-[160px] md:w-[200px] flex-col items-center'
       }`}
     >
@@ -128,6 +189,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
           <span
             data-pill
             data-rot={pillRot}
+            style={sponsor.pillStyle}
             className={`${PILL} absolute z-40 text-xs md:text-sm ${
               sponsor.pill === 'top-left' ? '-left-5 -top-4' : '-bottom-4 -right-5'
             }`}
@@ -177,7 +239,15 @@ export function CommunityPartnersSection() {
 
       // GSAP owns the transforms on these elements (Tailwind translate
       // utilities would be clobbered by GSAP's inline `translate: none`)
-      gsap.set(rootQ('[data-base]'), { x: -10, y: 10, rotate: -3 })
+      // Wide cards rotate less — a few degrees already swings their long edges far.
+      rootQ('[data-base]').forEach((base) => {
+        const isWideBase = !!base.closest('.sponsor-card--wide')
+        gsap.set(base, {
+          x: isWideBase ? -8 : -10,
+          y: isWideBase ? 8 : 10,
+          rotate: isWideBase ? -1 : -3,
+        })
+      })
       gsap.set(rootQ('[data-tip]'), { xPercent: -50, yPercent: -100, scale: 0.9, opacity: 0 })
 
       // ---------- Intro: sponsors title ----------
@@ -208,7 +278,13 @@ export function CommunityPartnersSection() {
           })
           .fromTo(
             sponsorCards,
-            { opacity: 0, y: 60, scale: 0.7, rotation: -5 },
+            {
+              opacity: 0,
+              y: 60,
+              scale: 0.7,
+              rotation: (_i, t: Element) =>
+                t.classList.contains('sponsor-card--wide') ? -1 : -5,
+            },
             {
               opacity: 1,
               y: 0,
@@ -221,10 +297,16 @@ export function CommunityPartnersSection() {
           )
           .fromTo(
             sq('[data-frame]'),
-            { opacity: 0, scale: 0.5, rotation: -35 },
+            {
+              opacity: 0,
+              scale: 0.5,
+              rotation: (_i, t: Element) =>
+                (t as HTMLElement).closest('.sponsor-card--wide') ? -10 : -35,
+            },
             {
               opacity: 1,
-              scale: 1,
+              scale: (_i, t: Element) =>
+                t.classList.contains('sponsor-card--wide') ? 0.5 : 1,
               rotation: 0,
               duration: 0.55,
               stagger: 0.05,
@@ -340,14 +422,15 @@ export function CommunityPartnersSection() {
       const micro = (card: Element, active: boolean) => {
         const q = gsap.utils.selector(card)
         const isPartner = card.classList.contains('partner-card')
+        const isWide = card.classList.contains('sponsor-card--wide')
         const d = 0.4
         const e = 'power2.out'
         const over = { overwrite: 'auto' as const }
 
         gsap.to(q('[data-base]'), {
-          x: active ? -16 : -10,
-          y: active ? -20 : 10,
-          rotate: active ? -10 : -3,
+          x: active ? (isWide ? -14 : -16) : isWide ? -8 : -10,
+          y: active ? (isWide ? -14 : -20) : isWide ? 8 : 10,
+          rotate: active ? (isWide ? -2.5 : -10) : isWide ? -1 : -3,
           scale: active ? 1.05 : 1,
           duration: d,
           ease: e,
@@ -503,7 +586,7 @@ export function CommunityPartnersSection() {
     <div ref={rootRef} className="dotted-bg">
       {/* ============ Sponsors & Partners ============ */}
       <section id="sponsors" ref={sponsorsSectionRef} className="relative scroll-mt-16 py-20 overflow-hidden">
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2
             ref={sponsorsTitleRef}
             className="font-dela-gothic-one text-2xl md:text-3xl lg:text-4xl font-bold text-[#0B4A8A] text-center tracking-wider mb-14 md:mb-16 opacity-0"
@@ -521,10 +604,15 @@ export function CommunityPartnersSection() {
 
             {/* The rest â€” type pill below the card */}
             <div className="flex flex-wrap items-start justify-center gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12">
-              {SPONSORS.filter((sponsor) => !sponsor.main).map((sponsor) => (
+              {SPONSORS.filter((sponsor) => !sponsor.main && !sponsor.wide).map((sponsor) => (
+                <SponsorCard key={sponsor.name} sponsor={sponsor} />
+              ))}
+
+              {SPONSORS.filter((sponsor) => sponsor.wide).map((sponsor) => (
                 <SponsorCard key={sponsor.name} sponsor={sponsor} />
               ))}
             </div>
+
           </div>
         </div>
       </section>
