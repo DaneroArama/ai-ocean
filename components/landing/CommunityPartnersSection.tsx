@@ -91,7 +91,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
   if (isWide) {
     return (
       <div className="sponsor-card sponsor-card--wide opacity-0 flex w-full max-w-[720px] flex-col items-center">
-        <div className="relative h-[130px] w-full md:h-[170px]">
+        <div className="relative h-[130px] w-full md:h-[220px]">
           <div
             aria-hidden="true"
             data-base
@@ -143,7 +143,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
         className={
           isMain
             ? 'relative h-full w-full'
-            : 'relative h-[140px] w-[140px] md:h-[180px] md:w-[180px]'
+            : 'relative h-[140px] w-[140px] md:h-[220px] md:w-[220px]'
         }
       >
         {/* Coloured base card â€” offset + micro-rotates on hover (GSAP owns x/y) */}
@@ -603,7 +603,7 @@ export function CommunityPartnersSection() {
             </div>
 
             {/* The rest â€” type pill below the card */}
-            <div className="flex flex-wrap items-start justify-center gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12">
+            <div className="flex flex-wrap items-start justify-center gap-x-14 gap-y-16 md:gap-x-24">
               {SPONSORS.filter((sponsor) => !sponsor.main && !sponsor.wide).map((sponsor) => (
                 <SponsorCard key={sponsor.name} sponsor={sponsor} />
               ))}
