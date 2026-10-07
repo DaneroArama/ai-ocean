@@ -228,7 +228,7 @@ export const MerchandiseSection = () => {
           <span className="absolute -top-5 left-[-25%] rounded-full border border-white/70 bg-linear-to-b from-[#a0ddb1] to-[#42ad79] px-6 py-2 text-xs font-semibold shadow-[inset_0_1px_5px_#ffffffb3,0_0_0_3px_#ffffff33]">
             Collection
           </span>
-          <h2 ref={titleRef} className="font-dela-gothic-one text-4xl md:text-5xl font-bold text-ocean-deep mb-12 text-center">
+          <h2 ref={titleRef} className="font-dela-gothic-one text-4xl md:text-5xl text-ocean-deep mb-12 text-center">
             Event Merch
           </h2>
           <span className="absolute -bottom-7 right-0 rounded-full border border-white/70 bg-linear-to-b from-[#d59aff] to-[#ac2eeb] px-6 py-2 text-xs font-semibold shadow-[inset_0_1px_5px_#ffffffb3,0_0_0_3px_#ffffff33] md:-right-24 md:-bottom-1">

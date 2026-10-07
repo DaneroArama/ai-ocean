@@ -589,7 +589,7 @@ export function CommunityPartnersSection() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2
             ref={sponsorsTitleRef}
-            className="font-dela-gothic-one text-2xl md:text-3xl lg:text-4xl font-bold text-[#0B4A8A] text-center tracking-wider mb-14 md:mb-16 opacity-0"
+            className="font-dela-gothic-one text-4xl md:text-5xl text-[#0B4A8A] text-center tracking-wider mb-14 md:mb-16 opacity-0"
           >
             Sponsors &amp; Partners
           </h2>
@@ -671,7 +671,7 @@ export function CommunityPartnersSection() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2
             ref={titleRef}
-            className="font-dela-gothic-one text-2xl md:text-3xl lg:text-4xl font-bold text-[#0B4A8A] text-center tracking-wider mb-16 opacity-0"
+            className="font-dela-gothic-one text-4xl md:text-5xl text-[#0B4A8A] text-center tracking-wider mb-16 opacity-0"
           >
             Community Partners
           </h2>
