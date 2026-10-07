@@ -16,12 +16,23 @@ import WaiYiMonSoePhoto from '@/app/assets/Persons/Speakers/Wai Yi Mon Soe 2025 
 import HendraPhoto from '@/app/assets/Persons/Speakers/Hendra.webp'
 import EricGloverPhoto from '@/app/assets/Persons/Speakers/Eric Glover - Phyo Thiri Thu.webp'
 import SittYeYintTunPhoto from '@/app/assets/Persons/Speakers/Sitt Ye Yint Tun.png'
-import KyisinHsutharPhoto from '@/app/assets/Persons/Kyisin Hsuthar.jpeg'
-import SannLynnHtunPhoto from '@/app/assets/Persons/Sann Lynn Htun.jpg'
-import HaymarAungPhoto from '@/app/assets/Persons/Haymar Aung.jpeg'
-import PhyoThiriThuPhoto from '@/app/assets/Persons/Phyo Thiri Thu.png'
-import ChawSuHlaingPhoto from '@/app/assets/Persons/Chaw Su Hlaing.png'
-import ThaeSuAyePhoto from '@/app/assets/Persons/Thae Su Aye.jpg'
+import KyisinHsutharPhoto from '@/app/assets/Persons/mentors/Kyisin Hsuthar.jpeg'
+import SannLynnHtunPhoto from '@/app/assets/Persons/mentors/Sann Lynn Htun.jpg'
+import HaymarAungPhoto from '@/app/assets/Persons/mentors/Haymar Aung.jpeg'
+import PhyoThiriThuPhoto from '@/app/assets/Persons/mentors/Phyo Thiri Thu.png'
+import ChawSuHlaingPhoto from '@/app/assets/Persons/mentors/Chaw Su Hlaing.png'
+import ThaeSuAyePhoto from '@/app/assets/Persons/mentors/Thae Su Aye.jpg'
+import BoboLinnaingMentorPhoto from '@/app/assets/Persons/mentors/bobolinnaing_profile - Bobo Linnaing.jpeg'
+import ZawekaungHtetMentorPhoto from '@/app/assets/Persons/mentors/IMG_0346 - Zawekaung htet.jpeg'
+import LinLinKhineMentorPhoto from '@/app/assets/Persons/mentors/IMG_20250314_200502_196 - Lin Lin Khine.jpg'
+import MinNandaZanMentorPhoto from '@/app/assets/Persons/mentors/IMG_3321 - Min Nanda Zan.jpg'
+import LynnhtetThantMentorPhoto from '@/app/assets/Persons/mentors/IMG_6482 - Lynnhtet Thant.jpeg'
+import KyawKoKoTunMentorPhoto from '@/app/assets/Persons/mentors/me-pfp - Kyaw Ko Ko Tun.png'
+import ThiriPhyoNaingMentorPhoto from '@/app/assets/Persons/mentors/Ocean-Character-5 - Thiri Phyo Naing.png'
+import HninYuHlaingMentorPhoto from '@/app/assets/Persons/mentors/pic for mentor - Hnin Yu Hlaing.png'
+import ThazinWinMentorPhoto from '@/app/assets/Persons/mentors/Thazin - Thazin Win.png'
+import KoKhantMentorPhoto from '@/app/assets/Persons/mentors/uxmm - Ko Khant.png'
+import MinYeHtutMentorPhoto from '@/app/assets/Persons/mentors/_HKS8529_1 - Min Ye Htut.jpg'
 
 export type SpeakerDay = 1 | 2
 
@@ -34,6 +45,15 @@ export type Speaker = {
   position: string
   organization: string
   bio: string
+  photo: StaticImageData | string
+}
+
+export type Mentor = {
+  id: string
+  name: string
+  position?: string
+  organization?: string
+  bio?: string
   photo: StaticImageData | string
 }
 
@@ -188,7 +208,15 @@ export const speakers: Speaker[] = [
     name: 'Kyi Sin Hsu Thar',
     position: 'Head of Programs',
     organization: 'UXMM',
-    bio: 'A versatile UI/UX Designer and product professional with international experience, including remote contributions to high-security government digital transformation projects for a Singapore-based firm. She currently serves as Head of Programs at UXMM, where she leads initiatives that create opportunities for learning, mentorship, and professional growth within the design community. As a Women in Tech Scholarship recipient, she has returned to academia to pursue an M.Sc. in Data Science and AI, embracing a new chapter of continuous learning and expanding her expertise beyond design into technology, data, and strategic thinking.',
+    bio: [
+      'Mentor Introduction',
+      '',
+      'A versatile UI/UX Designer and product professional with international experience, including remote contributions to high-security government digital transformation projects for a Singapore-based firm. She currently serves as Head of Programs at UXMM, where she leads initiatives that create opportunities for learning, mentorship, and professional growth within the design community.',
+      '',
+      'As a Women in Tech Scholarship recipient, she has returned to academia to pursue an M.Sc. in Data Science and AI, embracing a new chapter of continuous learning and expanding her expertise beyond design into technology, data, and strategic thinking. Her journey reflects a commitment to evolving with the industry while using her experience to create opportunities for others.',
+      '',
+      'Combining user-centered design, product thinking, and data-driven approaches, she believes in learning by doing, sharing knowledge, and empowering the next generation of designers. As a mentor, she is particularly passionate about supporting aspiring designers and women in tech to build confidence, develop practical skills, and turn their potential into meaningful careers.',
+    ].join('\n'),
     photo: KyisinHsutharPhoto,
   },
   {
@@ -235,6 +263,121 @@ export const speakers: Speaker[] = [
     organization: 'LOMTech',
     bio: 'Project Researcher at LOMTech focused on social impact, inclusion, and making AI accessible to non-technical builders and diverse communities. Her background spans research, operations, and youth leadership across Myanmar and international platforms (SEARA member, SEALNet mentor, LP4Y coach, R&D at Indonesia’s Halal Science Center).',
     photo: ThaeSuAyePhoto,
+  },
+]
+
+const mentorIds = new Set([
+  'kyi-sin-hsu-thar',
+  'sann-lynn-htun',
+  'hnin-hay-mar-aung',
+  'phyo-thiri-thu',
+  'chaw-su-hlaing',
+  'thae-su-aye',
+])
+
+const mentorPhotos: Record<string, StaticImageData> = {
+  'kyi-sin-hsu-thar': KyisinHsutharPhoto,
+  'sann-lynn-htun': SannLynnHtunPhoto,
+  'hnin-hay-mar-aung': HaymarAungPhoto,
+  'phyo-thiri-thu': PhyoThiriThuPhoto,
+  'chaw-su-hlaing': ChawSuHlaingPhoto,
+  'thae-su-aye': ThaeSuAyePhoto,
+}
+
+const existingMentors: Mentor[] = speakers
+  .filter((speaker) => mentorIds.has(speaker.id))
+  .map(({ id, name, position, organization, bio }) => ({
+    id,
+    name,
+    position,
+    organization,
+    bio,
+    photo: mentorPhotos[id],
+  }))
+
+export const mentors: Mentor[] = [
+  ...existingMentors,
+  {
+    id: 'bobo-linnaing',
+    name: 'Bobo Linnaing',
+    position: 'UI/UX Designer',
+    organization: 'SANDP1T Ltd.',
+    bio: 'Bobo Linnaing is a UI/UX Designer with a background in medicine who transitioned into the design field in 2021. He currently works on B2B SaaS and enterprise products across areas such as supply chain, document management, and electronic healthcare system, with a focus on user experience, interface design, and design systems',
+    photo: BoboLinnaingMentorPhoto,
+  },
+  {
+    id: 'zawekaung-htet',
+    name: 'Zawe Kaung Htet',
+    position: 'Senior UI UX Designer',
+    organization: 'U9',
+    bio: 'I’m Zawe Kaung Htet, a Senior UI/UX Designer at U9 with over eight years of experience in the industry. I’ve worked on a wide range of digital products and solutions across FinTech, e-wallets and digital banking, telecom, e-commerce, POS, PWA, and more. I’m passionate about creating simple, intuitive, and meaningful experiences that solve real user needs and bring value to businesses.',
+    photo: ZawekaungHtetMentorPhoto,
+  },
+  {
+    id: 'lin-lin-khine',
+    name: 'Lin Lin Khine',
+    position: 'QA Analyst',
+    organization: 'Carro',
+    bio: 'I have around 8 years experience in QA Analyst, with experience working closely with product, business, design and engineering teams to deliver user-focused solutions along with value.',
+    photo: LinLinKhineMentorPhoto,
+  },
+  {
+    id: 'min-nanda-zan',
+    name: 'Min Nanda Zan',
+    position: 'Product Designer & UX Specialist',
+    organization: 'Wave Money',
+    bio: 'Min Nanda Zan, widely known as Kanzo, is a seasoned Product Designer at Wave Money and a dedicated Instructor at UXMM with over 8 years of industry experience. Since beginning his career in 2018, he has specialized in UX design, focusing on creating intuitive and impactful digital financial services that cater to millions of users. In addition to his professional role at Wave Money, Kanzo is deeply committed to nurturing the next generation of designers as an instructor for beginner UI/UX classes at UXMM. His approach combines deep technical expertise with a passion for design thinking, aiming to elevate the digital ecosystem in Myanmar through both high-quality product development and community mentorship.',
+    photo: MinNandaZanMentorPhoto,
+  },
+  {
+    id: 'lynnhtet-thant',
+    name: 'Lynn Htet Thant',
+    position: 'User Experience Lead',
+    organization: 'KBZ',
+    bio: 'I’m Lynn Htet Thant — a product designer and A passionate UX designer with 5 years of experience creating user-centered interfaces and applications. Skilled in the entire design process, from user research and prototyping to usability testing and implementation. Equally enthusiastic about sharing knowledge and fostering the next generation of UX professionals. Proficient in creating intuitive, secure, and compliant interfaces that enhance the user experience, visually appealing interfaces for SaaS (Software as a Service) products and drive business growth. I design with love a lot of web apps and mobile applications for various industries. I perform as a UX researcher, UX analyst, UX designer and UI designer passionately.',
+    photo: LynnhtetThantMentorPhoto,
+  },
+  {
+    id: 'kyaw-ko-ko-tun',
+    name: 'Kyaw Ko Ko Tun',
+    position: 'Founder / Senior Fullstack Developer',
+    organization: "Let's Tech Club / OSBAY",
+    bio: 'Kyaw Ko Ko Tun (Brady) is a software engineer, system architect, and the founder of Let’s Tech Club. His journey in technology began at age 12, entering the professional software industry by age 15. He is passionate about designing scalable backend architectures, reliable systems, and production-ready engineering workflows. Beyond system architecture, Brady is driven by a long-term vision to build a sustainable tech startup ecosystem in Myanmar. Through Let’s Tech Club, he leads practical developer bootcamps, technical hackathons, and community initiatives designed to connect local talents with the right, high-impact opportunities. His core mission centers on equipping local developers with production-grade skills and helping build the foundation for future technology ventures.',
+    photo: KyawKoKoTunMentorPhoto,
+  },
+  { id: 'thiri-phyo-naing', name: 'Thiri Phyo Naing', photo: ThiriPhyoNaingMentorPhoto },
+  {
+    id: 'pwint-yee-mon',
+    name: 'Pwint Yee Mon',
+    position: 'UI/UX Consultant',
+    organization: 'SANDP1T',
+    bio: 'Ma Pwint Yee Mon (Christine) သည် Singapore အခြေစိုက် SANDP1T တွင် UI/UX Consultant အဖြစ် လုပ်ကိုင်နေသူဖြစ်ပြီး Myanmar နှင့် Singapore အခြေစိုက် ကုမ္ပဏီများတွင် ၅ နှစ်ကျော် အတွေ့အကြုံရှိသူဖြစ်ပါတယ်။ UI Designer အဖြစ် စတင်ခဲ့ပြီး ယခုအခါတွင် Interaction Design၊ System Thinking နှင့် UX Mindset များကို အဓိကထားကာ Service Design ဘက်တွင် တာဝန်ယူလုပ်ကိုင်နေပါတယ်။ ဒါ့အပြင် UX community များတွင် ပါဝင်ကာ knowledge sharing ပြုလုပ်ခြင်းကို နှစ်သက်သူဖြစ်ပြီး Figma Community တွင်လည်း UX နှင့် Workshop templates များကိုလည်း ပူးပေါင်းမျှဝေထားသူဖြစ်ပါတယ်။',
+    photo: ThiriPhyoNaingMentorPhoto,
+  },
+  {
+    id: 'hnin-yu-hlaing',
+    name: 'Hnin Yu Hlaing',
+    position: 'Lead UI/UX Designer',
+    organization: 'LomTech Global',
+    bio: 'Hello, my name is Hnin Yu Hlaing (Joyce). I’m currently working as a Design Team Lead at LOMTech, where I lead design initiatives and mentor designers to grow both creatively and strategically. Over the past five years, I’ve collaborated with international teams to create solutions that effectively balance both business goals and user needs. As a mentor, what I want to focus on in this UXMM program is helping designers move beyond just “designing UI/UX.” I want them to start thinking like product leaders, understanding real-world impact and being able to create meaningful, practical solutions.',
+    photo: HninYuHlaingMentorPhoto,
+  },
+  {
+    id: 'thazin-win',
+    name: 'Thazin Win',
+    position: 'Senior UI/UX Specialist',
+    organization: 'U9 Myanmar',
+    bio: 'Thazin Win is a Senior UI/UX Specialist at U9 Myanmar, with experience spanning product design, UX research, usability testing, and digital product development. She has worked across fintech, telecommunications, and digital services, with a particular interest in creating usable and inclusive experiences for people with different levels of digital literacy. Beyond her professional work, Thazin actively contributes to Myanmar’s UX community through mentoring, teaching, and knowledge sharing. She is passionate about helping designers and cross-functional teams understand how UX can create meaningful value for both users and businesses.',
+    photo: ThazinWinMentorPhoto,
+  },
+  { id: 'ko-khant', name: 'Ko Khant', photo: KoKhantMentorPhoto },
+  {
+    id: 'min-ye-htut',
+    name: 'Min Ye Htut',
+    position: 'UX/UI Designer',
+    organization: 'Yoma Group Technology',
+    bio: 'Min Ye is a UX/UI Designer passionate about turning real-world problems into simple, meaningful digital experiences. With experience across Myanmar’s startup and corporate landscape, he brings together user-centered design, technology, and business thinking to create solutions that are both useful for people and valuable for organizations.',
+    photo: MinYeHtutMentorPhoto,
   },
 ]
 

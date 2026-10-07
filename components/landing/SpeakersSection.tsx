@@ -17,14 +17,14 @@ import { rolesById, speakers } from '@/data/speakersData'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type Role = 'Speaker' | 'Panelist' | 'Moderator' | 'Judge'
+export type Role = 'Speaker' | 'Panelist' | 'Moderator' | 'Judge' | 'Mentor'
 type Category = 'Speakers' | 'Panelists' | 'Judges'
 
-type Profile = {
+export type Profile = {
   id: string
   name: string
-  position: string
-  organization: string
+  position?: string
+  organization?: string
   bio?: string
   photo: StaticImageData | string
   roles: Role[]
@@ -41,6 +41,7 @@ const roleBadgeClass: Record<Role, string> = {
   Panelist: 'bg-linear-to-b from-[#d59aff] to-[#ac2eeb]',
   Moderator: 'bg-linear-to-b from-[#8ec5ff] to-[#3b82f6]',
   Judge: 'bg-linear-to-b from-[#a0ddb1] to-[#42ad79]',
+  Mentor: 'bg-linear-to-b from-[#a0ddb1] to-[#42ad79]',
 }
 
 const MASCOTS = [Ali, Crabi, Octo, Shark, Tuto]
@@ -88,7 +89,7 @@ const profilesFor = (category: Category): Profile[] => {
   return roster.filter(profile => profile.roles.includes(singular))
 }
 
-function BriefCard({ profile, index, onSelect }: { profile: Profile; index: number; onSelect: (profile: Profile) => void }) {
+export function BriefCard({ profile, index, onSelect, showMascot = true, showRoleBadges = true }: { profile: Profile; index: number; onSelect: (profile: Profile) => void; showMascot?: boolean; showRoleBadges?: boolean }) {
   const mascot = MASCOTS[index % MASCOTS.length]
   const mascotLeft = index % 2 === 1
 
@@ -116,42 +117,50 @@ function BriefCard({ profile, index, onSelect }: { profile: Profile; index: numb
           sizes="(max-width: 479px) 85vw, (max-width: 767px) 42vw, (max-width: 1279px) 21vw, 260px"
           className="object-cover object-top"
         />
-        <span className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-          {profile.roles.map(role => (
-            <span
-              key={role}
-              className={`rounded-full border border-white/80 px-2.5 py-1 text-[10px] font-semibold leading-none text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
-            >
-              {role}
-            </span>
-          ))}
-        </span>
+        {showRoleBadges && (
+          <span className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+            {profile.roles.map(role => (
+              <span
+                key={role}
+                className={`rounded-full border border-white/80 px-2.5 py-1 text-[10px] font-semibold leading-none text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
+              >
+                {role}
+              </span>
+            ))}
+          </span>
+        )}
       </div>
       <h3 className="font-dela-gothic-one mt-3 text-sm leading-[1.4]">{profile.name}</h3>
-      <div className="mt-auto pt-6 text-sm font-semibold">
-        <p className="leading-snug">{profile.position}</p>
-        <p className="mt-1.5 text-xs leading-relaxed text-[#ac22ff]">@ {profile.organization}</p>
-      </div>
+      {(profile.position || profile.organization) && (
+        <div className="mt-auto pt-6 text-sm font-semibold">
+          {profile.position && <p className="leading-snug">{profile.position}</p>}
+          {profile.organization && (
+            <p className="mt-1.5 text-xs leading-relaxed text-[#ac22ff]">@ {profile.organization}</p>
+          )}
+        </div>
+      )}
 
       {/* Mascot peeking from a corner on hover (GSAP owns its transforms) */}
-      <span
-        data-mascot
-        aria-hidden="true"
-        className={`pointer-events-none absolute z-20 h-14 w-14 opacity-0 md:h-16 md:w-16 ${mascotLeft ? '-bottom-3 -left-3 md:-bottom-4 md:-left-4' : '-bottom-3 -right-3 md:-bottom-4 md:-right-4'}`}
-      >
-        <Image
-          src={mascot}
-          alt=""
-          width={72}
-          height={72}
-          className="h-full w-full object-contain drop-shadow-[0_5px_7px_rgba(0,45,75,0.35)]"
-        />
-      </span>
+      {showMascot && (
+        <span
+          data-mascot
+          aria-hidden="true"
+          className={`pointer-events-none absolute z-20 h-14 w-14 opacity-0 md:h-16 md:w-16 ${mascotLeft ? '-bottom-3 -left-3 md:-bottom-4 md:-left-4' : '-bottom-3 -right-3 md:-bottom-4 md:-right-4'}`}
+        >
+          <Image
+            src={mascot}
+            alt=""
+            width={72}
+            height={72}
+            className="h-full w-full object-contain drop-shadow-[0_5px_7px_rgba(0,45,75,0.35)]"
+          />
+        </span>
+      )}
     </article>
   )
 }
 
-function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => void }) {
+export function DetailCard({ profile, onClose, showRoleBadges = true }: { profile: Profile; onClose: () => void; showRoleBadges?: boolean }) {
   const backdropRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const bioRef = useRef<HTMLParagraphElement>(null)
@@ -273,24 +282,30 @@ function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => voi
                 className="object-cover object-top"
               />
             </div>
-            <div data-detail-tags className="flex flex-wrap justify-center gap-2 sm:justify-start">
-              {profile.roles.map(role => (
-                <span
-                  key={role}
-                  className={`rounded-full border border-white/80 px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
-                >
-                  {role}
-                </span>
-              ))}
-            </div>
+            {showRoleBadges && (
+              <div data-detail-tags className="flex flex-wrap justify-center gap-2 sm:justify-start">
+                {profile.roles.map(role => (
+                  <span
+                    key={role}
+                    className={`rounded-full border border-white/80 px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div data-detail-text className="min-w-0">
             <h3 className="font-dela-gothic-one text-xl leading-tight text-[#0b4a8a] sm:text-2xl md:text-3xl">
               {profile.name}
             </h3>
-            <p className="mt-2 text-sm font-semibold leading-snug text-[#1668a8] sm:text-base">{profile.position}</p>
-            <p className="mt-1.5 text-sm font-semibold text-[#ac22ff] sm:text-base">@ {profile.organization}</p>
+            {profile.position && (
+              <p className="mt-2 text-sm font-semibold leading-snug text-[#1668a8] sm:text-base">{profile.position}</p>
+            )}
+            {profile.organization && (
+              <p className="mt-1.5 text-sm font-semibold text-[#ac22ff] sm:text-base">@ {profile.organization}</p>
+            )}
             {profile.bio && (
               <div className="mt-4 border-t border-dashed border-[#cfe8f6] pt-4">
                 <p
@@ -302,7 +317,7 @@ function DetailCard({ profile, onClose }: { profile: Profile; onClose: () => voi
                       ? 'linear-gradient(to bottom, black calc(100% - 32px), transparent)'
                       : 'none',
                   }}
-                  className="overflow-hidden text-sm leading-relaxed text-[#3c6b8e]"
+                  className="overflow-hidden whitespace-pre-line text-sm leading-relaxed text-[#3c6b8e]"
                 >
                   {profile.bio}
                 </p>

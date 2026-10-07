@@ -10,7 +10,9 @@ import {
   MerchandiseSection,
   CommunityPartnersSection,
   ScheduleSection,
-  SpeakersSection
+  SpeakersSection,
+  MentorsSection,
+  EventTeamSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 import { BubbleClickTrail } from '@/components/landing/BubbleClickTrail'
@@ -58,10 +60,16 @@ export default function Home() {
       {/* Speakers - Section 6 */}
       <SpeakersSection/>
 
-      {/* Merchandise Section - Section 7 */}
+      {/* Mentors - Section 7 */}
+      <MentorsSection/>
+
+      {/* Event Team - Section 8 */}
+      <EventTeamSection/>
+
+      {/* Merchandise Section - Section 9 */}
       <MerchandiseSection/>
 
-      {/* Community Partners - Section 8 */}
+      {/* Community Partners - Section 10 */}
       <CommunityPartnersSection/>
 
       {/* About UXMM */}

@@ -122,6 +122,18 @@ export function Navbar() {
                   Speakers
                 </button>
                 <button
+                  onClick={() => scrollTo('mentors')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                >
+                  Mentors
+                </button>
+                <button
+                  onClick={() => scrollTo('event-team')}
+                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
+                >
+                  Event Team
+                </button>
+                <button
                   onClick={() => scrollTo('sponsors')}
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
@@ -191,6 +203,18 @@ export function Navbar() {
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
                 Speakers
+              </button>
+              <button
+                onClick={() => scrollTo('mentors')}
+                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
+              >
+                Mentors
+              </button>
+              <button
+                onClick={() => scrollTo('event-team')}
+                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
+              >
+                Event Team
               </button>
               <button
                 onClick={() => scrollTo('sponsors')}
