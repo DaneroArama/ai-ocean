@@ -1,12 +1,12 @@
 ﻿// Types for Schedule Data
 import type { StaticImageData } from 'next/image'
 
-import ChawSuHlaingPhoto from '@/app/assets/Persons/Chaw Su Hlaing.png'
-import SannLynnHtunPhoto from '@/app/assets/Persons/Sann Lynn Htun.jpg'
-import HaymarAungPhoto from '@/app/assets/Persons/Haymar Aung.jpeg'
-import KyisinHsutharPhoto from '@/app/assets/Persons/Kyisin Hsuthar.jpeg'
-import ThaeSuAyePhoto from '@/app/assets/Persons/Thae Su Aye.jpg'
-import PhyoThiriThuPhoto from '@/app/assets/Persons/Phyo Thiri Thu.png'
+import ChawSuHlaingPhoto from '@/app/assets/Persons/mentors/Chaw Su Hlaing.png'
+import SannLynnHtunPhoto from '@/app/assets/Persons/mentors/Sann Lynn Htun.jpg'
+import HaymarAungPhoto from '@/app/assets/Persons/mentors/Haymar Aung.jpeg'
+import KyisinHsutharPhoto from '@/app/assets/Persons/mentors/Kyisin Hsuthar.jpeg'
+import ThaeSuAyePhoto from '@/app/assets/Persons/mentors/Thae Su Aye.jpg'
+import PhyoThiriThuPhoto from '@/app/assets/Persons/mentors/Phyo Thiri Thu.png'
 
 export type CardType = 'finished' | 'confirmed' | 'upcoming'
 

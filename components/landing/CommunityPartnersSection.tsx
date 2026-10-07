@@ -47,19 +47,19 @@ type Sponsor = {
 
 const SPONSORS: Sponsor[] = [
   { name: 'CTZPay', type: 'Venue Sponsor', src: CTZPay, color: '#FF0E88', main: true, pill: 'top-left' },
+  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
   { name: 'SANDP1T', type: 'People Development Partner', src: Sandp1t, color: '#6B7A2E', main: true, pill: 'top-left', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #A97BEA, #8B52D4)' } },
   { name: 'H3VEA', type: 'Logistics Track Partner', src: H3VEA, color: '#0F8A45', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
-  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
   { name: 'Myanmar Citizens Bank', type: 'Event Support Partner', src: MCB, color: '#0A7CFF' },
   { name: 'BEYOND 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
-  { name: 'Mobbin', type: 'Global Knowledge Partner', src: Mobbin, color: '#171717' },
-  { name: 'Oway Travel', type: 'Credit Partner', src: Oway, color: '#1D63D8' },
-  { name: 'Meal Partners', type: 'Meal Partner', src: MealPartners, color: '#16437E', wide: true },
-  { name: 'Genplex.Ai', type: 'Knowledge Partner', src: Genplex, color: '#2E5BE8' },
-  { name: 'TheBuilderPros', type: 'Knowledge Partner', src: TheBuilderPros, color: '#F97316' },
-  { name: 'Technortal', type: 'Knowledge Partner', src: Technortal, color: '#A8DD22' },
   { name: 'MyJobs Myanmar', type: 'Talent Development Partner', src: MyJobs, color: '#FF7A18' },
   { name: 'Untitled Space & Dessert Studio', type: 'Refreshment Partner', src: UD, color: '#556730' },
+  { name: 'Genplex.Ai', type: 'Knowledge Partner', src: Genplex, color: '#2E5BE8' },
+  { name: 'Technortal', type: 'Knowledge Partner', src: Technortal, color: '#A8DD22' },
+  { name: 'Mobbin', type: 'Global Knowledge Partner', src: Mobbin, color: '#171717' },
+  { name: 'Oway Travel', type: 'Credit Partner', src: Oway, color: '#1D63D8' },
+  { name: 'TheBuilderPros', type: 'Knowledge Partner', src: TheBuilderPros, color: '#F97316' },
+  { name: 'Meal Partners', type: 'Meal Partner', src: MealPartners, color: '#16437E', wide: true },
 ]
 
 const PARTNERS = [
@@ -604,11 +604,15 @@ export function CommunityPartnersSection() {
 
             {/* The rest â€” type pill below the card */}
             <div className="flex flex-wrap items-start justify-center gap-x-14 gap-y-16 md:gap-x-24">
-              {SPONSORS.filter((sponsor) => !sponsor.main).map((sponsor) => (
+              {SPONSORS.filter((sponsor) => !sponsor.main && !sponsor.wide).map((sponsor) => (
                 <SponsorCard key={sponsor.name} sponsor={sponsor} />
               ))}
 
+              {SPONSORS.filter((sponsor) => sponsor.wide).map((sponsor) => (
+                <SponsorCard key={sponsor.name} sponsor={sponsor} />
+              ))}
             </div>
+
           </div>
         </div>
       </section>
