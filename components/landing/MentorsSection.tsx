@@ -131,12 +131,15 @@ export function MentorsSection() {
     >
       <div className="mx-auto max-w-6xl">
         <header className="relative mx-auto w-fit max-w-full mb-8">
-          <span className="absolute -top-8 left-[20%] rounded-full border border-white/70 bg-linear-to-b from-[#a0ddb1] to-[#42ad79] px-6 py-2 text-xs font-semibold shadow-[inset_0_1px_5px_#ffffffb3,0_0_0_3px_#ffffff33]">
-            Mentorship
+          <span className="absolute -top-5 left-[-10%] rounded-full border border-white/70 bg-linear-to-b from-[#a0ddb1] to-[#42ad79] px-6 py-2 text-xs font-semibold shadow-[inset_0_1px_5px_#ffffffb3,0_0_0_3px_#ffffff33]">
+            Guide
           </span>
           <h2 id="mentors-heading" className="font-dela-gothic-one text-center text-[clamp(2rem,4.8vw,3.5rem)] leading-tight tracking-tight">
             Our Mentors
           </h2>
+           <span className="absolute -bottom-7 right-0 rounded-full border border-white/70 bg-linear-to-b from-[#d59aff] to-[#ac2eeb] px-6 py-2 text-xs font-semibold shadow-[inset_0_1px_5px_#ffffffb3,0_0_0_3px_#ffffff33] md:-right-24 md:-bottom-1">
+            Support
+          </span>
         </header>
 
         <div

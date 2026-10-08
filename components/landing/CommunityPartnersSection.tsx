@@ -54,7 +54,7 @@ const SPONSORS: Sponsor[] = [
   { name: 'BEYOND 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
   { name: 'Mobbin', type: 'Global Knowledge Partner', src: Mobbin, color: '#171717' },
   { name: 'Oway Travel', type: 'Credit Partner', src: Oway, color: '#1D63D8' },
-  { name: 'Meal Partners', type: 'Meal Partner', src: MealPartners, color: '#16437E', wide: true },
+  { name: 'Yoma F&B (KFC Myanmar | YKKO)', type: 'Meal Partner', src: MealPartners, color: '#16437E', wide: true },
   { name: 'Genplex.Ai', type: 'Knowledge Partner', src: Genplex, color: '#2E5BE8' },
   { name: 'TheBuilderPros', type: 'Knowledge Partner', src: TheBuilderPros, color: '#F97316' },
   { name: 'Technortal', type: 'Knowledge Partner', src: Technortal, color: '#A8DD22' },
