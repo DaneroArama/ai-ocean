@@ -90,7 +90,7 @@ export function EventTeamSection() {
             id="event-team-list"
             ref={membersRef}
             aria-label="Event team members"
-            className="grid grid-flow-col grid-rows-3 gap-5 pb-2 auto-cols-[100%] md:grid-flow-row md:grid-cols-3 md:grid-rows-none md:pb-0"
+            className="grid grid-flow-col grid-rows-3 gap-5 pb-2 auto-cols-[85%] md:grid-flow-row md:grid-cols-3 md:grid-rows-none md:pb-0"
           >
             {membersWithPhoto.map((member, index) => (
               <li
@@ -116,6 +116,12 @@ export function EventTeamSection() {
             ))}
           </ul>
         </div>
+
+        <p aria-hidden="true" className="mt-4 flex justify-center md:hidden">
+          <span className="rounded-full border border-white/60 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white/90">
+            Swipe for more →
+          </span>
+        </p>
 
         {membersWithPhoto.length > DESKTOP_VISIBLE_COUNT && (
           <div className="mt-10 hidden justify-center md:flex">
