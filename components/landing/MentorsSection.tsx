@@ -6,7 +6,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { mentors, rolesById } from '@/data/speakersData'
-import { DetailCard, RoleBadges, type Profile } from './SpeakersSection'
+import { DetailCard, type Profile, type Role } from './SpeakersSection'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,7 +15,7 @@ const DESKTOP_VISIBLE_COUNT = 9
 const profiles: Profile[] = mentors
   .map((mentor): Profile => ({
     ...mentor,
-    roles: [...(rolesById[mentor.id] ?? []), 'Mentor'],
+    roles: [...new Set<Role>([...(rolesById[mentor.id] ?? []), 'Mentor'])],
   }))
   .sort((a, b) => a.name.localeCompare(b.name))
 

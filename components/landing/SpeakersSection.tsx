@@ -72,7 +72,7 @@ const roster: Profile[] = (() => {
       organization: s.organization,
       bio: s.bio,
       photo: s.photo,
-      roles: rolesById[s.id] ?? ['Speaker'],
+      roles: [...(rolesById[s.id] ?? ['Speaker'])],
     })
   )
   judges.forEach(judge =>
