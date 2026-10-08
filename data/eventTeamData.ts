@@ -30,7 +30,7 @@ import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Tha
 import SiThuAungPhoto from '@/app/assets/Persons/Members/Si Thu Aung.jpg'
 import Sora from '@/app/assets/Persons/Members/Sora.jpg'
 import KyalSinLinNaungPhoto from '@/app/assets/Persons/Members/Kyal Sin Lin Naung.jpg'
-
+import SiThuNandaPhoto from '@/app/assets/Persons/Members/Si Thu Nanda.png'
 import SawTheinWinTunPhoto from '@/app/assets/Persons/Members/Saw Thein Win Tun.jpg'
 
 export type TeamMember = {
@@ -63,7 +63,7 @@ export const eventTeam: TeamMember[] = [
   { name: 'Phyo Thiri Thu', photo: PhyoThiriThuPhoto },
   { name: 'Saw Thein Win Tun', photo: SawTheinWinTunPhoto },
   { name: 'Si Thu Aung', photo: SiThuAungPhoto },
-  { name: 'Si Thu Nanda'},
+  { name: 'Si Thu Nanda', photo: SiThuNandaPhoto },
   { name: 'Sora', photo: Sora },
   { name: 'Sitt Ye Yint Tun', photo: SittYeYintTunPhoto },
   { name: 'Su Nandar', photo: SuNandarPhoto },
