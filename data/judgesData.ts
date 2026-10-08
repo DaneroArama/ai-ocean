@@ -45,7 +45,7 @@ export const judges: Judge[] = [
   {
     id: 'la-min-thaw-alvin',
     name: 'La Min Thaw @ Alvin',
-    position: 'Lead UXUI, Deputy Team Lead',
+    position: 'Lead UXUI & Deputy Team Lead, Co-founder',
     organization: 'General Magick Thailand, UXMM',
     bio: 'Alvin is a Lead UI/UX Designer and design leader with over a decade of experience across fintech, digital products, and technology in Southeast Asia. He currently leads UI/UX at General Magick Thailand, driving product experience, design strategy, and design systems while supporting the leadership and growth of the Product Team and collaborating with other functions. Alvin is also a co-founder of UXMM (User Experience Myanmar), where he mentors designers and contributes to workshops and community initiatives. He enjoys sharing his design journey, real-world experiences, and lessons learned to help others grow in their design careers.',
     photo: AlvinPhoto,

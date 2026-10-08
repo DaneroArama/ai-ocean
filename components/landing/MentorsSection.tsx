@@ -5,17 +5,19 @@ import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { mentors } from '@/data/speakersData'
-import { DetailCard, type Profile } from './SpeakersSection'
+import { mentors, rolesById } from '@/data/speakersData'
+import { DetailCard, RoleBadges, type Profile } from './SpeakersSection'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const DESKTOP_VISIBLE_COUNT = 9
 
-const profiles: Profile[] = mentors.map(mentor => ({
-  ...mentor,
-  roles: ['Mentor'],
-}))
+const profiles: Profile[] = mentors
+  .map((mentor): Profile => ({
+    ...mentor,
+    roles: [...(rolesById[mentor.id] ?? []), 'Mentor'],
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name))
 
 function MentorCard({
   profile,
@@ -178,7 +180,7 @@ export function MentorsSection() {
         )}
       </div>
 
-      {detail && <DetailCard profile={detail} onClose={() => setDetailId(null)} showRoleBadges={false} />}
+      {detail && <DetailCard profile={detail} onClose={() => setDetailId(null)} />}
     </section>
   )
 }

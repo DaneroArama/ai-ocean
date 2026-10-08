@@ -23,6 +23,14 @@ import LaMinThawPhoto from '@/app/assets/Persons/Judges/Image_20260429_105144_36
 import KoKhantMentorPhoto from '@/app/assets/Persons/mentors/uxmm - Ko Khant.png'
 import MinYeHtutMentorPhoto from '@/app/assets/Persons/mentors/_HKS8529_1 - Min Ye Htut.jpg'
 import ChanMyaMyaKhinPhoto from '@/app/assets/Persons/Members/ChanMyaMyaKhin.jpg'
+import AungPhonePyaeZawPhoto from '@/app/assets/Persons/Members/Aung Bhone Pyae Sone.jpeg'
+import AyeSandiMyintPhoto from '@/app/assets/Persons/Members/Aye Sandi Myint.jpeg'
+import HtetArkarPhoto from '@/app/assets/Persons/Members/Htet Arkar.jpg'
+import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Than.jpg'
+import SiThuAungPhoto from '@/app/assets/Persons/Members/Si Thu Aung.jpg'
+import Sora from '@/app/assets/Persons/Members/Sora.jpg'
+
+import SawTheinWinTunPhoto from '@/app/assets/Persons/Members/Saw Thein Win Tun.jpg'
 
 export type TeamMember = {
   name: string
@@ -32,15 +40,15 @@ export type TeamMember = {
 export const eventTeam: TeamMember[] = [
   { name: 'Aung Aye Than', photo: AungAyeThanPhoto },
   { name: 'Aung Phone Myat', photo: AungPhoneMyatPhoto },
-  { name: 'Aung Phone Pyae Zaw' },
+  { name: 'Aung Phone Pyae Zaw', photo: AungPhonePyaeZawPhoto },
   { name: 'Aung Soe Khine', photo: AungSoeKhinePhoto },
-  { name: 'Aye Sandi Myint' },
-  { name: 'Ko Khant (Barry)', photo: KoKhantMentorPhoto },
+  { name: 'Aye Sandi Myint', photo: AyeSandiMyintPhoto },
+  { name: 'Barry', photo: KoKhantMentorPhoto },
   { name: 'Chan Mya Mya Khin', photo: ChanMyaMyaKhinPhoto },
   { name: 'Ei Ei Phyo', photo: EiEiPhyoPhoto },
   { name: 'Ei Thaw Zin', photo: EiThawZinPhoto },
   { name: 'Ghar Mani Si Thu', photo: GharManiSiThuPhoto },
-  { name: 'Htet Arkar' },
+  { name: 'Htet Arkar', photo: HtetArkarPhoto },
   { name: 'Khaing Zin Thet', photo: KhaingZinThetPhoto },
   { name: 'Kyal Sin Lin Naung' },
   { name: 'Kyi Sin Hsu Thar', photo: KyiSinHsuTharPhoto },
@@ -48,13 +56,14 @@ export const eventTeam: TeamMember[] = [
   { name: 'Lynn Myat Bhone Htut', photo: LynnMyatBhoneHtutPhoto },
   { name: 'Min Naing', photo: MinNaingPhoto },
   { name: 'Min Ye Htut Myat', photo: MinYeHtutMentorPhoto },
-  { name: 'Naw Shin Nandi Than' },
+  { name: 'Naw Shin Nandi Than', photo: NawShinNadiThanPhoto },
   { name: 'Nwe Oo Lwin', photo: NweOoLwinPhoto },
   { name: 'Nyein Zayar Naing', photo: NyeinZayarNaingPhoto },
   { name: 'Phyo Thiri Thu', photo: PhyoThiriThuPhoto },
-  { name: 'Saw Thein Win Tun' },
-  { name: 'Si Thu Aung' },
-  { name: 'Si Thu Nanda' },
+  { name: 'Saw Thein Win Tun', photo: SawTheinWinTunPhoto },
+  { name: 'Si Thu Aung', photo: SiThuAungPhoto },
+  { name: 'Si Thu Nanda'},
+  { name: 'Sora', photo: Sora },
   { name: 'Sitt Ye Yint Tun', photo: SittYeYintTunPhoto },
   { name: 'Su Nandar', photo: SuNandarPhoto },
   { name: 'Thiri Phyo Naing', photo: ThiriPhyoNaingPhoto },

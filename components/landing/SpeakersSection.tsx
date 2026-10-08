@@ -14,7 +14,7 @@ import Octo from '@/app/assets/Mascots/Octo.png'
 import Shark from '@/app/assets/Mascots/Shark.png'
 import Tuto from '@/app/assets/Mascots/Tuto.png'
 import { judges } from '@/data/judgesData'
-import { rolesById, speakers } from '@/data/speakersData'
+import { mentors, rolesById, speakers } from '@/data/speakersData'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -78,7 +78,18 @@ const roster: Profile[] = (() => {
   judges.forEach(judge =>
     add({
       ...judge,
-      roles: ['Judge'],
+      roles: ['Judge', 'Panelist'],
+    })
+  )
+  mentors.forEach(mentor =>
+    add({
+      id: mentor.id,
+      name: mentor.name,
+      position: mentor.position,
+      organization: mentor.organization,
+      bio: mentor.bio,
+      photo: mentor.photo,
+      roles: ['Mentor'],
     })
   )
   return [...map.values()]
@@ -88,10 +99,18 @@ const judgeOrder = new Map(judges.map((judge, index) => [judge.id, index]))
 
 const profilesFor = (category: Category): Profile[] => {
   if (category === 'Panelists') {
-    // moderators run the panel sessions, so they live in this tab too
-    return roster.filter(
-      profile => profile.roles.includes('Panelist') || profile.roles.includes('Moderator')
+    // moderators run the panel sessions, so they live in this tab too;
+    // judges are panelists as well but sit after the last panelist
+    const panelists = roster.filter(
+      profile =>
+        (profile.roles.includes('Panelist') || profile.roles.includes('Moderator')) &&
+        !profile.roles.includes('Judge')
     )
+    const listed = new Set(panelists.map(profile => profile.id))
+    const judgePanelists = roster
+      .filter(profile => profile.roles.includes('Judge') && !listed.has(profile.id))
+      .sort((a, b) => (judgeOrder.get(a.id) ?? 0) - (judgeOrder.get(b.id) ?? 0))
+    return [...panelists, ...judgePanelists]
   }
   if (category === 'Judges') {
     // judges who are also speakers sit early in the roster, so re-sort by
@@ -101,6 +120,21 @@ const profilesFor = (category: Category): Profile[] => {
       .sort((a, b) => (judgeOrder.get(a.id) ?? 0) - (judgeOrder.get(b.id) ?? 0))
   }
   return roster.filter(profile => profile.roles.includes('Speaker'))
+}
+
+export function RoleBadges({ roles, className = '' }: { roles: Role[]; className?: string }) {
+  return (
+    <span className={`flex flex-wrap gap-1 ${className}`}>
+      {roles.map(role => (
+        <span
+          key={role}
+          className={`rounded-full border border-white/80 px-2.5 py-1 text-[10px] font-semibold leading-none text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
+        >
+          {role}
+        </span>
+      ))}
+    </span>
+  )
 }
 
 export function BriefCard({ profile, index, onSelect, showMascot = true, showRoleBadges = true }: { profile: Profile; index: number; onSelect: (profile: Profile) => void; showMascot?: boolean; showRoleBadges?: boolean }) {
@@ -131,18 +165,7 @@ export function BriefCard({ profile, index, onSelect, showMascot = true, showRol
           sizes="(max-width: 479px) 85vw, (max-width: 767px) 42vw, (max-width: 1279px) 21vw, 260px"
           className="object-cover object-top"
         />
-        {showRoleBadges && (
-          <span className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-            {profile.roles.map(role => (
-              <span
-                key={role}
-                className={`rounded-full border border-white/80 px-2.5 py-1 text-[10px] font-semibold leading-none text-white shadow-[inset_0_1px_4px_#ffffffb3,0_1px_5px_#00000040] ${roleBadgeClass[role]}`}
-              >
-                {role}
-              </span>
-            ))}
-          </span>
-        )}
+        {showRoleBadges && <RoleBadges roles={profile.roles} className="absolute bottom-3 left-3" />}
       </div>
       <h3 className="font-dela-gothic-one mt-3 text-sm leading-[1.4]">{profile.name}</h3>
       {(profile.position || profile.organization) && (

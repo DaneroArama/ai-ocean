@@ -343,7 +343,7 @@ export const mentors: Mentor[] = [
     photo: ThazinWinMentorPhoto,
   },
   { id: 'ko-khant', 
-    name: 'Ko Khant (Barry)',
+    name: 'Barry',
     position: 'Product Designer',
     organization: 'MyJobS Myanmar / Ninja Van Myanmar / SupaCart',
     bio: 'Hello there. I’m a Senior UX/UI Designer and Product Designer with experience designing digital products across different industries from both local and foreign. Currently I’m contributing in Ninja Van Myanmar and MyJobs Myanmar as a Senior Designer. And I’m also taking responsibility as a Project Manager Assistant at SupaCart. I used to take part in mentoring newbies via classes and online courses at Let’s Tech Club and Compass back in the past.မင်္ဂလာပါဗျ၊​ ကျွန်တော်ကတော့ Local နဲ့ Foreign Industries တွေမှာရှိတဲ့ Companies တွေမှာ Senior UXUI Designer အနေနဲ့ကော Product Designer အနေနဲ့ပါ လုပ်ကိုင်ဖူးတဲ့ အတွေ့အကြုံရှိပါတယ်ခင်ဗျာ၊ လက်ရှိမှာတော့ Ninja Van Myanmar, MyJobs Myanmar နဲ့ SupaCart တို့မှာ လုပ်ကိုင်လျက်ရှိပါတယ်၊ အရင်တုန်းကတော့   Community ထဲအသစ်ဝင်ရောက်လာသူတွေကို သင်တန်းတွေကတစ်ဆင့် သင်ကြားပို့ချဖူးပါတယ်ခင်ဗျာ။',
