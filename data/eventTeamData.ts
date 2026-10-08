@@ -57,7 +57,7 @@ export const eventTeam: TeamMember[] = [
   { name: 'Lynn Myat Bhone Htut', photo: LynnMyatBhoneHtutPhoto },
   { name: 'Min Naing', photo: MinNaingPhoto },
   { name: 'Min Ye Htut Myat', photo: MinYeHtutMentorPhoto },
-  { name: 'Naw Shin Nandi Than', photo: NawShinNadiThanPhoto },
+  { name: 'Naw Shin Nadi Than', photo: NawShinNadiThanPhoto },
   { name: 'Nwe Oo Lwin', photo: NweOoLwinPhoto },
   { name: 'Nyein Zayar Naing', photo: NyeinZayarNaingPhoto },
   { name: 'Phyo Thiri Thu', photo: PhyoThiriThuPhoto },
