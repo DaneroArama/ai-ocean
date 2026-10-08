@@ -29,6 +29,7 @@ import HtetArkarPhoto from '@/app/assets/Persons/Members/Htet Arkar.jpg'
 import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Than.jpg'
 import SiThuAungPhoto from '@/app/assets/Persons/Members/Si Thu Aung.jpg'
 import Sora from '@/app/assets/Persons/Members/Sora.jpg'
+import KyalSinLinNaungPhoto from '@/app/assets/Persons/Members/Kyal Sin Lin Naung.jpg'
 
 import SawTheinWinTunPhoto from '@/app/assets/Persons/Members/Saw Thein Win Tun.jpg'
 
@@ -40,7 +41,7 @@ export type TeamMember = {
 export const eventTeam: TeamMember[] = [
   { name: 'Aung Aye Than', photo: AungAyeThanPhoto },
   { name: 'Aung Phone Myat', photo: AungPhoneMyatPhoto },
-  { name: 'Aung Phone Pyae Zaw', photo: AungPhonePyaeZawPhoto },
+  { name: 'Aung Bhone Pyae Zaw', photo: AungPhonePyaeZawPhoto },
   { name: 'Aung Soe Khine', photo: AungSoeKhinePhoto },
   { name: 'Aye Sandi Myint', photo: AyeSandiMyintPhoto },
   { name: 'Barry', photo: KoKhantMentorPhoto },
@@ -50,7 +51,7 @@ export const eventTeam: TeamMember[] = [
   { name: 'Ghar Mani Si Thu', photo: GharManiSiThuPhoto },
   { name: 'Htet Arkar', photo: HtetArkarPhoto },
   { name: 'Khaing Zin Thet', photo: KhaingZinThetPhoto },
-  { name: 'Kyal Sin Lin Naung' },
+  { name: 'Kyal Sin Lin Naung', photo: KyalSinLinNaungPhoto },
   { name: 'Kyi Sin Hsu Thar', photo: KyiSinHsuTharPhoto },
   { name: 'La Min Thaw', photo: LaMinThawPhoto },
   { name: 'Lynn Myat Bhone Htut', photo: LynnMyatBhoneHtutPhoto },

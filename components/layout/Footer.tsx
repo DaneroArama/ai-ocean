@@ -1,6 +1,22 @@
-import Link from "next/link";
+'use client'
+
 import uxmmLogo from "@/app/assets/uxmm_logo.svg";
 import Image from "next/image";
+
+const navLinks = [
+  { label: "Agenda", id: "agenda" },
+  { label: "Speakers", id: "speakers" },
+  { label: "Mentors", id: "mentors" },
+  { label: "Event Team", id: "event-team" },
+  { label: "Sponsors", id: "sponsors" },
+  { label: "Archetypes", id: "archetypes" },
+  { label: "About", id: "about" },
+];
+
+function scrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
 
 export function Footer() {
   return (
@@ -28,26 +44,17 @@ export function Footer() {
           <div>
             <h3 className="text-[17px] font-bold text-white mb-4 tracking-tight">Content</h3>
             <ul className="space-y-[14px] text-[14px] font-medium">
-              <li>
-                <Link href="/" className="text-white hover:text-white/70 transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/event" className="text-white hover:text-white/70 transition-colors">
-                  Event
-                </Link>
-              </li>
-              <li>
-                <Link href="/characters" className="text-white hover:text-white/70 transition-colors">
-                  Characters
-                </Link>
-              </li>
-              <li>
-                <Link href="/speaker" className="text-white hover:text-white/70 transition-colors">
-                  Speaker
-                </Link>
-              </li>
+              {navLinks.map((link) => (
+                <li key={link.id}>
+                  <button
+                    type="button"
+                    onClick={() => scrollTo(link.id)}
+                    className="text-white hover:text-white/70 transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -68,7 +75,7 @@ export function Footer() {
             <div className="flex items-center gap-3 flex-wrap">
               {/* Facebook */}
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/share/1Dmv1TXReT/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
@@ -80,7 +87,7 @@ export function Footer() {
               </a>
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/uxmm_official?stkn=cGRhMDR1M2p1aWtk"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -94,7 +101,7 @@ export function Footer() {
               </a>
               {/* TikTok */}
               <a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@uxmm_official?_r=1&_t=ZS-9ANWIxp5mL9"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
@@ -106,7 +113,7 @@ export function Footer() {
               </a>
               {/* YouTube */}
               <a
-                href="https://youtube.com"
+                href="https://youtube.com/@uxmyanmar?si=q32mei35HETFCbyw"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
@@ -118,7 +125,7 @@ export function Footer() {
               </a>
               {/* LinkedIn */}
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/company/uxmm/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
