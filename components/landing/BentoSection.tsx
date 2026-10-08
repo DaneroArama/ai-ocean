@@ -1,14 +1,12 @@
 'use client'
 
-import { useI18n } from '@/lib/i18n/provider'
 import Image from 'next/image'
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import colouredLogo from '@/app/assets/event_logo_light_coloured.png'
 import waves from '@/app/assets/waves.png'
 import starfish from '@/app/assets/Starfish.png'
-import swirl from '@/app/assets/about_icon_1.png'
+import colouredLogo from '@/app/assets/event_logo_light_coloured.png'
 import thinWaves from '@/app/assets/thin_waves.svg'
 
 import ali from '@/app/assets/Mascots/Ali.png'
@@ -18,11 +16,11 @@ import octo from '@/app/assets/Mascots/Octo.png'
 import tuto from '@/app/assets/Mascots/Tuto.png'
 
 const MASCOTS = [
-  { src: ali, alt: 'Ali mascot' },
+  { src: tuto, alt: 'Tuto mascot' },
   { src: shark, alt: 'Shark mascot' },
   { src: crabi, alt: 'Crabi mascot' },
   { src: octo, alt: 'Octo mascot' },
-  { src: tuto, alt: 'Tuto mascot' },
+  { src: ali, alt: 'Ali mascot' },
 ]
 
 gsap.registerPlugin(ScrollTrigger)
@@ -45,8 +43,6 @@ const CARD_DIRECTIONS = [
 
 
 export function BentoSection() {
-  const { t } = useI18n()
-
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -182,38 +178,38 @@ export function BentoSection() {
       {/* ======================================================
           BENTO CONTENT
       ======================================================= */}
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8 pt-0 pb-6 md:pt-0 md:pb-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1256px] flex-1 flex-col justify-center px-4 pt-0 pb-6 md:pt-0 md:pb-10">
         <div
           ref={gridRef}
-          className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 md:auto-rows-fr md:h-[520px] lg:h-[560px] md:grid-rows-[1.55fr_0.6fr_1.6fr] md:min-h-0"
+          className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[0.92fr_0.94fr_1.14fr_1fr] md:gap-6 lg:h-[594px] lg:grid-rows-[244fr_65fr_237fr] md:min-h-0"
         >
           {/* CARD 1 — Buildathon Teams */}
-          <div className="bento-card md:col-start-1 md:row-start-1 md:col-span-2 bg-[#18CBBC33] backdrop-blur-sm rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+          <div className="bento-card lg:col-start-1 lg:row-start-1 lg:col-span-2 bg-[#18CBBC33] backdrop-blur-sm rounded-[40px] p-6 md:p-[30px] lg:pt-9 lg:pb-[30px] transition-colors duration-300 glass-corners">
             <div className="flex h-full flex-col justify-between gap-5">
-              <div className="space-y-1">
-                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white leading-tight">
+              <div className="space-y-2">
+                <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white leading-tight">
                   Buildathon Teams
                 </h3>
-                <p className="font-quicksand text-sm md:text-base text-white/80">
+                <p className="font-quicksand text-base lg:text-lg text-white">
                   Participating teams will be announced soon.
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center -space-x-3">
                   {MASCOTS.map((m) => (
                     <div
                       key={m.alt}
-                      className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white p-1 shrink-0 overflow-hidden"
+                      className="relative w-12 h-12 lg:w-[60px] lg:h-[60px] rounded-full bg-white p-1 shrink-0 overflow-hidden border-4 border-[#39BDD9]"
                     >
-                      <Image src={m.src} alt={m.alt} width={48} height={48} className="w-full h-full object-contain" />
+                      <Image src={m.src} alt={m.alt} width={48} height={48} className="w-full h-full object-contain scale-[1.65] origin-[50%_35%]" />
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center gap-2 bg-white/25 rounded-full pl-4 pr-1.5 py-1.5">
-                  <span className="font-quicksand text-sm font-semibold text-white whitespace-nowrap">Coming Soon</span>
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/40">
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5M6 12h12" />
+                <div className="flex items-center gap-2 bg-white/15 border border-white/15 rounded-full pl-[18px] pr-2 py-2">
+                  <span className="font-quicksand text-base font-semibold text-white whitespace-nowrap">Coming Soon</span>
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white">
+                    <svg className="w-3 h-3 text-ocean-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M7 7h10v10" />
                     </svg>
                   </span>
                 </div>
@@ -222,51 +218,51 @@ export function BentoSection() {
           </div>
 
           {/* CARD 2 — Panelists */}
-          <div className="bento-card md:col-start-3 md:row-start-1 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+          <div className="bento-card lg:col-start-3 lg:row-start-1 bg-[#B8EBFF33] backdrop-blur-md rounded-[40px] p-6 md:p-[30px] transition-colors duration-300 glass-corners">
             <div className="flex flex-col h-full justify-between gap-3">
-              <p className="font-quicksand text-sm md:text-base text-white/80 leading-snug">
+              <p className="font-quicksand text-base lg:text-lg text-white leading-relaxed">
                 Different perspectives.
                 <br />
                 One shared conversation.
               </p>
               <div>
-                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Panelists</h3>
-                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">20</p>
+                <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white">Panelists</h3>
+                <p className="font-dela-gothic-one text-5xl lg:text-[56px] text-white leading-none mt-5">20</p>
               </div>
             </div>
           </div>
 
           {/* CARD 3 — Speakers */}
-          <div className="bento-card md:col-start-4 md:row-start-1 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+          <div className="bento-card lg:col-start-4 lg:row-start-1 lg:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-[40px] p-6 md:p-[30px] transition-colors duration-300 glass-corners">
             <div className="flex flex-col h-full justify-between gap-4">
-              <p className="font-quicksand text-sm md:text-base text-white/80 leading-relaxed">
+              <p className="font-quicksand text-base lg:text-lg text-white leading-relaxed">
                 Industry experts and practitioners sharing real-world insights the future of human-AI collaboration
               </p>
               <div>
-                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Speakers</h3>
-                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">9</p>
+                <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white">Speakers</h3>
+                <p className="font-dela-gothic-one text-5xl lg:text-[56px] text-white leading-none mt-5">9</p>
               </div>
             </div>
           </div>
 
           {/* CARD 4 — Judges */}
-          <div className="bento-card md:col-start-1 md:row-start-2 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 flex flex-col glass-corners">
+          <div className="bento-card lg:col-start-1 lg:row-start-2 lg:row-span-2 bg-[#B8EBFF33] backdrop-blur-md rounded-[40px] p-6 md:p-[30px] transition-colors duration-300 flex flex-col glass-corners">
             <div className="flex flex-col h-full justify-between gap-4">
-              <Image src={colouredLogo} alt="Event icon" width={100} height={100} className="object-fill w-28 h-28" />
+              <Image src={colouredLogo} alt="" width={140} height={140} className="object-contain w-[140px] h-[140px] -ml-2 -mt-2" />
               <div>
-                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Judges</h3>
-                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">7</p>
+                <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white">Judges</h3>
+                <p className="font-dela-gothic-one text-5xl lg:text-[56px] text-white leading-none mt-5">7</p>
               </div>
             </div>
           </div>
 
           {/* CARD 5 — 2026 Multi-Phase Buildathon */}
-          <div className="bento-card relative md:col-start-2 md:row-start-2 md:col-span-2 md:row-span-2 bg-[#2FA0E855] backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden glass-corners">
+          <div className="bento-card relative lg:col-start-2 lg:row-start-2 lg:col-span-2 lg:row-span-2 bg-[#2FA0E855] backdrop-blur-md rounded-[40px] transition-colors duration-300 overflow-hidden glass-corners">
             <div className="absolute bottom-0 right-0 z-0">
-              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[300px] md:w-[380px] h-auto" />
+              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[300px] lg:w-[470px] h-auto" />
             </div>
-            <div className="relative z-10 flex flex-col justify-start h-full space-y-4 p-6 md:p-8">
-              <h3 className="font-dela-gothic-one text-3xl md:text-4xl text-white tracking-wide leading-tight">
+            <div className="relative z-10 flex flex-col justify-start h-full gap-2 p-6 md:p-[30px] lg:pt-11">
+              <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white leading-[1.45] mb-5">
                 2026
                 <br />
                 Multi-Phase Buildathon
@@ -275,14 +271,14 @@ export function BentoSection() {
                 <span className="font-quicksand text-sm md:text-base font-semibold text-[#0B5D7D]">In Person at CTZPay Office</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center w-9 h-9 rounded-full bg-white/25 text-white text-xl font-semibold leading-none">
+                <span className="flex items-center justify-center w-[42px] h-[42px] rounded-full border border-white/15 bg-white/15 text-white text-xl font-semibold leading-none">
                   +
                 </span>
-                <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2">
-                  <span className="font-quicksand text-sm md:text-base font-semibold text-[#0B5D7D]">Online</span>
-                  <div className="p-2 flex items-center justify-center bg-ocean-light rounded-full">
+                <div className="inline-flex items-center gap-2 bg-white/15 border border-white/15 rounded-full pl-[18px] pr-2 py-2">
+                  <span className="font-quicksand text-sm md:text-base font-semibold text-white">Online</span>
+                  <div className="w-6 h-6 flex items-center justify-center bg-white rounded-full">
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M5.44523 4.82149C5.44522 4.63319 5.59786 4.48056 5.78615 4.48056L9.64334 4.48054C9.8316 4.48057 9.98423 4.6332 9.98426 4.82146L9.98426 8.67867C9.98423 8.86693 9.8316 9.01957 9.64334 9.0196C9.45503 9.01958 9.30238 8.86694 9.30237 8.67863L9.30239 5.64456L5.06293 9.88401C4.92979 10.0172 4.71393 10.0172 4.58079 9.88401C4.44765 9.75087 4.44765 9.53501 4.58079 9.40187L8.82024 5.16241L5.78615 5.16241C5.59786 5.16242 5.44522 5.00978 5.44523 4.82149Z" fill="white"/>
+                      <path fillRule="evenodd" clipRule="evenodd" d="M5.44523 4.82149C5.44522 4.63319 5.59786 4.48056 5.78615 4.48056L9.64334 4.48054C9.8316 4.48057 9.98423 4.6332 9.98426 4.82146L9.98426 8.67867C9.98423 8.86693 9.8316 9.01957 9.64334 9.0196C9.45503 9.01958 9.30238 8.86694 9.30237 8.67863L9.30239 5.64456L5.06293 9.88401C4.92979 10.0172 4.71393 10.0172 4.58079 9.88401C4.44765 9.75087 4.44765 9.53501 4.58079 9.40187L8.82024 5.16241L5.78615 5.16241C5.59786 5.16242 5.44522 5.00978 5.44523 4.82149Z" fill="#02A4E3"/>
                     </svg>
                 </div>
               </div>
@@ -291,17 +287,17 @@ export function BentoSection() {
           </div>
 
           {/* CARD 6 — Mentors */}
-          <div className="bento-card relative md:col-start-4 md:row-start-3 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden p-6 md:p-7 glass-corners">
-            <div className="flex flex-col h-full justify-end gap-1">
-              <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Mentors</h3>
-              <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none">20+</p>
+          <div className="bento-card relative lg:col-start-4 lg:row-start-3 bg-[#B8EBFF33] backdrop-blur-md rounded-[40px] transition-colors duration-300 p-6 md:p-[30px] glass-corners">
+            <div className="flex flex-col h-full justify-center gap-5">
+              <h3 className="font-dela-gothic-one text-2xl lg:text-[clamp(24px,2.5vw,32px)] text-white">Mentors</h3>
+              <p className="font-dela-gothic-one text-5xl lg:text-[56px] text-white leading-none">20+</p>
             </div>
             <Image
               src={starfish}
               alt=""
               width={120}
               height={120}
-              className="absolute -bottom-3 -right-3 w-24 h-24 md:w-28 md:h-28 object-contain opacity-90"
+              className="pointer-events-none absolute -bottom-8 -right-10 w-28 h-28 lg:w-[140px] lg:h-[140px] object-contain"
             />
           </div>
         </div>

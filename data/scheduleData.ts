@@ -1,5 +1,9 @@
 ﻿// Types for Schedule Data
 import type { StaticImageData } from 'next/image'
+import { speakers } from '@/data/speakersData'
+import EiEiPhyoPhoto from '@/app/assets/Persons/Members/B6 - Ei Ei Phyo.webp'
+import SuNandarPhoto from '@/app/assets/Persons/Members/B6 - SuNandar.webp'
+import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Than.jpg'
 
 import ChawSuHlaingPhoto from '@/app/assets/Persons/mentors/Chaw Su Hlaing.png'
 import SannLynnHtunPhoto from '@/app/assets/Persons/mentors/Sann Lynn Htun.jpg'
@@ -56,6 +60,26 @@ export interface ScheduleContentProps {
   isActive: boolean
 }
 
+const agendaPeople: Record<string, Person> = Object.fromEntries(
+  speakers.map((speaker, index) => [speaker.id, {
+    id: index + 10,
+    name: speaker.name,
+    designation: speaker.position,
+    company: speaker.organization,
+    image: speaker.photo,
+  }])
+)
+
+const dayOneHosts: Person[] = [
+  agendaPeople['sitt-ye-yint-tun'],
+  { id: 100, name: 'Ei Ei Phyo', designation: 'Host', company: '', image: EiEiPhyoPhoto },
+]
+
+const dayTwoHosts: Person[] = [
+  { id: 101, name: 'Su Nandar', designation: 'Host', company: '', image: SuNandarPhoto },
+  { id: 102, name: 'Naw Shin Nadi Than', designation: 'Host', company: '', image: NawShinNadiThanPhoto },
+]
+
 // Phase Cards Data
 export const phases: PhaseCard[] = [
   { phase: 'Phase 1', title: 'Pre Event', date: '20', month: 'SEP' },
@@ -105,32 +129,114 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     ],
   },
   1: {
-    type: 'upcoming',
-    backgroundColor: 'from-gray-300 to-gray-400',
-    title: 'Main Event (Day 1 & 2)',
-    description: '2 days intensive product sprints',
-    scheduleItems: [],
-    upcomingItems: [
-      'Professional Panel Discussions',
-      'Industry Sharing Sessions',
-      'Networking Activities',
-      'Team Projects & Hands-on Building',
-      'Turn Ideas into AI-powered Products'
-    ]
+    type: 'confirmed',
+    backgroundColor: 'from-[#36c8f3] to-white',
+    title: 'Main Event Day 1',
+    scheduleItems: [
+      {
+        time: '8:30 - 9:00 AM',
+        events: [{ title: 'Registration', description: 'Participants Check-in', people: [] }],
+      },
+      {
+        time: '9:00 - 9:10 AM',
+        events: [{
+          title: 'Opening Ceremony',
+          description: 'Hosts - Ko Sitt Ye Yint Tun, Ma Ei Ei Phyo & UXMM Founder Ma Wai Yi Mon Soe',
+          people: [...dayOneHosts, agendaPeople['wai-yi-mon-soe']],
+        }],
+      },
+      {
+        time: '9:10 - 9:25 AM',
+        events: [{
+          title: 'Sponsor Speech & Speaker Intro by Hosts',
+          description: 'Hosts - Ko Sitt Ye Yint Tun, Ma Ei Ei Phyo',
+          people: dayOneHosts,
+        }],
+      },
+      {
+        time: '9:25 - 10:30 AM',
+        events: [{
+          title: 'Panel Discussion',
+          description: 'The AI Wave Transforming Design, Dev, QA, PM, and Business Workflows',
+          people: [agendaPeople['eric-glover'], agendaPeople['hendra-saputra'], agendaPeople['kyaw-myo-thet'], agendaPeople['wai-yi-mon-soe']],
+        }],
+      },
+      {
+        time: '10:30 - 11:30 AM',
+        events: [{ title: 'Session 1: Accelerating Research with AI', description: 'Ko Myo Maung Maung', people: [agendaPeople['myo-maung-maung']] }],
+      },
+      {
+        time: '11:30 - 12:15 PM',
+        events: [{ title: 'Lunch Break', description: '', people: [], highlight: true }],
+      },
+      {
+        time: '12:15 - 1:15 PM',
+        events: [{ title: 'Session 2: Project management', description: 'Ko Zayar Htun', people: [agendaPeople['zayar-htun']] }],
+      },
+      {
+        time: '1:15 - 2:15 PM',
+        events: [{ title: 'Session 3: Scaling Design Systems with AI', description: 'Ko Aung Min Soe', people: [agendaPeople['aung-min-soe']] }],
+      },
+      {
+        time: '2:15 - 2:30 PM',
+        events: [{ title: 'Tea Break: Networking & Afternoon Refreshments', description: '', people: [], highlight: true }],
+      },
+      {
+        time: '2:30 - 3:30 PM',
+        events: [{ title: 'Session 4: Data Analytics', description: 'Ma Khin Moet Moet Nyein', people: [agendaPeople['khin-moet-moet-nyein']] }],
+      },
+      {
+        time: '3:30 - 4:00 PM',
+        events: [{ title: 'Day 1 Wrap-Up & What’s Next', description: 'Recap the day, capture key moments, share feedback, and look ahead to Day 2', people: [] }],
+      },
+    ],
   },
   2: {
-    type: 'upcoming',
-    backgroundColor: 'from-gray-300 to-gray-400',
-    title: 'Main Event (Day 1 & 2)',
-    description: '2 days intensive product sprints',
-    scheduleItems: [],
-    upcomingItems: [
-      'Professional Panel Discussions',
-      'Industry Sharing Sessions',
-      'Networking Activities',
-      'Team Projects & Hands-on Building',
-      'Turn Ideas into AI-powered Products'
-    ]
+    type: 'confirmed',
+    backgroundColor: 'from-[#36c8f3] to-white',
+    title: 'Main Event Day 2',
+    scheduleItems: [
+      {
+        time: '8:30 - 9:00 AM',
+        events: [{ title: 'Registration', description: 'Participants Check-in', people: [] }],
+      },
+      {
+        time: '9:00 - 9:15 AM',
+        events: [{ title: 'Welcome Back & Agenda Overview', description: 'Hosts - Ma Su Nandar, Ma Naw Shin Nadi Than', people: dayTwoHosts }],
+      },
+      {
+        time: '9:15 - 10:15 AM',
+        events: [{ title: 'Session 5: Business, UX & Service Design', description: 'Aiko Huang & Ko Pyit Sone Oo', people: [agendaPeople['aiko-huang'], agendaPeople['pyit-sone-oo']] }],
+      },
+      {
+        time: '10:15 - 11:15 AM',
+        events: [{ title: 'Session 6: Pitch Deck Preparation with AI & Basic Pitching', description: 'Ko Min Khant Ko Ko', people: [agendaPeople['min-khant-ko-ko']] }],
+      },
+      {
+        time: '11:15 - 12:00 PM',
+        events: [{ title: 'Lunch Break', description: '', people: [], highlight: true }],
+      },
+      {
+        time: '12:00 - 1:15 PM',
+        events: [{ title: 'Session 7: Prototyping with AI', description: 'Ma Shu Mawa Soe', people: [agendaPeople['shu-mawa-soe']] }],
+      },
+      {
+        time: '1:15 - 2:15 PM',
+        events: [{ title: 'Session 8: Debugging, Refinement, & Launching with Vercel', description: 'Ko Aung Kyaw Min', people: [agendaPeople['aung-kyaw-minn']] }],
+      },
+      {
+        time: '2:15 - 2:45 PM',
+        events: [{ title: 'Tea Break: Networking & Afternoon Refreshments', description: '', people: [], highlight: true }],
+      },
+      {
+        time: '2:45 - 3:45 PM',
+        events: [{ title: 'Project Submission & Judging Criteria Briefing', description: 'Ma Phyo Thiri Thu', people: [agendaPeople['phyo-thiri-thu']] }],
+      },
+      {
+        time: '3:45 - 4:00 PM',
+        events: [{ title: 'Day 2 Wrap-Up & What’s Next', description: 'Reflect on the journey, review next steps, celebrate the event, and prepare for what comes next', people: [] }],
+      },
+    ],
   },
   3: {
     type: 'upcoming',

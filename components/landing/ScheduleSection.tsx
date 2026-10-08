@@ -13,8 +13,8 @@ import { phases, phaseSchedules } from '@/data/scheduleData'
 gsap.registerPlugin(ScrollTrigger)
 
 export function ScheduleSection() {
-  const [activePhase, setActivePhase] = useState(0)
-  const schedule = phaseSchedules[activePhase]
+  const [activePhase, setActivePhase] = useState(1)
+  const visiblePhases = activePhase > 2 ? [0, 1, 2, activePhase] : [0, 1, 2]
   const rootRef = useRef<HTMLElement>(null)
   const phasesRef = useRef<HTMLDivElement>(null)
   const detailRef = useRef<HTMLDivElement>(null)
@@ -186,32 +186,36 @@ export function ScheduleSection() {
           </div>
         </div>
 
-        <div ref={detailRef} id="schedule-detail" role="region" aria-labelledby="agenda-title" className="relative mx-auto mt-8 max-w-[1200px] rounded-[22px] bg-linear-to-b from-[#36c8f3] via-[#e8faff] via-60% to-white px-3 pb-8 shadow-[inset_0_2px_8px_#ffffffa0,0_4px_16px_#00558c04] md:mx-4 md:pb-10">
-          <div className="flex min-h-10 items-center justify-between gap-3 px-2 py-2">
-            <h3 id="agenda-title" data-detail-title className="font-dela-gothic-one text-sm text-white md:text-base">{schedule.title}</h3>
-            <div data-detail-logos aria-hidden="true" className="flex shrink-0 gap-2">
-              {[0, 90, 180].map(rotation => (
-                <Image key={rotation} src={EventLogoGrey} alt="" className="size-5 brightness-0 invert" style={{ transform: `rotate(${rotation}deg)` }} />
-              ))}
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white bg-[radial-gradient(#e9edf0_1px,transparent_1px)] bg-size-[22px_22px] px-4 py-8 md:px-5">
-            {schedule.type === 'upcoming' ? (
-              <div data-detail-row className="rounded-2xl border-2 border-dashed border-[#ddd] bg-white p-5 md:p-7">
-                <p className="font-syne text-lg font-bold">{schedule.description}</p>
-                <ul className="mt-5 space-y-3">
-                  {schedule.upcomingItems?.map(item => (
-                    <li key={item} className="flex items-center gap-3 text-sm font-semibold">
-                      <Image src={EventLogoYellow} alt="" className="size-6 shrink-0 object-contain" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div ref={detailRef} id="schedule-detail">
+          {visiblePhases.map(phaseIndex => {
+            const schedule = phaseSchedules[phaseIndex]
+            return (
+              <div key={phaseIndex} role="region" aria-labelledby={`agenda-title-${phaseIndex}`} className="relative mx-auto mt-8 max-w-[1200px] rounded-[22px] bg-linear-to-b from-[#36c8f3] via-[#e8faff] via-60% to-white px-3 pb-8 shadow-[inset_0_2px_8px_#ffffffa0,0_4px_16px_#00558c04] md:mx-4 md:pb-10">
+                <div className="flex min-h-10 items-center justify-between gap-3 px-2 py-2">
+                  <h3 id={`agenda-title-${phaseIndex}`} data-detail-title className="font-dela-gothic-one text-sm text-white md:text-base">{schedule.title}</h3>
+                  <div data-detail-logos aria-hidden="true" className="flex shrink-0 gap-2">
+                    {[0, 90, 180].map(rotation => (
+                      <Image key={rotation} src={EventLogoGrey} alt="" className="size-5 brightness-0 invert" style={{ transform: `rotate(${rotation}deg)` }} />
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-white bg-[radial-gradient(#e9edf0_1px,transparent_1px)] bg-size-[22px_22px] px-4 py-8 md:px-5">
+                  {schedule.type === 'upcoming' ? (
+                    <div data-detail-row className="rounded-2xl border-2 border-dashed border-[#ddd] bg-white p-5 md:p-7">
+                      <p className="font-syne text-lg font-bold">{schedule.description}</p>
+                      <ul className="mt-5 space-y-3">
+                        {schedule.upcomingItems?.map(item => (
+                          <li key={item} className="flex items-center gap-3 text-sm font-semibold">
+                            <Image src={EventLogoYellow} alt="" className="size-6 shrink-0 object-contain" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
             ) : (
               <div className="space-y-4">
                 {schedule.scheduleItems.map((item, index) => (
-                  <div key={index} data-detail-row className="grid gap-5 rounded-2xl border-2 border-dashed border-[#ddd] bg-white p-4 ring-4 ring-white shadow-[0_0_8px_#00000008] transition-shadow hover:shadow-[0_0_14px_#00000018] md:grid-cols-[minmax(120px,17%)_1fr]">
+                  <div key={index} data-detail-row className={`grid gap-5 rounded-2xl border-2 border-dashed p-4 ring-4 ring-white shadow-[0_0_8px_#00000008] transition-shadow hover:shadow-[0_0_14px_#00000018] md:grid-cols-[minmax(120px,17%)_1fr] ${item.events.every(event => event.highlight) ? 'border-amber-400 bg-amber-50 text-amber-600' : 'border-[#ddd] bg-white'}`}>
                     <p className="text-base font-bold">{item.time}</p>
                     <div className="space-y-4">
                       {item.events.map(event => (
@@ -225,6 +229,7 @@ export function ScheduleSection() {
                               <AnimatedTooltip items={event.people} variant="agenda" />
                             </div>
                           )}
+                          {event.highlight && <Image src={EventLogoYellow} alt="" className="size-6 shrink-0 object-contain" />}
                         </div>
                       ))}
                     </div>
@@ -239,6 +244,9 @@ export function ScheduleSection() {
               </div>
             )}
           </div>
+        </div>
+            )
+          })}
         </div>
       </div>
 
