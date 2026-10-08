@@ -23,7 +23,7 @@ import LaMinThawPhoto from '@/app/assets/Persons/Judges/Image_20260429_105144_36
 import KoKhantMentorPhoto from '@/app/assets/Persons/mentors/uxmm - Ko Khant.png'
 import MinYeHtutMentorPhoto from '@/app/assets/Persons/mentors/_HKS8529_1 - Min Ye Htut.jpg'
 import ChanMyaMyaKhinPhoto from '@/app/assets/Persons/Members/ChanMyaMyaKhin.jpg'
-import AungPhonePyaeZawPhoto from '@/app/assets/Persons/Members/Aung Bhone Pyae Sone.jpeg'
+import AungBhonePyaeZawPhoto from '@/app/assets/Persons/Members/Aung Bhone Pyae Zaw.png'
 import AyeSandiMyintPhoto from '@/app/assets/Persons/Members/Aye Sandi Myint.jpeg'
 import HtetArkarPhoto from '@/app/assets/Persons/Members/Htet Arkar.jpg'
 import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Than.jpg'
@@ -41,7 +41,7 @@ export type TeamMember = {
 export const eventTeam: TeamMember[] = [
   { name: 'Aung Aye Than', photo: AungAyeThanPhoto },
   { name: 'Aung Phone Myat', photo: AungPhoneMyatPhoto },
-  { name: 'Aung Bhone Pyae Zaw', photo: AungPhonePyaeZawPhoto },
+  { name: 'Aung Bhone Pyae Zaw', photo: AungBhonePyaeZawPhoto },
   { name: 'Aung Soe Khine', photo: AungSoeKhinePhoto },
   { name: 'Aye Sandi Myint', photo: AyeSandiMyintPhoto },
   { name: 'Barry', photo: KoKhantMentorPhoto },
