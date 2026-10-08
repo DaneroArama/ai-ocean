@@ -5,13 +5,25 @@ import Image from 'next/image'
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-import logo from '@/app/assets/event_logo.png'
 import colouredLogo from '@/app/assets/event_logo_light_coloured.png'
 import waves from '@/app/assets/waves.png'
 import starfish from '@/app/assets/Starfish.png'
-import snail from '@/app/assets/Snail.svg'
+import swirl from '@/app/assets/about_icon_1.png'
 import thinWaves from '@/app/assets/thin_waves.svg'
+
+import ali from '@/app/assets/Mascots/Ali.png'
+import shark from '@/app/assets/Mascots/Shark.png'
+import crabi from '@/app/assets/Mascots/Crabi.png'
+import octo from '@/app/assets/Mascots/Octo.png'
+import tuto from '@/app/assets/Mascots/Tuto.png'
+
+const MASCOTS = [
+  { src: ali, alt: 'Ali mascot' },
+  { src: shark, alt: 'Shark mascot' },
+  { src: crabi, alt: 'Crabi mascot' },
+  { src: octo, alt: 'Octo mascot' },
+  { src: tuto, alt: 'Tuto mascot' },
+]
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -173,87 +185,124 @@ export function BentoSection() {
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8 pt-0 pb-6 md:pt-0 md:pb-10">
         <div
           ref={gridRef}
-          className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-4 md:grid-rows-4 md:gap-6 md:auto-rows-fr md:h-[520px] lg:h-[560px] md:min-h-0"
+          className="grid auto-rows-auto content-center grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 md:auto-rows-fr md:h-[520px] lg:h-[560px] md:grid-rows-[1.55fr_0.6fr_1.6fr] md:min-h-0"
         >
-          {/* CARD 1 — In-Person Sprint + Virtual Ecosystem */}
-          <div className="bento-card md:col-span-2 md:row-span-2 bg-[#18CBBC33] backdrop-blur-sm rounded-4xl p-8 transition-colors duration-300 glass-corners">
-            <div className="flex flex-col items-start justify-center space-y-4 h-full">
-              <div className="w-20 h-20">
-                <Image src={starfish} alt="Event icon" width={80} height={80} className="object-contain drop-shadow-lg" />
+          {/* CARD 1 — Buildathon Teams */}
+          <div className="bento-card md:col-start-1 md:row-start-1 md:col-span-2 bg-[#18CBBC33] backdrop-blur-sm rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+            <div className="flex h-full flex-col justify-between gap-5">
+              <div className="space-y-1">
+                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white leading-tight">
+                  Buildathon Teams
+                </h3>
+                <p className="font-quicksand text-sm md:text-base text-white/80">
+                  Participating teams will be announced soon.
+                </p>
               </div>
-              <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white leading-tight">
-                In-Person Sprint +<br />
-                Virtual Ecosystem
-              </h3>
-            </div>
-          </div>
-
-          {/* CARD 2 — 20+ Mentors */}
-          <div className="bento-card md:col-span-1 md:row-span-2 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl transition-colors duration-300 p-8 flex items-center justify-center glass-corners">
-            <div className="flex flex-col items-start justify-center h-full">
-              <h3 className="font-syne text-5xl md:text-7xl text-white">20+</h3>
-              <p className="font-dela-gothic-one text-xl md:text-4xl font-semibold text-white/90 tracking-wide pb-6">Mentors</p>
-            </div>
-          </div>
-
-          {/* CARD 3 — Speakers 8+ */}
-          <div className="bento-card md:col-span-1 md:row-span-3 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-8 transition-colors duration-300 glass-corners">
-            <div className="relative flex flex-col h-full space-y-8">
-              <p className="font-quicksand text-base md:text-lg text-white/90 leading-relaxed">
-                Industry experts and practitioners sharing real-world insights on AI, design, and the future of human-AI collaboration.
-              </p>
-              <p className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">
-                Speakers<br />
-                <span className="text-5xl">9+</span>
-              </p>
-              <Image src={logo} alt="Event icon" width={48} height={48} className="absolute -bottom-2 -right-2 object-contain w-12 h-12" />
-            </div>
-          </div>
-
-          {/* CARD 4 — Judges 5+ */}
-          <div className="bento-card md:col-span-1 md:row-span-3 bg-white/10 backdrop-blur-md rounded-4xl px-4 sm:px-6 lg:px-8 transition-colors duration-300 flex flex-col items-start justify-center glass-corners">
-            <div className="flex flex-col items-start justify-center space-y-2 h-full">
-              <div className="mb-2">
-                <Image src={colouredLogo} alt="Event icon" width={100} height={100} className="object-fill w-28 h-28" />
-              </div>
-              <h3 className="font-dela-gothic-one text-xl md:text-3xl text-white tracking-wide">Judges</h3>
-              <h3 className="font-dela-gothic-one text-4xl md:text-5xl text-white">+++</h3>
-            </div>
-          </div>
-
-          {/* CARD 5 — October 2026 / 2-Day Event / CTZPay Office */}
-          <div className="bento-card relative md:col-span-2 md:row-span-3 bg-[#B379DD33] backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden glass-corners">
-            <div className="absolute bottom-0 right-0 z-0">
-              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[400px] h-full" />
-            </div>
-            <div className="relative z-10 flex flex-col justify-start h-full space-y-4 p-8">
-              <h3 className="font-dela-gothic-one text-4xl text-white tracking-wide">
-                2026<br />
-                Multi-Phase Event
-              </h3>
-              <div className="inline-flex items-center w-fit gap-2 bg-white rounded-full px-4 py-2 border border-white/30">
-                <span className="font-quicksand text-base text-[#0B5D7D]">CTZPay Office</span>
-                <div className="p-2 flex items-center justify-center bg-ocean-light rounded-full">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {MASCOTS.map((m) => (
+                    <div
+                      key={m.alt}
+                      className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white p-1 shrink-0 overflow-hidden"
+                    >
+                      <Image src={m.src} alt={m.alt} width={48} height={48} className="w-full h-full object-contain" />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 bg-white/25 rounded-full pl-4 pr-1.5 py-1.5">
+                  <span className="font-quicksand text-sm font-semibold text-white whitespace-nowrap">Coming Soon</span>
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/40">
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5M6 12h12" />
+                    </svg>
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* CARD 6 — Buildathon (Bootcamp + Buildathon) */}
-          <div className="bento-card md:col-span-1 md:row-span-2 bg-white/10 backdrop-blur-md rounded-4xl p-6 transition-colors duration-300 flex flex-col items-start justify-center glass-corners">
-            <div className="flex flex-col items-start justify-center text-center space-y-3 h-full">
-              <div className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5">
-                <Image src={snail} alt="Snail icon" width={20} height={20} className="object-contain w-5 h-5" />
-                <span className="font-quicksand text-xs text-white tracking-wider">Event Type</span>
+          {/* CARD 2 — Panelists */}
+          <div className="bento-card md:col-start-3 md:row-start-1 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+            <div className="flex flex-col h-full justify-between gap-3">
+              <p className="font-quicksand text-sm md:text-base text-white/80 leading-snug">
+                Different perspectives.
+                <br />
+                One shared conversation.
+              </p>
+              <div>
+                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Panelists</h3>
+                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">20</p>
               </div>
-              <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide leading-tight">
-                Buildathon
-              </h3>
-              <p className="font-quicksand text-sm md:text-base font-semibold text-white">(Bootcamp + Buildathon)</p>
             </div>
+          </div>
+
+          {/* CARD 3 — Speakers */}
+          <div className="bento-card md:col-start-4 md:row-start-1 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 glass-corners">
+            <div className="flex flex-col h-full justify-between gap-4">
+              <p className="font-quicksand text-sm md:text-base text-white/80 leading-relaxed">
+                Industry experts and practitioners sharing real-world insights the future of human-AI collaboration
+              </p>
+              <div>
+                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Speakers</h3>
+                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">9</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 4 — Judges */}
+          <div className="bento-card md:col-start-1 md:row-start-2 md:row-span-2 bg-[#18CBBC33] backdrop-blur-md rounded-4xl p-6 md:p-7 transition-colors duration-300 flex flex-col glass-corners">
+            <div className="flex flex-col h-full justify-between gap-4">
+              <Image src={colouredLogo} alt="Event icon" width={100} height={100} className="object-fill w-28 h-28" />
+              <div>
+                <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Judges</h3>
+                <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none mt-1">7</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 5 — 2026 Multi-Phase Buildathon */}
+          <div className="bento-card relative md:col-start-2 md:row-start-2 md:col-span-2 md:row-span-2 bg-[#2FA0E855] backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden glass-corners">
+            <div className="absolute bottom-0 right-0 z-0">
+              <Image src={waves} alt="" width={500} height={500} className="object-contain w-[300px] md:w-[380px] h-auto" />
+            </div>
+            <div className="relative z-10 flex flex-col justify-start h-full space-y-4 p-6 md:p-8">
+              <h3 className="font-dela-gothic-one text-3xl md:text-4xl text-white tracking-wide leading-tight">
+                2026
+                <br />
+                Multi-Phase Buildathon
+              </h3>
+              <div className="inline-flex items-center w-fit gap-2 bg-white rounded-full px-4 py-2 border border-white/30">
+                <span className="font-quicksand text-sm md:text-base font-semibold text-[#0B5D7D]">In Person at CTZPay Office</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center w-9 h-9 rounded-full bg-white/25 text-white text-xl font-semibold leading-none">
+                  +
+                </span>
+                <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2">
+                  <span className="font-quicksand text-sm md:text-base font-semibold text-[#0B5D7D]">Online</span>
+                  <div className="p-2 flex items-center justify-center bg-ocean-light rounded-full">
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M5.44523 4.82149C5.44522 4.63319 5.59786 4.48056 5.78615 4.48056L9.64334 4.48054C9.8316 4.48057 9.98423 4.6332 9.98426 4.82146L9.98426 8.67867C9.98423 8.86693 9.8316 9.01957 9.64334 9.0196C9.45503 9.01958 9.30238 8.86694 9.30237 8.67863L9.30239 5.64456L5.06293 9.88401C4.92979 10.0172 4.71393 10.0172 4.58079 9.88401C4.44765 9.75087 4.44765 9.53501 4.58079 9.40187L8.82024 5.16241L5.78615 5.16241C5.59786 5.16242 5.44522 5.00978 5.44523 4.82149Z" fill="white"/>
+                    </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          {/* CARD 6 — Mentors */}
+          <div className="bento-card relative md:col-start-4 md:row-start-3 bg-[#B8EBFF33] backdrop-blur-md rounded-4xl transition-colors duration-300 overflow-hidden p-6 md:p-7 glass-corners">
+            <div className="flex flex-col h-full justify-end gap-1">
+              <h3 className="font-dela-gothic-one text-2xl md:text-3xl text-white tracking-wide">Mentors</h3>
+              <p className="font-dela-gothic-one text-5xl md:text-6xl text-white leading-none">20+</p>
+            </div>
+            <Image
+              src={starfish}
+              alt=""
+              width={120}
+              height={120}
+              className="absolute -bottom-3 -right-3 w-24 h-24 md:w-28 md:h-28 object-contain opacity-90"
+            />
           </div>
         </div>
       </div>

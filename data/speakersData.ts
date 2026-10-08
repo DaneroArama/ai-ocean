@@ -28,19 +28,16 @@ import LinLinKhineMentorPhoto from '@/app/assets/Persons/mentors/IMG_20250314_20
 import MinNandaZanMentorPhoto from '@/app/assets/Persons/mentors/IMG_3321 - Min Nanda Zan.jpg'
 import LynnhtetThantMentorPhoto from '@/app/assets/Persons/mentors/IMG_6482 - Lynnhtet Thant.jpeg'
 import KyawKoKoTunMentorPhoto from '@/app/assets/Persons/mentors/me-pfp - Kyaw Ko Ko Tun.png'
-import ThiriPhyoNaingMentorPhoto from '@/app/assets/Persons/mentors/Ocean-Character-5 - Thiri Phyo Naing.png'
 import HninYuHlaingMentorPhoto from '@/app/assets/Persons/mentors/pic for mentor - Hnin Yu Hlaing.png'
 import ThazinWinMentorPhoto from '@/app/assets/Persons/mentors/Thazin - Thazin Win.png'
 import KoKhantMentorPhoto from '@/app/assets/Persons/mentors/uxmm - Ko Khant.png'
 import MinYeHtutMentorPhoto from '@/app/assets/Persons/mentors/_HKS8529_1 - Min Ye Htut.jpg'
-
-export type SpeakerDay = 1 | 2
+import PwintYeeMonPhoto from '@/app/assets/Persons/mentors/Pwint Yee Mon (Christine) 1 - Pwint Yee Mon (Christine).jpg'
 
 export type SpeakerRole = 'Speaker' | 'Panelist' | 'Moderator'
 
 export type Speaker = {
   id: string
-  day: SpeakerDay
   name: string
   position: string
   organization: string
@@ -60,7 +57,6 @@ export type Mentor = {
 export const speakers: Speaker[] = [
   {
     id: 'myo-maung-maung',
-    day: 1,
     name: 'Myo Maung Maung',
     position: 'VP of UI/UX, Lead UX Designer',
     organization: 'Yoma Bank',
@@ -69,7 +65,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'aung-kyaw-minn',
-    day: 1,
     name: 'Aung Kyaw Minn',
     position: 'Solutions Architect',
     organization: 'AYA Innovation Lab',
@@ -78,7 +73,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'zayar-htun',
-    day: 1,
     name: 'Zayar Htun',
     position: 'Senior Manager - Digital Delivery and Operations',
     organization: 'Cheil Vietnam',
@@ -87,7 +81,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'aung-min-soe',
-    day: 1,
     name: 'AUNG MIN SOE ( Kinn )',
     position: 'Lead UI/UX Designer',
     organization: 'Klink Enterprise Solution',
@@ -96,7 +89,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'aiko-huang',
-    day: 1,
     name: 'Aiko Huang',
     position: 'Portfolio Director',
     organization: 'H3VEA Technology Services',
@@ -105,7 +97,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'min-khant-ko-ko',
-    day: 1,
     name: 'Min Khant Ko Ko',
     position: 'AI Instructor',
     organization: "Alex's Vlog & Genplex AI",
@@ -114,7 +105,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'khin-moet-moet-nyein',
-    day: 1,
     name: 'Khin Moet Moet Nyein',
     position: 'Chief Data & Impact Officer',
     organization: 'Doh Eain',
@@ -122,8 +112,55 @@ export const speakers: Speaker[] = [
     photo: KayPhoto,
   },
   {
+    id: 'eric-glover',
+    name: 'Eric Glover',
+    position: 'CEO',
+    organization: 'CCI France-Myanmar (FMCCI)',
+    bio: 'Eric Glover is the CEO of the French-Myanmar Chamber of Commerce and Industry, a non-profit membership organisation dedicated to developing and improving business conditions for French and other companies in Myanmar, including Myanmar companies of course. FMCCI believes that improving business conditions for everyone results in improving business conditions for each of its members. Eric has lived in Myanmar since 2014. He is a nuclear physicist by training, and he holds a Master degree in Journalism & Communication and another Master degree in Change management. He worked in Myanmar for years as an independent consultant before finally joining FMCCI in June 2026.',
+    photo: EricGloverPhoto,
+  },
+  {
+    id: 'hendra-saputra',
+    name: 'Hendra Saputra',
+    position: 'Chief Marketing Officer',
+    organization: 'U9',
+    bio: 'Hendra Saputra is an experienced business and marketing leader with a career spanning telecommunications, edtech, and digital ventures across Southeast Asia. As CMO of U9 Myanmar, he works across brand, marketing, product, pricing, analytics, and customer experience in one of the region’s most complex markets. Previously, he co-founded and led Kuncie, an Indonesian edtech platform, scaling it to 1 million users within its first year. A builder at heart, Hendra thrives in environments where the playbook doesn’t exist yet. His experience across startups and large-scale businesses gives him a unique perspective on building for growth, understanding customers, navigating uncertainty, and turning ideas into businesses that create real impact.',
+    photo: HendraPhoto,
+  },
+  {
+    id: 'kyaw-myo-thet',
+    name: 'Kyaw Myo Thet',
+    position: 'Chief Technology Officer',
+    organization: 'CTZPay',
+    bio: 'Ko Kyaw Myo Thet is a technology leader, Enterprise Architect, and seasoned IT professional with over 18 years of experience across technology, digital transformation, and FinTech. As a Chief Technology Officer, he leads product and technology strategy, aligning business goals with technology innovation to build impactful digital products and experiences. With extensive experience guiding cross-functional teams and shaping technology roadmaps, he brings a valuable perspective on how technology leaders turn ideas into scalable products, navigate real-world challenges, and create meaningful impact through innovation.',
+    photo: KyawMyoThetPhoto,
+  },
+  {
+    id: 'wai-yi-mon-soe',
+    name: 'Wai Yi Mon Soe',
+    position: 'Founder',
+    organization: 'UXMM & BridgeX',
+    bio: 'Wai Yi Mon Soe is a strategic design leader and the Founder of UXMM and BridgeX. With over a decade of experience in the ICT sector, including over 10 years delivering digital solutions in Singapore, she returned to Myanmar to bridge the critical gap between global standards and local needs. As a dedicated Solution Provider, Wai Yi Mon Soe specializes in aligning Business Vision with practical Execution through Enterprise UX and Service Design. Beyond consultancy, she is a driving force for ecosystem resilience. Through the UXMM Hub, she is actively rebuilding the professional landscape by training the next generation of talent and connecting them directly with workforce opportunities.',
+    photo: WaiYiMonSoePhoto,
+  },
+  {
+    id: 'aung-ko-ko-thet',
+    name: 'Aung Ko Ko Thet',
+    position: 'Founder',
+    organization: 'Flutter Builder Professional Industry Program',
+    bio: 'Aung Ko Ko Thet is a technology professional and the Myanmar Chapter Representative of theBuilderPros network, passionate about helping developers take the leap from learning to actually building. Through the Flutter Builder Professional Industry Program, he creates opportunities for developers to gain hands-on production experience, learn through real feedback and collaboration, and build evidence of what they can truly contribute. His work sits at the intersection of technology, professional learning, and industry readiness—helping developers turn skills into real-world capability.',
+    photo: AungKoKoThetPhoto,
+  },
+  {
+    id: 'mya-thandar-oo',
+    name: 'Mya Thandar Oo',
+    position: 'Chairwoman & Chief Marketing Officer',
+    organization: 'MyJobs',
+    bio: 'Mya Thandar Oo is a business leader and Chairwoman & Chief Business Officer of MyJobs Myanmar, with extensive experience spanning recruitment, workforce development, and talent intelligence. She works at the intersection of people, business, and the future of work, helping organizations navigate evolving talent needs while contributing to skills development and employment opportunities in Myanmar. With a deep understanding of the local workforce landscape, she brings valuable insights into what employers really look for, how professionals can stay relevant in a changing market, and how to build careers with long-term value.',
+    photo: MyaThandarOoPhoto,
+  },
+  {
     id: 'pyit-sone-oo',
-    day: 1,
     name: 'Pyit Sone Oo',
     position: 'CEO',
     organization: 'BEYOND 360',
@@ -132,7 +169,6 @@ export const speakers: Speaker[] = [
   },
   {
     id: 'shu-mawa-soe',
-    day: 2,
     name: 'Shu Mawa Soe',
     position: 'Product Designer',
     organization: 'AYA Innovation Lab',
@@ -140,77 +176,27 @@ export const speakers: Speaker[] = [
     photo: ShuMawaSoePhoto,
   },
   {
-    id: 'aung-ko-ko-thet',
-    day: 2,
-    name: 'Aung Ko Ko Thet',
+    id: 'chaw-su-hlaing',
+    name: 'Chaw Su Hlaing',
+    position: 'UX Designer (Design Systems)',
+    organization: 'CODIGO',
+    bio: 'Chaw Su Hlaing is a Senior Product Designer with 6 years of experience. At Codigo, she builds enterprise systems for Porsche and Tiong Bahru Bakery, and a design system running across 8 products that her team builds production UI from with AI. She also runs The Productive Schedule, teaching design systems to designers in Myanmar.',
+    photo: ChawSuHlaingPhoto,
+  },
+  {
+    id: 'hnin-hay-mar-aung',
+    name: 'Hnin Hay Mar Aung',
     position: 'Founder',
-    organization: 'Flutter Builder Professional Industry Program',
-    bio: 'Aung Ko Ko Thet is a technology professional and the Myanmar Chapter Representative of theBuilderPros network, passionate about helping developers take the leap from learning to actually building. Through the Flutter Builder Professional Industry Program, he creates opportunities for developers to gain hands-on production experience, learn through real feedback and collaboration, and build evidence of what they can truly contribute. His work sits at the intersection of technology, professional learning, and industry readiness—helping developers turn skills into real-world capability.',
-    photo: AungKoKoThetPhoto,
-  },
-  {
-    id: 'kyaw-myo-thet',
-    day: 2,
-    name: 'Kyaw Myo Thet',
-    position: 'Chief Technology Officer',
-    organization: 'CTZPay',
-    bio: 'Ko Kyaw Myo Thet is a technology leader, Enterprise Architect, and seasoned IT professional with over 18 years of experience across technology, digital transformation, and FinTech. As a Chief Technology Officer, he leads product and technology strategy, aligning business goals with technology innovation to build impactful digital products and experiences. With extensive experience guiding cross-functional teams and shaping technology roadmaps, he brings a valuable perspective on how technology leaders turn ideas into scalable products, navigate real-world challenges, and create meaningful impact through innovation.',
-    photo: KyawMyoThetPhoto,
-  },
-  {
-    id: 'mya-thandar-oo',
-    day: 2,
-    name: 'Mya Thandar Oo',
-    position: 'Chairwoman & Chief Marketing Officer',
-    organization: 'MyJobs',
-    bio: 'Mya Thandar Oo is a business leader and Chairwoman & Chief Business Officer of MyJobs Myanmar, with extensive experience spanning recruitment, workforce development, and talent intelligence. She works at the intersection of people, business, and the future of work, helping organizations navigate evolving talent needs while contributing to skills development and employment opportunities in Myanmar. With a deep understanding of the local workforce landscape, she brings valuable insights into what employers really look for, how professionals can stay relevant in a changing market, and how to build careers with long-term value.',
-    photo: MyaThandarOoPhoto,
-  },
-  {
-    id: 'wai-yi-mon-soe',
-    day: 2,
-    name: 'Wai Yi Mon Soe',
-    position: 'Founder',
-    organization: 'UXMM & BridgeX',
-    bio: 'Wai Yi Mon Soe is a strategic design leader and the Founder of UXMM and BridgeX. With over a decade of experience in the ICT sector, including over 10 years delivering digital solutions in Singapore, she returned to Myanmar to bridge the critical gap between global standards and local needs. As a dedicated Solution Provider, Wai Yi Mon Soe specializes in aligning Business Vision with practical Execution through Enterprise UX and Service Design. Beyond consultancy, she is a driving force for ecosystem resilience. Through the UXMM Hub, she is actively rebuilding the professional landscape by training the next generation of talent and connecting them directly with workforce opportunities.',
-    photo: WaiYiMonSoePhoto,
-  },
-  {
-    id: 'hendra-saputra',
-    day: 2,
-    name: 'Hendra Saputra',
-    position: 'Chief Marketing Officer',
-    organization: 'U9',
-    bio: 'Hendra Saputra is an experienced business and marketing leader with a career spanning telecommunications, edtech, and digital ventures across Southeast Asia. As CMO of U9 Myanmar, he works across brand, marketing, product, pricing, analytics, and customer experience in one of the region’s most complex markets. Previously, he co-founded and led Kuncie, an Indonesian edtech platform, scaling it to 1 million users within its first year. A builder at heart, Hendra thrives in environments where the playbook doesn’t exist yet. His experience across startups and large-scale businesses gives him a unique perspective on building for growth, understanding customers, navigating uncertainty, and turning ideas into businesses that create real impact.',
-    photo: HendraPhoto,
-  },
-  {
-    id: 'eric-glover',
-    day: 2,
-    name: 'Eric Glover',
-    position: 'CEO',
-    organization: 'CCI France-Myanmar (FMCCI)',
-    bio: 'Eric Glover is the CEO of the French-Myanmar Chamber of Commerce and Industry, a non-profit membership organisation dedicated to developing and improving business conditions for French and other companies in Myanmar, including Myanmar companies of course. FMCCI believes that improving business conditions for everyone results in improving business conditions for each of its members. Eric has lived in Myanmar since 2014. He is a nuclear physicist by training, and he holds a Master degree in Journalism & Communication and another Master degree in Change management. He worked in Myanmar for years as an independent consultant before finally joining FMCCI in June 2026.',
-    photo: EricGloverPhoto,
-  },
-  {
-    id: 'sitt-ye-yint-tun',
-    day: 2,
-    name: 'Sitt Ye Yint Tun',
-    position: 'UX/UI Designer',
-    organization: 'BIM Group of Companies',
-    bio: 'Sitt Ye Yint Tun is a UX/UI Designer focused on systems thinking and designing clear, usable experiences for complex products and services. He brings together user needs, business goals, and technical considerations to turn complex workflows into practical digital solutions. Beyond his design work, he actively contributes to UXMM, helping run research programs that generate meaningful insights for Myanmar’s design and tech community.',
-    photo: SittYeYintTunPhoto,
+    organization: 'EzyPro',
+    bio: 'Coming from a background in Tourism & Business Management, Hnin Hay Mar Aung is a Product Designer who has been crafting user-centered digital solutions across Corporate and Start-Up environments since 2020. She excels at bridging business goals with intuitive user experiences. As a Founder of EzyPro, she empowers traditional SMEs to transition smoothly into digital-first businesses. She is also the founder of EzyPet and EzyStamp.',
+    photo: HaymarAungPhoto,
   },
   {
     id: 'kyi-sin-hsu-thar',
-    day: 1,
     name: 'Kyi Sin Hsu Thar',
     position: 'Head of Programs',
     organization: 'UXMM',
     bio: [
-      'Mentor Introduction',
-      '',
       'A versatile UI/UX Designer and product professional with international experience, including remote contributions to high-security government digital transformation projects for a Singapore-based firm. She currently serves as Head of Programs at UXMM, where she leads initiatives that create opportunities for learning, mentorship, and professional growth within the design community.',
       '',
       'As a Women in Tech Scholarship recipient, she has returned to academia to pursue an M.Sc. in Data Science and AI, embracing a new chapter of continuous learning and expanding her expertise beyond design into technology, data, and strategic thinking. Her journey reflects a commitment to evolving with the industry while using her experience to create opportunities for others.',
@@ -220,26 +206,7 @@ export const speakers: Speaker[] = [
     photo: KyisinHsutharPhoto,
   },
   {
-    id: 'sann-lynn-htun',
-    day: 1,
-    name: 'Sann Lynn Htun',
-    position: 'Senior Software Engineer',
-    organization: 'ACE Data Systems',
-    bio: 'Sann Lynn Htun is a Senior Software Engineer with over 11 years of experience at ACE Data Systems, where he has contributed to the development of digital solutions for the banking and financial industry. Throughout his career, he has enjoyed collaborating with teams, solving real-world challenges, and supporting the growth of aspiring professionals through mentoring and knowledge sharing.',
-    photo: SannLynnHtunPhoto,
-  },
-  {
-    id: 'hnin-hay-mar-aung',
-    day: 1,
-    name: 'Hnin Hay Mar Aung',
-    position: 'Founder',
-    organization: 'EzyPro',
-    bio: 'Coming from a background in Tourism & Business Management, Hnin Hay Mar Aung is a Product Designer who has been crafting user-centered digital solutions across Corporate and Start-Up environments since 2020. She excels at bridging business goals with intuitive user experiences. As a Founder of EzyPro, she empowers traditional SMEs to transition smoothly into digital-first businesses. She is also the founder of EzyPet and EzyStamp.',
-    photo: HaymarAungPhoto,
-  },
-  {
     id: 'phyo-thiri-thu',
-    day: 1,
     name: 'Phyo Thiri Thu',
     position: 'Research & Development Manager',
     organization: 'KBZ Bank',
@@ -247,23 +214,29 @@ export const speakers: Speaker[] = [
     photo: PhyoThiriThuPhoto,
   },
   {
-    id: 'chaw-su-hlaing',
-    day: 1,
-    name: 'Chaw Su Hlaing',
-    position: 'UX Designer (Design Systems)',
-    organization: 'CODIGO',
-    bio: 'Chaw Su Hlaing is a Senior Product Designer with 6 years of experience. At Codigo, she builds enterprise systems for Porsche and Tiong Bahru Bakery, and a design system running across 8 products that her team builds production UI from with AI. She also runs The Productive Schedule, teaching design systems to designers in Myanmar.',
-    photo: ChawSuHlaingPhoto,
+    id: 'sann-lynn-htun',
+    name: 'Sann Lynn Htun',
+    position: 'Senior Software Engineer',
+    organization: 'ACE Data Systems',
+    bio: 'Sann Lynn Htun is a Senior Software Engineer with over 11 years of experience at ACE Data Systems, where he has contributed to the development of digital solutions for the banking and financial industry. Throughout his career, he has enjoyed collaborating with teams, solving real-world challenges, and supporting the growth of aspiring professionals through mentoring and knowledge sharing.',
+    photo: SannLynnHtunPhoto,
+  },
+  {
+    id: 'sitt-ye-yint-tun',
+    name: 'Sitt Ye Yint Tun',
+    position: 'UX/UI Designer',
+    organization: 'BIM Group of Companies',
+    bio: 'Sitt Ye Yint Tun is a UX/UI Designer focused on systems thinking and designing clear, usable experiences for complex products and services. He brings together user needs, business goals, and technical considerations to turn complex workflows into practical digital solutions. Beyond his design work, he actively contributes to UXMM, helping run research programs that generate meaningful insights for Myanmar’s design and tech community.',
+    photo: SittYeYintTunPhoto,
   },
   {
     id: 'thae-su-aye',
-    day: 1,
     name: 'Thae Su Aye',
     position: 'Project Researcher',
     organization: 'LOMTech',
     bio: 'Project Researcher at LOMTech focused on social impact, inclusion, and making AI accessible to non-technical builders and diverse communities. Her background spans research, operations, and youth leadership across Myanmar and international platforms (SEARA member, SEALNet mentor, LP4Y coach, R&D at Indonesia’s Halal Science Center).',
     photo: ThaeSuAyePhoto,
-  },
+  }
 ]
 
 const mentorIds = new Set([
@@ -345,14 +318,13 @@ export const mentors: Mentor[] = [
     bio: 'Kyaw Ko Ko Tun (Brady) is a software engineer, system architect, and the founder of Let’s Tech Club. His journey in technology began at age 12, entering the professional software industry by age 15. He is passionate about designing scalable backend architectures, reliable systems, and production-ready engineering workflows. Beyond system architecture, Brady is driven by a long-term vision to build a sustainable tech startup ecosystem in Myanmar. Through Let’s Tech Club, he leads practical developer bootcamps, technical hackathons, and community initiatives designed to connect local talents with the right, high-impact opportunities. His core mission centers on equipping local developers with production-grade skills and helping build the foundation for future technology ventures.',
     photo: KyawKoKoTunMentorPhoto,
   },
-  { id: 'thiri-phyo-naing', name: 'Thiri Phyo Naing', photo: ThiriPhyoNaingMentorPhoto },
   {
     id: 'pwint-yee-mon',
     name: 'Pwint Yee Mon',
     position: 'UI/UX Consultant',
     organization: 'SANDP1T',
     bio: 'Ma Pwint Yee Mon (Christine) သည် Singapore အခြေစိုက် SANDP1T တွင် UI/UX Consultant အဖြစ် လုပ်ကိုင်နေသူဖြစ်ပြီး Myanmar နှင့် Singapore အခြေစိုက် ကုမ္ပဏီများတွင် ၅ နှစ်ကျော် အတွေ့အကြုံရှိသူဖြစ်ပါတယ်။ UI Designer အဖြစ် စတင်ခဲ့ပြီး ယခုအခါတွင် Interaction Design၊ System Thinking နှင့် UX Mindset များကို အဓိကထားကာ Service Design ဘက်တွင် တာဝန်ယူလုပ်ကိုင်နေပါတယ်။ ဒါ့အပြင် UX community များတွင် ပါဝင်ကာ knowledge sharing ပြုလုပ်ခြင်းကို နှစ်သက်သူဖြစ်ပြီး Figma Community တွင်လည်း UX နှင့် Workshop templates များကိုလည်း ပူးပေါင်းမျှဝေထားသူဖြစ်ပါတယ်။',
-    photo: ThiriPhyoNaingMentorPhoto,
+    photo: PwintYeeMonPhoto,
   },
   {
     id: 'hnin-yu-hlaing',
@@ -370,7 +342,12 @@ export const mentors: Mentor[] = [
     bio: 'Thazin Win is a Senior UI/UX Specialist at U9 Myanmar, with experience spanning product design, UX research, usability testing, and digital product development. She has worked across fintech, telecommunications, and digital services, with a particular interest in creating usable and inclusive experiences for people with different levels of digital literacy. Beyond her professional work, Thazin actively contributes to Myanmar’s UX community through mentoring, teaching, and knowledge sharing. She is passionate about helping designers and cross-functional teams understand how UX can create meaningful value for both users and businesses.',
     photo: ThazinWinMentorPhoto,
   },
-  { id: 'ko-khant', name: 'Ko Khant', photo: KoKhantMentorPhoto },
+  { id: 'ko-khant', 
+    name: 'Ko Khant (Barry)',
+    position: 'Product Designer',
+    organization: 'MyJobS Myanmar / Ninja Van Myanmar / SupaCart',
+    bio: 'Hello there. I’m a Senior UX/UI Designer and Product Designer with experience designing digital products across different industries from both local and foreign. Currently I’m contributing in Ninja Van Myanmar and MyJobs Myanmar as a Senior Designer. And I’m also taking responsibility as a Project Manager Assistant at SupaCart. I used to take part in mentoring newbies via classes and online courses at Let’s Tech Club and Compass back in the past.မင်္ဂလာပါဗျ၊​ ကျွန်တော်ကတော့ Local နဲ့ Foreign Industries တွေမှာရှိတဲ့ Companies တွေမှာ Senior UXUI Designer အနေနဲ့ကော Product Designer အနေနဲ့ပါ လုပ်ကိုင်ဖူးတဲ့ အတွေ့အကြုံရှိပါတယ်ခင်ဗျာ၊ လက်ရှိမှာတော့ Ninja Van Myanmar, MyJobs Myanmar နဲ့ SupaCart တို့မှာ လုပ်ကိုင်လျက်ရှိပါတယ်၊ အရင်တုန်းကတော့   Community ထဲအသစ်ဝင်ရောက်လာသူတွေကို သင်တန်းတွေကတစ်ဆင့် သင်ကြားပို့ချဖူးပါတယ်ခင်ဗျာ။',
+    photo: KoKhantMentorPhoto },
   {
     id: 'min-ye-htut',
     name: 'Min Ye Htut',
@@ -381,13 +358,8 @@ export const mentors: Mentor[] = [
   },
 ]
 
-export function speakersForDay(day: SpeakerDay): Speaker[] {
-  return speakers.filter((s) => s.day === day)
-}
-
 /** Roster role per person — someone may hold several (Speaker + Panelist,
- *  Speaker + Moderator) and then appears in each of their tabs.
- *  Judges are deliberately absent until publicly announced. */
+ *  Speaker + Moderator) and then appears in each of their tabs. */
 export const rolesById: Record<string, SpeakerRole[]> = {
   'myo-maung-maung': ['Speaker'],
   'aung-kyaw-minn': ['Speaker'],
@@ -397,7 +369,7 @@ export const rolesById: Record<string, SpeakerRole[]> = {
   'min-khant-ko-ko': ['Speaker'],
   'khin-moet-moet-nyein': ['Speaker'],
   'pyit-sone-oo': ['Speaker', 'Panelist'],
-  'shu-mawa-soe': ['Speaker', 'Moderator'],
+  'shu-mawa-soe': ['Speaker', 'Moderator', 'Panelist'],
   'aung-ko-ko-thet': ['Panelist'],
   'kyaw-myo-thet': ['Panelist'],
   'mya-thandar-oo': ['Panelist'],

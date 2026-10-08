@@ -63,7 +63,7 @@ export default function Home() {
       {/* Mentors - Section 7 */}
       <MentorsSection/>
 
-      {/* Event Team - Section 8 */}
+      {/* Event Team */}
       <EventTeamSection/>
 
       {/* Merchandise Section - Section 9 */}

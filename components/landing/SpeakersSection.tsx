@@ -13,6 +13,7 @@ import Crabi from '@/app/assets/Mascots/Crabi.png'
 import Octo from '@/app/assets/Mascots/Octo.png'
 import Shark from '@/app/assets/Mascots/Shark.png'
 import Tuto from '@/app/assets/Mascots/Tuto.png'
+import { judges } from '@/data/judgesData'
 import { rolesById, speakers } from '@/data/speakersData'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -49,8 +50,7 @@ const MASCOTS = [Ali, Crabi, Octo, Shark, Tuto]
 /** One roster for all three lists — a person with several roles (e.g. Speaker
  *  + Panelist, Speaker + Moderator) is merged by name and shows every role
  *  badge while appearing in each of their tabs.
- *  NOTE: judges are intentionally not added yet (not announced publicly).
- *  data/judgesData.ts is ready — re-add the judges.forEach(add) block when revealed. */
+ */
 const roster: Profile[] = (() => {
   const map = new Map<string, Profile>()
   const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -75,8 +75,16 @@ const roster: Profile[] = (() => {
       roles: rolesById[s.id] ?? ['Speaker'],
     })
   )
+  judges.forEach(judge =>
+    add({
+      ...judge,
+      roles: ['Judge'],
+    })
+  )
   return [...map.values()]
 })()
+
+const judgeOrder = new Map(judges.map((judge, index) => [judge.id, index]))
 
 const profilesFor = (category: Category): Profile[] => {
   if (category === 'Panelists') {
@@ -85,8 +93,14 @@ const profilesFor = (category: Category): Profile[] => {
       profile => profile.roles.includes('Panelist') || profile.roles.includes('Moderator')
     )
   }
-  const singular: Role = category === 'Speakers' ? 'Speaker' : 'Judge'
-  return roster.filter(profile => profile.roles.includes(singular))
+  if (category === 'Judges') {
+    // judges who are also speakers sit early in the roster, so re-sort by
+    // judgesData order to honor the intended sequence
+    return roster
+      .filter(profile => profile.roles.includes('Judge'))
+      .sort((a, b) => (judgeOrder.get(a.id) ?? 0) - (judgeOrder.get(b.id) ?? 0))
+  }
+  return roster.filter(profile => profile.roles.includes('Speaker'))
 }
 
 export function BriefCard({ profile, index, onSelect, showMascot = true, showRoleBadges = true }: { profile: Profile; index: number; onSelect: (profile: Profile) => void; showMascot?: boolean; showRoleBadges?: boolean }) {
@@ -343,7 +357,7 @@ export function DetailCard({ profile, onClose, showRoleBadges = true }: { profil
 export function SpeakersSection() {
   const rootRef = useRef<HTMLElement>(null)
   const profilesRef = useRef<HTMLDivElement>(null)
-  const [activeCategory, setActiveCategory] = useState<Category>('Speakers')
+  const [activeCategory, setActiveCategory] = useState<Category>('Judges')
   const [detailId, setDetailId] = useState<string | null>(null)
 
   const profiles = profilesFor(activeCategory)
