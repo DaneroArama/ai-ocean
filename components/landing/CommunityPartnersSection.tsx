@@ -50,8 +50,8 @@ type Sponsor = {
 const SPONSORS: Sponsor[] = [
   { name: 'CTZPay', type: 'Venue Sponsor', src: CTZPay, color: '#FF0E88', main: true, pill: 'top-left' },
   { name: 'SANDP1T', type: 'People Development Partner', src: Sandp1t, color: '#6B7A2E', main: true, pill: 'top-left', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #A97BEA, #8B52D4)' } },
-  { name: 'H3VEA', type: 'Logistics Track Partner', src: H3VEA, color: '#0F8A45', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
-  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'bottom-right', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
+  { name: 'H3VEA', type: 'Logistics Track Partner', src: H3VEA, color: '#0F8A45', main: true, pill: 'top-left', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #FFA07A, #FF6B45)' } },
+  { name: "Let's Tech Club", type: 'Tech Partner', src: LetsTech, color: '#5B0AFF', main: true, pill: 'top-left', pillStyle: { backgroundImage: 'linear-gradient(to bottom, #8ED7AD, #3BA96A)' } },
   { name: 'Myanmar Citizens Bank', type: 'Event Support Partner', src: MCB, color: '#0A7CFF' },
   { name: 'BEYOND 360', type: 'Media Partner', src: Beyond360, color: '#FFE100' },
   { name: 'Mobbin', type: 'Global Knowledge Partner', src: Mobbin, color: '#171717' },
@@ -141,7 +141,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
     <div
       className={`sponsor-card opacity-0 ${
         isMain
-          ? 'relative w-[200px] h-[200px] md:w-[220px] md:h-[220px]'
+          ? 'relative w-[200px] h-[200px] md:w-[230px] md:h-[230px] mb-28'
           : 'flex w-[160px] md:w-[200px] flex-col items-center'
       }`}
     >
@@ -149,7 +149,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
         className={
           isMain
             ? 'relative h-full w-full'
-            : 'relative h-[140px] w-[140px] md:h-[220px] md:w-[220px]'
+            : 'relative h-[120px] w-[120px] md:h-[200px] md:w-[200px]'
         }
       >
         {/* Coloured base card â€” offset + micro-rotates on hover (GSAP owns x/y) */}
