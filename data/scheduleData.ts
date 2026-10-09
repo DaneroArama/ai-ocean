@@ -59,12 +59,12 @@ export interface ScheduleContentProps {
 // Phase Cards Data
 export const phases: PhaseCard[] = [
   { phase: 'Phase 1', title: 'Pre Event', date: '20', month: 'SEP' },
-  { phase: 'Phase 2', title: 'Main Event Day 1' },
-  { phase: 'Phase 2', title: 'Main Event Day 2' },
-  { phase: 'Phase 3', title: 'Mentorship & Buildathon' },
-  { phase: 'Phase 4', title: 'Evaluation & Cross-Border Judging' },
-  { phase: 'Phase 5', title: 'Judge Insights' },
-  { phase: 'Phase 6', title: 'Awards Ceremony' },
+  { phase: 'Phase 2', title: 'Main Event Day 1', date: '17', month: 'OCT' },
+  { phase: 'Phase 2', title: 'Main Event Day 2', date: '18', month: 'OCT' },
+  { phase: 'Phase 3', title: 'Mentorship & Buildathon', date: '19-23', month: 'OCT' },
+  { phase: 'Phase 4', title: 'Evaluation & Cross-Border Judging', date: '24-31', month: 'OCT' },
+  { phase: 'Phase 5', title: 'Judge Insights', date: '25', month: 'OCT' },
+  { phase: 'Phase 6', title: 'Awards Ceremony', date: '1', month: 'NOV' },
 ]
 
 // Phase Schedules Data
