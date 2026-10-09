@@ -60,8 +60,8 @@ export default function Scene6({ audioController }: Scene6Props) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 300vh wrapper
-          scrub: 1,
+          end: "bottom bottom", // span driven by fixed 400vh wrapper
+          scrub: 2,
           invalidateOnRefresh: true,
           id: "scene6",
         },
@@ -133,7 +133,7 @@ export default function Scene6({ audioController }: Scene6Props) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[300vh]">
+    <div ref={wrapperRef} className="h-[400vh]">
     <div
       ref={sceneRef}
       className="scene6 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-ocean-primary"

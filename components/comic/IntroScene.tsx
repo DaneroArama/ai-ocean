@@ -108,8 +108,8 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 250vh wrapper
-          scrub: 1,
+          end: "bottom bottom", // span driven by fixed 350vh wrapper
+          scrub: 2,
           invalidateOnRefresh: true,
           id: "intro-scene",
           onEnter: () => {
@@ -178,7 +178,7 @@ export default function IntroScene({ audioController }: IntroSceneProps) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[250vh]">
+    <div ref={wrapperRef} className="h-[350vh]">
     <div
       ref={sceneRef}
       className="intro-scene sticky top-0 w-full h-screen overflow-hidden will-change-transform"

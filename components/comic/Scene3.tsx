@@ -61,8 +61,8 @@ export default function Scene3({ audioController }: Scene3Props) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 350vh wrapper
-          scrub: 1,
+          end: "bottom bottom", // span driven by fixed 450vh wrapper
+          scrub: 2,
           invalidateOnRefresh: true,
           id: "scene3",
         },
@@ -185,12 +185,12 @@ export default function Scene3({ audioController }: Scene3Props) {
       );
 
       // Whole-scene crossfade over the frozen Scene 2: spans exactly the 25vh
-      // overlap window (25 / (350 - 100) of the trigger span)
+      // overlap window (25 / (450 - 100) of the trigger span)
       scene3Timeline.to(
         sceneRef.current,
         {
           opacity: 1,
-          duration: scene3Timeline.duration() * (25 / 250),
+          duration: scene3Timeline.duration() * (25 / 350),
           ease: "none",
         },
         0
@@ -202,7 +202,7 @@ export default function Scene3({ audioController }: Scene3Props) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[350vh] -mt-[125vh]">
+    <div ref={wrapperRef} className="h-[450vh] -mt-[125vh]">
     <div
       ref={sceneRef}
       className="scene3 sticky top-0 w-full h-screen overflow-hidden will-change-transform"

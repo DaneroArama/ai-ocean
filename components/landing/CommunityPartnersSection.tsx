@@ -28,6 +28,8 @@ import Mobbin from '@/app/assets/Partners/Mobbin.png'
 import Oway from '@/app/assets/Partners/Oway.png'
 import TheBuilderPros from '@/app/assets/Partners/TheBuilderPros.png'
 import MealPartners from '@/app/assets/Partners/Meal Partners.png'
+import UXMM from '@/app/assets/Partners/UXMM.png'
+import UXMMHub from '@/app/assets/Partners/UXMM HUB.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -96,15 +98,19 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
             aria-hidden="true"
             data-base
             style={{ backgroundColor: sponsor.color }}
-            className="absolute inset-0 rounded-2xl shadow-[0_6px_16px_rgba(11,74,138,0.18)]"
+            className="absolute inset-0 rounded-2xl shadow-[0_6px_16px_rgba(11,74,138,0.18)] z-0"
           />
           <div
+              data-base
+              className="pointer-events-none absolute inset-2 rounded-xl border-white border-2 border-dashed bg-transparent z-5"
+            />
+          <div
             data-white
-            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white p-5 shadow-[0_6px_18px_rgba(11,74,138,0.12)] md:p-7"
+            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white p-5 shadow-[0_6px_18px_rgba(11,74,138,0.12)] md:p-7 z-10"
           >
             <div
               data-frame
-              className="pointer-events-none absolute inset-3 rounded-xl border-2 border-dashed bg-transparent"
+              className="pointer-events-none absolute inset-2 rounded-xl border-2 border-dashed bg-transparent"
               style={{ borderColor: `${sponsor.color}80` }}
             />
             <Image
@@ -151,13 +157,16 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
           aria-hidden="true"
           data-base
           style={{ backgroundColor: sponsor.color }}
-          className="absolute inset-0 rounded-2xl shadow-[0_6px_16px_rgba(11,74,138,0.18)]"
+          className="absolute inset-0 rounded-2xl shadow-[0_6px_16px_rgba(11,74,138,0.18)] z-0"
         />
-
+        <div
+          data-base
+          className="pointer-events-none absolute inset-2 rounded-xl border-white border-2 border-dashed bg-transparent z-5"
+        />
         {/* White card with logo + inner frame */}
         <div
           data-white
-          className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white p-4 shadow-[0_6px_18px_rgba(11,74,138,0.12)]"
+          className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white p-4 shadow-[0_6px_18px_rgba(11,74,138,0.12)] z-10"
         >
           {/* Inner square frame (inset-2, transparent bg) */}
           <div
@@ -608,6 +617,95 @@ export function CommunityPartnersSection() {
                 <SponsorCard key={sponsor.name} sponsor={sponsor} />
               ))}
 
+            </div>
+
+            {/* ============ Organized by / Powered by ============ */}
+            <div className="flex flex-wrap items-start justify-center gap-10 md:gap-20">
+              {/* Organized by — UXMM */}
+              <div className="sponsor-card opacity-0 flex flex-col items-center gap-4">
+                <h3 className="font-dela-gothic-one text-xl md:text-2xl text-[#0B4A8A] tracking-wide">
+                  Organized by
+                </h3>
+                <div className="relative w-[150px] h-[150px] md:w-[170px] md:h-[170px]">
+                  <div
+                    aria-hidden="true"
+                    data-base
+                    className="absolute inset-0 rounded-2xl bg-[#FF0E88] shadow-[0_6px_16px_rgba(11,74,138,0.18)] z-0"
+                  />
+                  <div
+                    data-base
+                    className="pointer-events-none absolute inset-2 rounded-xl border-white border-2 border-dashed bg-transparent z-5"
+                  />
+                  <div
+                    data-white
+                    className="absolute inset-0 rounded-2xl bg-white p-4 shadow-[0_6px_18px_rgba(11,74,138,0.12)] flex items-center justify-center z-10"
+                  >
+                    <span
+                      aria-hidden="true"
+                      data-frame
+                      className="pointer-events-none absolute inset-2 rounded-xl border-2 border-dashed border-[#FF0E88]/70"
+                    />
+                    <Image
+                      data-logo
+                      src={UXMM}
+                      alt="UXMM logo"
+                      width={160}
+                      height={160}
+                      className="relative w-full h-full object-contain p-1"
+                    />
+                  </div>
+                  <div
+                    data-tip
+                    className="absolute -top-4 left-[60%] z-50 whitespace-nowrap rounded-2xl bg-[#FFAE14] px-4 py-2 text-sm font-bold text-white opacity-0 shadow-lg pointer-events-none"
+                  >
+                    UXMM
+                    <div className="absolute -bottom-2 left-[10%] h-4 w-4 -translate-x-1/2 rounded-full bg-[#FFAE14]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Powered by — UXMM HUB */}
+              <div className="sponsor-card opacity-0 flex flex-col items-center gap-4">
+                <h3 className="font-dela-gothic-one text-xl md:text-2xl text-[#0B4A8A] tracking-wide">
+                  Powered by
+                </h3>
+                <div className="relative w-[150px] h-[150px] md:w-[170px] md:h-[170px]">
+                  <div
+                    aria-hidden="true"
+                    data-base
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#2F5CFF] to-[#A855F7] shadow-[0_6px_16px_rgba(11,74,138,0.18)] z-0"
+                  />
+                  <div
+                    data-base
+                    className="pointer-events-none absolute inset-2 rounded-xl border-white border-2 border-dashed bg-transparent z-5"
+                  />
+                  <div
+                    data-white
+                    className="absolute inset-0 rounded-2xl bg-[#0A0A0A] p-4 shadow-[0_6px_18px_rgba(11,74,138,0.12)] flex items-center justify-center z-10"
+                  >
+                    <span
+                      aria-hidden="true"
+                      data-frame
+                      className="pointer-events-none absolute inset-2 rounded-xl border-2 border-dashed border-white/90"
+                    />
+                    <Image
+                      data-logo
+                      src={UXMMHub}
+                      alt="UXMM HUB logo"
+                      width={160}
+                      height={160}
+                      className="relative w-full h-full object-contain p-1"
+                    />
+                  </div>
+                  <div
+                    data-tip
+                    className="absolute -top-4 left-[60%] z-50 whitespace-nowrap rounded-2xl bg-[#FFAE14] px-4 py-2 text-sm font-bold text-white opacity-0 shadow-lg pointer-events-none"
+                  >
+                    UXMM HUB
+                    <div className="absolute -bottom-2 left-[10%] h-4 w-4 -translate-x-1/2 rounded-full bg-[#FFAE14]" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

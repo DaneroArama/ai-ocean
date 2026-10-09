@@ -61,8 +61,8 @@ export default function Scene4({ audioController }: Scene4Props) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 280vh wrapper
-          scrub: 1,
+          end: "bottom bottom", // span driven by fixed 380vh wrapper
+          scrub: 2,
           invalidateOnRefresh: true,
           id: "scene4",
         },
@@ -157,12 +157,12 @@ export default function Scene4({ audioController }: Scene4Props) {
       );
 
       // Whole-scene crossfade over the frozen Scene 3: spans exactly the 25vh
-      // overlap window (25 / (280 - 100) of the trigger span)
+      // overlap window (25 / (380 - 100) of the trigger span)
       scene4Timeline.to(
         sceneRef.current,
         {
           opacity: 1,
-          duration: scene4Timeline.duration() * (25 / 180),
+          duration: scene4Timeline.duration() * (25 / 280),
           ease: "none",
         },
         0
@@ -174,7 +174,7 @@ export default function Scene4({ audioController }: Scene4Props) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[280vh] -mt-[125vh]">
+    <div ref={wrapperRef} className="h-[380vh] -mt-[125vh]">
     <div
       ref={sceneRef}
       className="scene4 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-ocean-primary"
