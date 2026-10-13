@@ -32,7 +32,7 @@ interface TypingTextProps {
 // same grid cell so the box keeps its final size while typing.
 export default function TypingText({
   children,
-  speed = 16,
+  speed = 35,
   className,
 }: TypingTextProps) {
   const text = flattenText(children);

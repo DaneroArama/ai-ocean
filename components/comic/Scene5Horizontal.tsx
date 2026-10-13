@@ -116,7 +116,7 @@ export default function Scene5({ audioController }: Scene5Props) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 700vh wrapper
+          end: "bottom bottom", // span driven by fixed 950vh wrapper
           scrub: 2,
           invalidateOnRefresh: true,
           id: "scene5",
@@ -183,7 +183,7 @@ export default function Scene5({ audioController }: Scene5Props) {
               duration: 0.4,
               ease: "power2.in",
             },
-            "+=1"
+            "+=3"
           );
         });
 
@@ -288,7 +288,7 @@ export default function Scene5({ audioController }: Scene5Props) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[700vh]">
+    <div ref={wrapperRef} className="h-[950vh]">
     <div
       ref={sceneRef}
       className="scene5 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-ocean-primary"

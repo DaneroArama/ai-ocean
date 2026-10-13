@@ -60,10 +60,11 @@ function Sparkle({ className = '', style }: { className?: string; style?: CSSPro
   )
 }
 
-export function TeamModal() {
+export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' }) {
   const router = useRouter()
   const modalRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const closingRef = useRef(false)
 
   useEffect(() => {
     const modal = modalRef.current
@@ -99,25 +100,28 @@ export function TeamModal() {
     }
   }, [])
 
-  useEffect(() => {
-    const prevBody = document.body.style.overflow
-    const prevHtml = document.documentElement.style.overflow
-    document.body.style.overflow = 'hidden'
-    document.documentElement.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = prevBody
-      document.documentElement.style.overflow = prevHtml
-    }
-  }, [])
-
   const handleClose = () => {
+    if (closingRef.current) return
+    closingRef.current = true
+
+    const navigateAway = () => {
+      // Intercepted modal: go back to the page underneath.
+      // Standalone /team page: land on the homepage (no in-app history).
+      if (variant === 'page') {
+        router.replace('/')
+      } else {
+        router.back()
+      }
+    }
+
     const modal = modalRef.current
     const content = contentRef.current
-    if (!modal || !content) return
+    if (!modal || !content) {
+      navigateAway()
+      return
+    }
 
-    const tl = gsap.timeline({
-      onComplete: () => router.back(),
-    })
+    const tl = gsap.timeline({ onComplete: navigateAway })
     tl.to(content, { y: 30, opacity: 0, duration: 0.25, ease: 'power2.in' })
       .to(modal, { opacity: 0, duration: 0.2 }, '-=0.1')
   }
@@ -133,6 +137,10 @@ export function TeamModal() {
       ref={modalRef}
       onClick={handleBackdropClick}
       data-lenis-prevent
+      onWheel={e => {
+        // Wheel over the backdrop (ultrawide side strips) must not scroll the page behind
+        if (e.target === e.currentTarget) e.preventDefault()
+      }}
       className="fixed inset-0 z-[9999] flex items-center justify-center overscroll-contain bg-black/40 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"

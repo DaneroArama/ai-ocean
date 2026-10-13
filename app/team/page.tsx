@@ -3,5 +3,5 @@
 import { TeamModal } from '@/components/TeamModal'
 
 export default function TeamPage() {
-  return <TeamModal />
+  return <TeamModal variant="page" />
 }

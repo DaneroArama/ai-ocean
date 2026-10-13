@@ -84,7 +84,7 @@ export default function Scene1({ audioController }: Scene1Props) {
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
-          end: "bottom bottom", // span driven by fixed 400vh wrapper
+          end: "bottom bottom", // span driven by fixed 550vh wrapper
           scrub: 2,
           invalidateOnRefresh: true,
           id: "scene1",
@@ -92,8 +92,8 @@ export default function Scene1({ audioController }: Scene1Props) {
       });
 
       // Narration 1 appears - starts after the whole-scene crossfade has
-      // finished (crossfade spans the first 25/300 of the trigger = timeline
-      // 0 -> ~3.8; absolute 7 leaves a beat after the scene settles)
+      // finished (crossfade spans the first 25/450 of the trigger = timeline
+      // 0 -> ~3.9; absolute 7 leaves a beat after the scene settles)
       scene1Timeline
         .from(
           narration1Ref.current,
@@ -120,7 +120,7 @@ export default function Scene1({ audioController }: Scene1Props) {
             duration: 1,
             ease: "power2.in",
           },
-          "+=1"
+          "+=5"
         );
 
       // Narration 2 appears
@@ -146,7 +146,7 @@ export default function Scene1({ audioController }: Scene1Props) {
             duration: 1,
             ease: "power2.in",
           },
-          "+=1"
+          "+=5"
         );
 
       // Characters enter one by one
@@ -227,7 +227,7 @@ export default function Scene1({ audioController }: Scene1Props) {
               opacity: 0,
               duration: 0.5,
             },
-            "+=0.8"
+            "+=4"
           );
       });
 
@@ -245,12 +245,12 @@ export default function Scene1({ audioController }: Scene1Props) {
       );
 
       // Whole-scene crossfade over the frozen Intro: spans exactly the 25vh
-      // overlap window (25 / (400 - 100) of the trigger span)
+      // overlap window (25 / (550 - 100) of the trigger span)
       scene1Timeline.to(
         sceneRef.current,
         {
           opacity: 1,
-          duration: scene1Timeline.duration() * (25 / 300),
+          duration: scene1Timeline.duration() * (25 / 450),
           ease: "none",
         },
         0
@@ -262,7 +262,7 @@ export default function Scene1({ audioController }: Scene1Props) {
   }, [audioController]);
 
   return (
-    <div ref={wrapperRef} className="h-[400vh] -mt-[125vh]">
+    <div ref={wrapperRef} className="h-[550vh] -mt-[125vh]">
     <div ref={sceneRef} className="scene1 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-linear-to-b from-ocean-medium to-ocean-light to-10%">
       {/* Beach Background with parallax */}
       <div ref={backgroundRef} className="absolute inset-0 z-10">
