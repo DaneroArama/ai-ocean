@@ -2,6 +2,7 @@
 
 import { useI18n } from '@/lib/i18n/provider'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -209,14 +210,17 @@ export function BentoSection() {
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center gap-2 bg-white/25 rounded-full pl-4 pr-1.5 py-1.5">
-                  <span className="font-quicksand text-sm font-semibold text-white whitespace-nowrap">Coming Soon</span>
+                <Link 
+                  href="/team"
+                  className="flex items-center gap-2 bg-white/25 rounded-full pl-4 pr-1.5 py-1.5 transition-all hover:bg-white/35 hover:scale-105 active:scale-95"
+                >
+                  <span className="font-quicksand text-sm font-semibold text-white whitespace-nowrap">View Teams</span>
                   <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/40">
                     <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5M6 12h12" />
                     </svg>
                   </span>
-                </div>
+                </Link>
               </div>
             </div>
           </div>

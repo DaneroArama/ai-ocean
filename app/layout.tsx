@@ -134,7 +134,11 @@ export const metadata: Metadata = {
 // Disable static optimization for this layout since it uses client-side auth
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+interface RootLayoutProps extends LayoutProps<"/"> {
+  modal?: React.ReactNode;
+}
+
+export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
     <html
       lang="en"
@@ -144,7 +148,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ConvexAuthNextjsServerProvider>
           <I18nProvider initialLocale="en" initialDictionary={enDict}>
             <ConvexClientProvider>
-              <LenisProvider>{children}</LenisProvider>
+              <LenisProvider>
+                {children}
+                {modal}
+              </LenisProvider>
             </ConvexClientProvider>
           </I18nProvider>
         </ConvexAuthNextjsServerProvider>
