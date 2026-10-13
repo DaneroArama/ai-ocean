@@ -135,7 +135,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 interface RootLayoutProps extends LayoutProps<"/"> {
-  modal?: React.ReactNode;
+  modal: React.ReactNode;
 }
 
 export default function RootLayout({ children, modal }: RootLayoutProps) {
