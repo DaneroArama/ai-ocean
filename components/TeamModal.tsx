@@ -1,55 +1,75 @@
 ﻿'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import Waves from '@/app/assets/waves_2.png'
 import EventLogoGrey from '@/app/assets/event_logo_grey.png'
 
-const TEAM_DATA = [
+type TeamMember = { name: string; role?: string }
+type Team = { name: string; badge?: string; members: TeamMember[] }
+
+// Hardcoded for now — some positions are not assigned yet (omit `role`)
+const TEAM_DATA: Team[] = [
   {
-    name: 'Team A',
+    name: 'OnErrorResumeNext',
     badge: 'Recent',
     members: [
-      'Sitt Ye Yint Tun',
-      'Nwe Oo Lwin',
-      'Shwe Htoo Si Thu',
-      'Min Naing',
-      'Su Nandar',
-      'Pingu Thin Thu',
-      'Aung Phone',
+      { name: 'Thuriya Ye Naing', role: 'Full Stack Developer' },
+      { name: 'Wint Khant Lin', role: 'Product Designer' },
+      { name: 'Shoon Lae Moe Oo', role: 'Product Owner' },
+      { name: 'Moe Thura Aung' },
     ],
   },
   {
-    name: 'This team name is so long',
+    name: 'Aquaholics',
     members: [
-      'Lorem Throw',
-      'Sitt Ye Yint Tun',
-      'Nwe Oo Lwin',
-      'Shwe Htoo Si Thu',
-      'Min Naing',
-      'Su Nandar',
-      'Pingu Thin Thu',
-      'Aung Phone',
+      { name: 'Kaung Set Thar', role: 'Full Stack Developer' },
+      { name: 'Pan Myo Phyu', role: 'Business Analyst, Product Designer' },
+      { name: 'Aye Nandar Win', role: 'Business Analyst, UI Designer, UX Designer' },
+      { name: 'Ye Htet Naing', role: 'Frontend Developer, Product Manager' },
+      { name: 'Aung Khant Min', role: 'Backend Developer' },
+      { name: 'Thaw Thaw Tun', role: 'UI Designer, UX Designer' },
     ],
   },
   {
-    name: 'Team A',
+    name: 'Zero_Lag',
     members: [
-      'Sitt Ye Yint Tun',
-      'Nwe Oo Lwin',
-      'Shwe Htoo Si Thu',
-      'Min Naing',
-      'Su Nandar',
-      'Pingu Thin Thu',
-      'Aung Phone',
+      { name: 'Zaw Lwin Htoo', role: 'Full Stack Developer' },
+      { name: 'Min Kyi Sin Thant' },
+      { name: 'Yan Lin Naing' },
+      { name: 'Kyaw Bhone Htet' },
+      { name: 'Bhone Myat Htut' },
+      { name: 'Zin Min Htet' },
+      { name: 'Min Thant Tun' },
     ],
   },
 ]
 
-// Duplicate data to fill grid
-const ALL_TEAMS = [...TEAM_DATA, ...TEAM_DATA]
+const ALL_TEAMS = [...TEAM_DATA]
+
+const ROLE_ABBREV: Record<string, string> = {
+  'Full Stack Developer': 'FSD',
+  'Frontend Developer': 'FE',
+  'Front End Developer': 'FE',
+  'Backend Developer': 'BE',
+  'Back End Developer': 'BE',
+  'UI Designer': 'UI',
+  'UX Designer': 'UX',
+  'Product Manager': 'PM',
+  'Project Manager': 'PM',
+  'Product Designer': 'PD',
+  'Product Owner': 'PO',
+  'Business Analyst': 'BA',
+}
+
+function abbreviateRoles(role: string): string {
+  return role
+    .split(',')
+    .map(part => ROLE_ABBREV[part.trim()] ?? part.trim())
+    .join(', ')
+}
 
 /** 4-point twinkle star — blinks via the `.cta-star` keyframes. */
 function Sparkle({ className = '', style }: { className?: string; style?: CSSProperties }) {
@@ -65,6 +85,7 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
   const modalRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const closingRef = useRef(false)
+  const [activeRole, setActiveRole] = useState<string | null>(null)
 
   useEffect(() => {
     const modal = modalRef.current
@@ -178,15 +199,15 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
         >
           {/* Header */}
-          <div className="relative px-6 pt-20 pb-8 text-center">
-            <div className="relative inline-block">
-              <span className="absolute -left-12 -top-8 rounded-full bg-linear-to-b from-[#ffb99b] to-[#ff8659] px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_0_5px_2px_#ffffff80,0_2px_10px_#00000020] md:-left-16">
+          <div className="px-6 pt-20 pb-8 text-center">
+            <div className="relative inline-block w-fit">
+              <span className="absolute left-3 top-3 md:-left-12 md:-top-8 rounded-full bg-linear-to-b from-[#ffb99b] to-[#ff8659] px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_0_5px_2px_#ffffff80,0_2px_10px_#00000020] md:-left-16">
                 Ideas
               </span>
               <h1 id="team-modal-title" className="font-dela-gothic-one text-4xl md:text-5xl text-[#00558c]">
                 Buildathon Teams
               </h1>
-              <span className="absolute -right-12 -bottom-2 rounded-full bg-linear-to-b from-[#c084fc] to-[#9333ea] px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_0_5px_2px_#ffffff80,0_2px_10px_#00000020] md:-right-16">
+              <span className="absolute right-5 bottom-0 md:-right-12 md:-bottom-2 rounded-full bg-linear-to-b from-[#c084fc] to-[#9333ea] px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_0_5px_2px_#ffffff80,0_2px_10px_#00000020] md:-right-16">
                 Products
               </span>
             </div>
@@ -245,7 +266,30 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                             className="flex items-center gap-2.5 border-b border-[#e9edf0] py-2.5 text-sm text-[#00558c]/90 last:border-b-0"
                           >
                             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-deep" />
-                            <span className="font-quicksand font-medium">{member}</span>
+                            <span className="font-quicksand font-medium">{member.name}</span>
+                            {member.role && (
+                              <div className="group/role relative ml-auto shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setActiveRole(prev => (prev === `${index}-${idx}` ? null : `${index}-${idx}`))
+                                  }
+                                  className="rounded-full bg-[#a4ecff] px-2.5 py-0.5 text-[11px] font-bold text-[#00558c] transition-colors hover:bg-[#8ee4ff]"
+                                  aria-label={`${member.name}: ${member.role}`}
+                                >
+                                  {abbreviateRoles(member.role)}
+                                </button>
+                                <span
+                                  role="tooltip"
+                                  className={`pointer-events-none absolute bottom-full right-0 mb-1.5 whitespace-nowrap rounded-lg bg-ocean-deep px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg transition-opacity duration-150 group-hover/role:opacity-100 ${
+                                    activeRole === `${index}-${idx}` ? 'opacity-100' : 'opacity-0'
+                                  }`}
+                                >
+                                  {member.role}
+                                  <span className="absolute -bottom-1 right-3 h-2 w-2 rotate-45 bg-ocean-deep" />
+                                </span>
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -257,7 +301,7 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                 </div>
 
                 {/* Bottom CTA */}
-              <div className="relative mt-8 overflow-hidden rounded-[28px] bg-[#1CBEFE] p-6 text-center text-white shadow-lg md:p-8">
+              <div className="relative mt-8 overflow-hidden rounded-[28px] bg-[#1CBEFE] p-6 text-left text-white shadow-lg md:p-8">
                 {/* Blinking sparkle stars */}
                 <Sparkle className="cta-star absolute left-[8%] top-[8%] w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.7)] md:w-6" style={{ animationDuration: '2.6s' }} />
                 <Sparkle className="cta-star absolute left-[50%] top-[10%] w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.7)] md:w-5" style={{ animationDuration: '3.2s', animationDelay: '0.6s' }} />
