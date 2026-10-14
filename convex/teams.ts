@@ -2,26 +2,98 @@
  * Teams — manage buildathon teams
  */
 import { v } from "convex/values";
-import { query, mutation, QueryCtx } from "./_generated/server";
-import { getParticipantByIdentity } from "./helpers";
-import type { Id } from "./_generated/dataModel";
+import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { getParticipantByIdentity, requireAdmin } from "./helpers";
+import type { Doc, Id } from "./_generated/dataModel";
 
 const MAX_AUTO_PLACEMENTS_PER_RUN = 300;
+const MAX_TEAMS_LISTED = 200;
+const MAX_MEMBERS_PER_TEAM = 50;
+
+type AdminCtx = QueryCtx | MutationCtx;
+
+async function getTeamOrThrow(ctx: AdminCtx, teamId: Id<"teams">) {
+  const team = await ctx.db.get(teamId);
+  if (!team) throw new Error("Team not found");
+  return team;
+}
+
+/** Public member shape — names/positions only, never emails. */
+type PublicMember = { name: string; position: string | null };
+
+/**
+ * Public roster for the team modal — no auth, no emails.
+ * Named teams only (auto-generated unnamed teams stay private until named).
+ */
+export const listPublicTeams = query({
+  args: {},
+  returns: v.array(
+    v.object({
+      _id: v.id("teams"),
+      code: v.union(v.string(), v.null()),
+      name: v.string(),
+      badge: v.union(v.string(), v.null()),
+      members: v.array(v.object({ name: v.string(), position: v.union(v.string(), v.null()) })),
+    })
+  ),
+  handler: async (ctx) => {
+    const teams = await ctx.db.query("teams").take(MAX_TEAMS_LISTED);
+    const named = teams.filter((t): t is Doc<"teams"> & { name: string } => !!t.name);
+    named.sort((a, b) => {
+      const ac = a.code ?? "";
+      const bc = b.code ?? "";
+      if (ac !== bc) return ac.localeCompare(bc);
+      return a.name.localeCompare(b.name);
+    });
+
+    const results = await Promise.all(
+      named.map(async (team): Promise<{ _id: Id<"teams">; code: string | null; name: string; badge: string | null; members: PublicMember[] }> => {
+        const members: PublicMember[] = [];
+        for (const pid of team.memberIds.slice(0, MAX_MEMBERS_PER_TEAM)) {
+          const p = await ctx.db.get(pid);
+          if (!p) continue;
+          members.push({
+            name: p.name ?? p.firstName ?? "Team Member",
+            position: p.position ?? null,
+          });
+        }
+        return {
+          _id: team._id,
+          code: team.code ?? null,
+          name: team.name,
+          badge: team.badge ?? null,
+          members,
+        };
+      })
+    );
+    return results;
+  },
+});
 
 export const createTeam = mutation({
   args: {
     name: v.optional(v.string()),
+    code: v.optional(v.string()),
+    badge: v.optional(v.string()),
     description: v.optional(v.string()),
   },
+  returns: v.object({ teamId: v.id("teams") }),
   handler: async (ctx, args) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
-    
+    const admin = await requireAdmin(ctx);
+
     const now = Date.now();
+    const code = args.code?.trim() || undefined;
+    if (code) {
+      const existing = await ctx.db
+        .query("teams")
+        .withIndex("by_code", (q) => q.eq("code", code))
+        .first();
+      if (existing) throw new Error(`Team code ${code} is already in use`);
+    }
     const teamId = await ctx.db.insert("teams", {
-      name: args.name,
+      name: args.name?.trim() || undefined,
+      code,
+      badge: args.badge?.trim() || undefined,
       description: args.description,
       memberIds: [],
       createdBy: admin._id,
@@ -201,18 +273,32 @@ export const updateTeam = mutation({
   args: {
     teamId: v.id("teams"),
     name: v.optional(v.string()),
+    code: v.optional(v.string()),
+    badge: v.optional(v.string()),
     description: v.optional(v.string()),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
-    
+    await requireAdmin(ctx);
+
     const patch: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.name !== undefined) patch.name = args.name;
     if (args.description !== undefined) patch.description = args.description;
-    
+    if (args.code !== undefined) {
+      const code = args.code.trim() || undefined;
+      if (code) {
+        const existing = await ctx.db
+          .query("teams")
+          .withIndex("by_code", (q) => q.eq("code", code))
+          .first();
+        if (existing && existing._id !== args.teamId) {
+          throw new Error(`Team code ${code} is already in use`);
+        }
+      }
+      patch.code = code;
+    }
+    if (args.badge !== undefined) patch.badge = args.badge.trim() || undefined;
+
     await ctx.db.patch(args.teamId, patch);
     return { success: true };
   },
@@ -220,22 +306,120 @@ export const updateTeam = mutation({
 
 export const deleteTeam = mutation({
   args: { teamId: v.id("teams") },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
-    
-    // Remove team from all registrations
+    await requireAdmin(ctx);
+
+    // Remove team from all registrations (bounded — registrations per team are small)
     const regs = await ctx.db.query("buildathonRegistrations")
       .filter((q) => q.eq(q.field("teamId"), args.teamId))
-      .collect();
-    
+      .take(500);
+
     for (const reg of regs) {
       await ctx.db.patch(reg._id, { teamId: undefined, updatedAt: Date.now() });
     }
-    
+
     await ctx.db.delete(args.teamId);
+    return { success: true };
+  },
+});
+
+/**
+ * Manually add a person to a team from the admin dashboard.
+ * Creates a participants row if the email is unknown, or reuses the existing
+ * row (email-less roster members are allowed and auto-link on their first signup).
+ */
+export const addManualMember = mutation({
+  args: {
+    teamId: v.id("teams"),
+    name: v.string(),
+    email: v.optional(v.string()),
+    position: v.optional(v.string()),
+  },
+  returns: v.object({ success: v.boolean(), participantId: v.id("participants") }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const team = await getTeamOrThrow(ctx, args.teamId);
+
+    const name = args.name.trim();
+    if (!name) throw new Error("Name is required");
+    if (team.memberIds.length >= MAX_MEMBERS_PER_TEAM) throw new Error("Team is full");
+
+    const email = args.email?.trim().toLowerCase() || undefined;
+    const position = args.position?.trim() || undefined;
+    const now = Date.now();
+
+    let participantId: Id<"participants">;
+    if (email) {
+      const existing = await ctx.db
+        .query("participants")
+        .withIndex("by_email", (q) => q.eq("email", email))
+        .first();
+      if (existing) {
+        participantId = existing._id;
+        if (team.memberIds.includes(participantId)) throw new Error("Already in this team");
+        const patch: Record<string, unknown> = {};
+        if (!existing.name) patch.name = name;
+        if (position) patch.position = position;
+        if (Object.keys(patch).length > 0) await ctx.db.patch(participantId, patch);
+      } else {
+        participantId = await ctx.db.insert("participants", {
+          email,
+          name,
+          position,
+          role: "participant",
+          preferredLanguage: "en",
+          createdAt: now,
+        });
+      }
+    } else {
+      participantId = await ctx.db.insert("participants", {
+        name,
+        position,
+        role: "participant",
+        preferredLanguage: "en",
+        createdAt: now,
+      });
+    }
+
+    if (team.memberIds.includes(participantId)) throw new Error("Already in this team");
+    await ctx.db.patch(args.teamId, {
+      memberIds: [...team.memberIds, participantId],
+      updatedAt: now,
+    });
+
+    // Keep their registration (if any) pointing at this team
+    const reg = await ctx.db.query("buildathonRegistrations")
+      .withIndex("by_participant", (q) => q.eq("participantId", participantId))
+      .first();
+    if (reg) await ctx.db.patch(reg._id, { teamId: args.teamId, updatedAt: now });
+
+    return { success: true, participantId };
+  },
+});
+
+/** Edit a team member's name and/or position from the admin dashboard. */
+export const updateTeamMember = mutation({
+  args: {
+    participantId: v.id("participants"),
+    name: v.optional(v.string()),
+    position: v.optional(v.string()),
+  },
+  returns: v.object({ success: v.boolean() }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const p = await ctx.db.get(args.participantId);
+    if (!p) throw new Error("Participant not found");
+
+    const patch: Record<string, unknown> = {};
+    if (args.name !== undefined) {
+      const name = args.name.trim();
+      if (!name) throw new Error("Name cannot be empty");
+      patch.name = name;
+    }
+    if (args.position !== undefined) patch.position = args.position.trim() || undefined;
+
+    await ctx.db.patch(args.participantId, patch);
     return { success: true };
   },
 });
@@ -245,11 +429,9 @@ export const addMemberToTeam = mutation({
     teamId: v.id("teams"),
     participantId: v.id("participants"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+    await requireAdmin(ctx);
     
     const team = await ctx.db.get(args.teamId);
     if (!team) throw new Error("Team not found");
@@ -281,11 +463,9 @@ export const removeMemberFromTeam = mutation({
     teamId: v.id("teams"),
     participantId: v.id("participants"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
+    await requireAdmin(ctx);
     
     const team = await ctx.db.get(args.teamId);
     if (!team) throw new Error("Team not found");
@@ -311,18 +491,20 @@ export const removeMemberFromTeam = mutation({
 export const listTeams = query({
   args: {},
   handler: async (ctx) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
-    
-    const teams = await ctx.db.query("teams").collect();
+    await requireAdmin(ctx);
+
+    const teams = await ctx.db.query("teams").take(MAX_TEAMS_LISTED);
     const results = await Promise.all(
       teams.map(async (team) => {
         const members = await Promise.all(
           team.memberIds.map(async (pid) => {
             const p = await ctx.db.get(pid);
-            return { id: pid, name: p?.name ?? "—", email: p?.email ?? "—" };
+            return {
+              id: pid,
+              name: p?.name ?? "—",
+              email: p?.email ?? "—",
+              position: p?.position ?? null,
+            };
           })
         );
         return { ...team, members };
@@ -339,24 +521,33 @@ export const getMyTeam = query({
     if (!idt) throw new Error("Unauthorized");
     const p = await getParticipantByIdentity(ctx, idt);
     if (!p) return null;
-    
+
     // Find registration with teamId
     const reg = await ctx.db.query("buildathonRegistrations")
       .withIndex("by_participant", (q) => q.eq("participantId", p._id))
       .first();
-    
-    if (!reg?.teamId) return null;
-    
-    const team = await ctx.db.get(reg.teamId);
+
+    let team = reg?.teamId ? await ctx.db.get(reg.teamId) : null;
+
+    // Seeded/manual roster members may have no registration — fall back to membership
+    if (!team) {
+      const teams = await ctx.db.query("teams").take(MAX_TEAMS_LISTED);
+      team = teams.find((t) => t.memberIds.includes(p._id)) ?? null;
+    }
     if (!team) return null;
-    
+
     const members = await Promise.all(
       team.memberIds.map(async (pid) => {
         const member = await ctx.db.get(pid);
-        return { id: pid, name: member?.name ?? "—", email: member?.email ?? "—" };
+        return {
+          id: pid,
+          name: member?.name ?? "—",
+          email: member?.email ?? "—",
+          position: member?.position ?? null,
+        };
       })
     );
-    
+
     return { ...team, members };
   },
 });
@@ -364,15 +555,12 @@ export const getMyTeam = query({
 export const listUnassignedParticipants = query({
   args: {},
   handler: async (ctx) => {
-    const idt = await ctx.auth.getUserIdentity();
-    if (!idt) throw new Error("Unauthorized");
-    const admin = await getParticipantByIdentity(ctx, idt);
-    if (!admin || admin.role !== "admin") throw new Error("Admin required");
-    
-    // Get all registrations without teamId
+    await requireAdmin(ctx);
+
+    // Get registrations without teamId (bounded — active registration window is small)
     const regs = await ctx.db.query("buildathonRegistrations")
       .filter((q) => q.eq(q.field("teamId"), undefined))
-      .collect();
+      .take(500);
     
     const results = await Promise.all(
       regs.map(async (reg) => {

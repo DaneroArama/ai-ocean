@@ -1,53 +1,16 @@
 ﻿'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 import Waves from '@/app/assets/waves_2.png'
 import EventLogoGrey from '@/app/assets/event_logo_grey.png'
 
 type TeamMember = { name: string; role?: string }
 type Team = { name: string; badge?: string; members: TeamMember[] }
-
-// Hardcoded for now — some positions are not assigned yet (omit `role`)
-const TEAM_DATA: Team[] = [
-  {
-    name: 'OnErrorResumeNext',
-    badge: 'Recent',
-    members: [
-      { name: 'Thuriya Ye Naing', role: 'Full Stack Developer' },
-      { name: 'Wint Khant Lin', role: 'Product Designer' },
-      { name: 'Shoon Lae Moe Oo', role: 'Product Owner' },
-      { name: 'Moe Thura Aung' },
-    ],
-  },
-  {
-    name: 'Aquaholics',
-    members: [
-      { name: 'Kaung Set Thar', role: 'Full Stack Developer' },
-      { name: 'Pan Myo Phyu', role: 'Business Analyst, Product Designer' },
-      { name: 'Aye Nandar Win', role: 'Business Analyst, UI Designer, UX Designer' },
-      { name: 'Ye Htet Naing', role: 'Frontend Developer, Product Manager' },
-      { name: 'Aung Khant Min', role: 'Backend Developer' },
-      { name: 'Thaw Thaw Tun', role: 'UI Designer, UX Designer' },
-    ],
-  },
-  {
-    name: 'Zero_Lag',
-    members: [
-      { name: 'Zaw Lwin Htoo', role: 'Full Stack Developer' },
-      { name: 'Min Kyi Sin Thant' },
-      { name: 'Yan Lin Naing' },
-      { name: 'Kyaw Bhone Htet' },
-      { name: 'Bhone Myat Htut' },
-      { name: 'Zin Min Htet' },
-      { name: 'Min Thant Tun' },
-    ],
-  },
-]
-
-const ALL_TEAMS = [...TEAM_DATA]
 
 const ROLE_ABBREV: Record<string, string> = {
   'Full Stack Developer': 'FSD',
@@ -64,10 +27,13 @@ const ROLE_ABBREV: Record<string, string> = {
   'Business Analyst': 'BA',
 }
 
-function abbreviateRoles(role: string): string {
+function abbreviateRoles(role: string, dbAbbrevs?: Record<string, string>): string {
   return role
     .split(',')
-    .map(part => ROLE_ABBREV[part.trim()] ?? part.trim())
+    .map(part => {
+      const key = part.trim()
+      return dbAbbrevs?.[key] ?? ROLE_ABBREV[key] ?? key
+    })
     .join(', ')
 }
 
@@ -87,6 +53,29 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
   const closingRef = useRef(false)
   const [activeRole, setActiveRole] = useState<string | null>(null)
 
+  const publicTeams = useQuery(api.teams.listPublicTeams)
+  const activePositions = useQuery(api.teamPositions.listActivePositions)
+
+  // DB-backed abbrevs, keyed by position name; falls back to ROLE_ABBREV above.
+  const dbAbbrevs = useMemo(() => {
+    if (!activePositions) return undefined
+    const map: Record<string, string> = {}
+    for (const p of activePositions) {
+      if (p.abbrev) map[p.name] = p.abbrev
+    }
+    return map
+  }, [activePositions])
+
+  const teams: Team[] =
+    publicTeams?.map(team => ({
+      name: team.name,
+      badge: team.badge ?? undefined,
+      members: team.members.map(m => ({
+        name: m.name,
+        role: m.position ?? undefined,
+      })),
+    })) ?? []
+
   useEffect(() => {
     const modal = modalRef.current
     const content = contentRef.current
@@ -100,9 +89,17 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
     tl.to(modal, { opacity: 1, duration: 0.3 })
       .to(content, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.2')
 
-    // Animate team cards
+    return () => {
+      tl.kill()
+    }
+  }, [])
+
+  // Animate team cards once the roster arrives from Convex
+  useEffect(() => {
+    if (!publicTeams || publicTeams.length === 0) return
     const cards = gsap.utils.toArray<HTMLElement>('[data-team-card]')
-    gsap.fromTo(
+    if (cards.length === 0) return
+    const tween = gsap.fromTo(
       cards,
       { opacity: 0, y: 30, scale: 0.95 },
       {
@@ -115,11 +112,10 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
         delay: 0.3,
       }
     )
-
     return () => {
-      tl.kill()
+      tween.kill()
     }
-  }, [])
+  }, [publicTeams])
 
   const handleClose = () => {
     if (closingRef.current) return
@@ -234,8 +230,27 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
               </div>
 
               <div className="rounded-2xl bg-white bg-[radial-gradient(#e9edf0_1px,transparent_1px)] bg-size-[22px_22px] px-4 py-8 md:px-5">
+                {publicTeams === undefined ? (
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Loading teams">
+                    {[0, 1, 2].map(i => (
+                      <div
+                        key={i}
+                        className="rounded-2xl border-2 border-dashed border-ocean-deep/30 bg-white p-5"
+                      >
+                        <div className="mb-4 h-5 w-2/3 animate-pulse rounded bg-ocean-deep/10" />
+                        {[0, 1, 2, 3].map(j => (
+                          <div key={j} className="my-2.5 h-4 animate-pulse rounded bg-ocean-deep/10" style={{ width: `${70 + ((i + j) % 3) * 10}%` }} />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : teams.length === 0 ? (
+                  <p className="py-10 text-center font-quicksand text-[#00558c]/70">
+                    Teams will be announced soon — check back later!
+                  </p>
+                ) : (
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {ALL_TEAMS.map((team, index) => (
+                  {teams.map((team, index) => (
                     <div
                       key={`team-${index}`}
                       data-team-card
@@ -277,7 +292,7 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                                   className="rounded-full bg-[#a4ecff] px-2.5 py-0.5 text-[11px] font-bold text-[#00558c] transition-colors hover:bg-[#8ee4ff]"
                                   aria-label={`${member.name}: ${member.role}`}
                                 >
-                                  {abbreviateRoles(member.role)}
+                                  {abbreviateRoles(member.role, dbAbbrevs)}
                                 </button>
                                 <span
                                   role="tooltip"
@@ -299,6 +314,7 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                     </div>
                   ))}
                 </div>
+                )}
 
                 {/* Bottom CTA */}
               <div className="relative mt-8 overflow-hidden rounded-[28px] bg-[#1CBEFE] p-6 text-left text-white shadow-lg md:p-8">

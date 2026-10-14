@@ -208,7 +208,7 @@ export const claimGuestDraft = mutation({
           }
         : {
             name: participant.name ?? "",
-            email: participant.email,
+            email: participant.email ?? "",
             phone: "",
           },
       roleInfo: draft.roleInfo,

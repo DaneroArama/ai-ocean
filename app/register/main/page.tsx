@@ -151,7 +151,7 @@ function RegistrationInner() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (participant && !basic.email) {
-      setBasic((b) => ({ ...b, email: participant.email, name: participant.name ?? "" }));
+      setBasic((b) => ({ ...b, email: participant.email ?? b.email, name: participant.name ?? "" }));
     }
   }, [participant, basic.email]);
 

@@ -1,12 +1,154 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
+const CATEGORY_LABEL: Record<string, string> = {
+  engineering: "Engineering",
+  design: "Design",
+  product: "Product",
+  business: "Business",
+  team: "Team",
+};
+
+/** Multi-select dropdown for team roles. Selected names join with ", ". */
+function RolePicker({
+  positions,
+  selected,
+  onChange,
+}: {
+  positions: { name: string; category: string }[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [custom, setCustom] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [open]);
+
+  const toggle = (name: string) => {
+    onChange(
+      selected.includes(name)
+        ? selected.filter((n) => n !== name)
+        : [...selected, name]
+    );
+  };
+
+  const addCustom = () => {
+    const value = custom.trim();
+    if (!value) return;
+    if (!selected.includes(value)) onChange([...selected, value]);
+    setCustom("");
+  };
+
+  const grouped = positions.reduce<Record<string, { name: string }[]>>((acc, p) => {
+    (acc[p.category] ??= []).push(p);
+    return acc;
+  }, {});
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full rounded-lg border bg-white px-3 py-2 text-left text-sm"
+      >
+        {selected.length === 0 ? (
+          <span className="text-gray-400">Select roles…</span>
+        ) : (
+          <span className="flex flex-wrap gap-1">
+            {selected.map((n) => (
+              <span
+                key={n}
+                className="rounded-full bg-ocean-surface px-2 py-0.5 text-[11px] font-semibold text-ocean-deep"
+              >
+                {n}
+              </span>
+            ))}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div className="absolute left-0 right-0 z-20 mt-1 max-h-64 overflow-y-auto rounded-lg border bg-white p-2 shadow-lg">
+          {positions.length === 0 && (
+            <p className="px-1 py-1 text-xs text-gray-500">
+              No roles seeded yet — run <code>seedTeamPositions:seed</code>.
+            </p>
+          )}
+          {Object.entries(grouped).map(([cat, list]) => (
+            <div key={cat} className="mb-2">
+              <p className="px-1 py-1 text-[10px] font-bold uppercase tracking-wide text-gray-400">
+                {CATEGORY_LABEL[cat] ?? cat}
+              </p>
+              {list.map((p) => (
+                <label
+                  key={p.name}
+                  className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(p.name)}
+                    onChange={() => toggle(p.name)}
+                    className="rounded"
+                  />
+                  {p.name}
+                </label>
+              ))}
+            </div>
+          ))}
+          <div className="mt-1 flex gap-1 border-t pt-2">
+            <input
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addCustom();
+                }
+              }}
+              placeholder="Custom role…"
+              className="min-w-0 flex-1 rounded border px-2 py-1 text-xs"
+            />
+            <button
+              type="button"
+              onClick={addCustom}
+              className="rounded bg-gray-100 px-2 py-1 text-xs"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminTeamsPage() {
   const teams = useQuery(api.teams.listTeams);
+  const positions = useQuery(api.teamPositions.listPositions);
   const unassigned = useQuery(api.teams.listUnassignedParticipants);
   const autoCandidates = useQuery(api.teams.countAutoTeamCandidates);
   const createTeam = useMutation(api.teams.createTeam);
@@ -14,31 +156,65 @@ export default function AdminTeamsPage() {
   const deleteTeam = useMutation(api.teams.deleteTeam);
   const addMember = useMutation(api.teams.addMemberToTeam);
   const removeMember = useMutation(api.teams.removeMemberFromTeam);
+  const addManualMember = useMutation(api.teams.addManualMember);
+  const updateTeamMember = useMutation(api.teams.updateTeamMember);
   const autoCreateTeams = useMutation(api.teams.autoCreateTeams);
 
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Id<"teams"> | null>(null);
   const [teamName, setTeamName] = useState("");
   const [teamDesc, setTeamDesc] = useState("");
+  const [teamCode, setTeamCode] = useState("");
+  const [teamBadge, setTeamBadge] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Id<"teams"> | null>(null);
   const [showAutoForm, setShowAutoForm] = useState(false);
   const [teamSize, setTeamSize] = useState(5);
   const [autoBusy, setAutoBusy] = useState(false);
 
+  // Manual member add form (per selected team)
+  const [memberFormTeam, setMemberFormTeam] = useState<Id<"teams"> | null>(null);
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [newMemberPositions, setNewMemberPositions] = useState<string[]>([]);
+  // Inline member edit
+  const [editingMember, setEditingMember] = useState<Id<"participants"> | null>(null);
+  const [editMemberName, setEditMemberName] = useState("");
+  const [editMemberPositions, setEditMemberPositions] = useState<string[]>([]);
+
+  const resetMemberForm = () => {
+    setMemberFormTeam(null);
+    setNewMemberName("");
+    setNewMemberEmail("");
+    setNewMemberPositions([]);
+  };
+
   const handleCreate = async () => {
     try {
       if (editingTeam) {
-        await updateTeam({ teamId: editingTeam, name: teamName.trim() || undefined, description: teamDesc || undefined });
+        await updateTeam({
+          teamId: editingTeam,
+          name: teamName.trim() || undefined,
+          description: teamDesc || undefined,
+          code: teamCode.trim() || "",
+          badge: teamBadge.trim() || "",
+        });
         setMsg("✅ Team updated");
       } else {
-        await createTeam({ name: teamName.trim() || undefined, description: teamDesc || undefined });
+        await createTeam({
+          name: teamName.trim() || undefined,
+          description: teamDesc || undefined,
+          code: teamCode.trim() || undefined,
+          badge: teamBadge.trim() || undefined,
+        });
         setMsg("✅ Team created" + (teamName.trim() ? "" : " — give it a name later"));
       }
       setShowForm(false);
       setEditingTeam(null);
       setTeamName("");
       setTeamDesc("");
+      setTeamCode("");
+      setTeamBadge("");
     } catch (e: unknown) {
       setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
     }
@@ -85,10 +261,45 @@ export default function AdminTeamsPage() {
     }
   };
 
-  const openEdit = (team: { _id: Id<"teams">; name?: string; description?: string }) => {
+  const handleAddManualMember = async (teamId: Id<"teams">) => {
+    if (!newMemberName.trim()) {
+      setMsg("❌ Name is required");
+      return;
+    }
+    try {
+      await addManualMember({
+        teamId,
+        name: newMemberName.trim(),
+        email: newMemberEmail.trim() || undefined,
+        position: newMemberPositions.join(", ") || undefined,
+      });
+      setMsg("✅ Member added");
+      resetMemberForm();
+    } catch (e: unknown) {
+      setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
+    }
+  };
+
+  const handleSaveMemberEdit = async (participantId: Id<"participants">) => {
+    try {
+      await updateTeamMember({
+        participantId,
+        name: editMemberName.trim() || undefined,
+        position: editMemberPositions.join(", ") || undefined,
+      });
+      setMsg("✅ Member updated");
+      setEditingMember(null);
+    } catch (e: unknown) {
+      setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
+    }
+  };
+
+  const openEdit = (team: { _id: Id<"teams">; name?: string; description?: string; code?: string; badge?: string }) => {
     setEditingTeam(team._id);
     setTeamName(team.name ?? "");
     setTeamDesc(team.description ?? "");
+    setTeamCode(team.code ?? "");
+    setTeamBadge(team.badge ?? "");
     setShowForm(true);
   };
 
@@ -106,7 +317,7 @@ export default function AdminTeamsPage() {
           >
             ⚡ Auto-Create from Registrations
           </button>
-          <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
+          <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setTeamCode(""); setTeamBadge(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
             + New Team
           </button>
         </div>
@@ -130,9 +341,17 @@ export default function AdminTeamsPage() {
               <div key={team._id} className={`rounded-2xl border bg-white p-5 shadow-sm transition ${selectedTeam === team._id ? "ring-2 ring-ocean-primary" : ""}`}>
                 <div className="flex items-start justify-between">
                   <div onClick={() => setSelectedTeam(selectedTeam === team._id ? null : team._id)} className="cursor-pointer flex-1">
-                    <h3 className={`font-bold text-lg ${team.name ? "text-ocean-deep" : "italic text-gray-400"}`}>
-                      {team.name || "Unnamed team"}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      {team.code && (
+                        <span className="rounded-full bg-ocean-deep px-2 py-0.5 text-xs font-bold text-white">{team.code}</span>
+                      )}
+                      <h3 className={`font-bold text-lg ${team.name ? "text-ocean-deep" : "italic text-gray-400"}`}>
+                        {team.name || "Unnamed team"}
+                      </h3>
+                      {team.badge && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">{team.badge}</span>
+                      )}
+                    </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {team.description && <p className="text-sm text-gray-500">{team.description}</p>}
                       {team.track && (
@@ -144,10 +363,51 @@ export default function AdminTeamsPage() {
                     <p className="text-xs text-gray-400 mt-1">{team.members.length} member(s)</p>
                   </div>
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => (memberFormTeam === team._id ? resetMemberForm() : setMemberFormTeam(team._id))}
+                      className="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                    >
+                      + Add member
+                    </button>
                     <button onClick={() => openEdit(team)} className="rounded border px-2 py-1 text-xs font-semibold hover:bg-gray-50">Edit</button>
                     <button onClick={() => handleDelete(team._id)} className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-100">Delete</button>
                   </div>
                 </div>
+
+                {/* Manual member add form */}
+                {memberFormTeam === team._id && (
+                  <div className="mt-4 rounded-xl border border-dashed border-ocean-primary/40 bg-ocean-foam/40 p-3">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <input
+                        placeholder="Name *"
+                        value={newMemberName}
+                        onChange={(e) => setNewMemberName(e.target.value)}
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      />
+                      <RolePicker
+                        positions={positions ?? []}
+                        selected={newMemberPositions}
+                        onChange={setNewMemberPositions}
+                      />
+                      <input
+                        placeholder="Email (optional)"
+                        type="email"
+                        value={newMemberEmail}
+                        onChange={(e) => setNewMemberEmail(e.target.value)}
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      />
+                    </div>
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button onClick={resetMemberForm} className="rounded-lg border px-3 py-1.5 text-xs">Cancel</button>
+                      <button
+                        onClick={() => handleAddManualMember(team._id)}
+                        className="rounded-lg bg-ocean-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-ocean-deep"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Members */}
                 {team.members.length > 0 && (
@@ -157,10 +417,60 @@ export default function AdminTeamsPage() {
                         <div className="w-8 h-8 rounded-full bg-ocean-primary text-white flex items-center justify-center text-sm font-bold">
                           {member.name?.[0] ?? "?"}
                         </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold">{member.name}</div>
-                          <div className="text-xs text-gray-500">{member.email}</div>
-                        </div>
+                        {editingMember === member.id ? (
+                          <div className="flex flex-1 flex-wrap items-center gap-2">
+                            <input
+                              value={editMemberName}
+                              onChange={(e) => setEditMemberName(e.target.value)}
+                              className="w-40 rounded border px-2 py-1 text-sm"
+                              placeholder="Name"
+                            />
+                            <div className="min-w-40 flex-1">
+                              <RolePicker
+                                positions={positions ?? []}
+                                selected={editMemberPositions}
+                                onChange={setEditMemberPositions}
+                              />
+                            </div>
+                            <button
+                              onClick={() => handleSaveMemberEdit(member.id)}
+                              className="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingMember(null)}
+                              className="rounded border px-2 py-1 text-xs"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex-1">
+                              <div className="text-sm font-semibold">{member.name}</div>
+                              <div className="text-xs text-gray-500">{member.email}</div>
+                            </div>
+                            <span className="rounded-full bg-ocean-surface px-2 py-0.5 text-xs font-semibold text-ocean-deep">
+                              {member.position || "—"}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingMember(member.id);
+                                setEditMemberName(member.name ?? "");
+                                setEditMemberPositions(
+                                  (member.position ?? "")
+                                    .split(",")
+                                    .map((s) => s.trim())
+                                    .filter(Boolean)
+                                );
+                              }}
+                              className="rounded border px-2 py-1 text-xs font-semibold hover:bg-gray-100"
+                            >
+                              Edit
+                            </button>
+                          </>
+                        )}
                         <button onClick={() => handleRemoveMember(team._id, member.id)} className="rounded bg-red-50 px-2 py-1 text-xs text-red-600 hover:bg-red-100">Remove</button>
                       </div>
                     ))}
@@ -219,6 +529,20 @@ export default function AdminTeamsPage() {
                 onChange={(e) => setTeamName(e.target.value)}
                 className="w-full rounded-lg border px-3 py-2 text-sm"
               />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  placeholder="Code (e.g. AI01)"
+                  value={teamCode}
+                  onChange={(e) => setTeamCode(e.target.value)}
+                  className="rounded-lg border px-3 py-2 text-sm"
+                />
+                <input
+                  placeholder="Badge (e.g. Recent)"
+                  value={teamBadge}
+                  onChange={(e) => setTeamBadge(e.target.value)}
+                  className="rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
               <textarea
                 placeholder="Description (optional)"
                 value={teamDesc}

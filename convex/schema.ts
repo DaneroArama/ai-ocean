@@ -22,7 +22,9 @@ export default defineSchema({
    */
   participants: defineTable({
     // OAuth/Auth fields (from Convex Auth)
-    email: v.string(),
+    // Optional: admin-created roster members may not have an account/email yet.
+    // They auto-link when that email later signs up (see ensureCurrentParticipant).
+    email: v.optional(v.string()),
     emailVerified: v.optional(v.number()), // timestamp
     name: v.optional(v.string()), // Full name from OAuth provider
     image: v.optional(v.string()), // Profile picture URL from OAuth provider
@@ -30,6 +32,8 @@ export default defineSchema({
     // App-specific fields
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
+    // Buildathon team position(s), e.g. "Business Analyst, Product Designer"
+    position: v.optional(v.string()),
     preferredLanguage: v.union(v.literal("en"), v.literal("my")),
     role: v.union(v.literal("participant"), v.literal("admin")),
     
@@ -209,6 +213,10 @@ export default defineSchema({
   teams: defineTable({
     // Optional: auto-generated teams start unnamed and are named later by an admin
     name: v.optional(v.string()),
+    // Roster code, e.g. "AI01" (seeded from Teams.md)
+    code: v.optional(v.string()),
+    // Small highlight pill shown on the public team modal, e.g. "Recent"
+    badge: v.optional(v.string()),
     description: v.optional(v.string()),
     track: v.optional(v.union(
       v.literal("in_person"),
@@ -219,7 +227,8 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_created_by", ["createdBy"]),
+    .index("by_created_by", ["createdBy"])
+    .index("by_code", ["code"]),
 
   /**
    * Buildathon Roles table — extensible role ecosystem
@@ -249,6 +258,30 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_active", ["isActive"])
     .index("by_priority", ["priority"]),
+
+  /**
+   * Team Positions — lightweight catalog for the admin team-member dropdown.
+   * Separate from buildathonRoles (which powers the role-discovery assessment).
+   * Members store a comma-joined list of these names on `participants.position`.
+   */
+  teamPositions: defineTable({
+    name: v.string(), // "Full Stack Developer"
+    abbrev: v.optional(v.string()), // "FSD" — shown on the public team modal pill
+    category: v.union(
+      v.literal("engineering"),
+      v.literal("design"),
+      v.literal("product"),
+      v.literal("business"),
+      v.literal("team")
+    ),
+    priority: v.number(), // dropdown ordering (lower first)
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_active", ["isActive"])
+    .index("by_priority", ["priority"])
+    .index("by_name", ["name"]),
 
   /**
    * Assessment Versions — v1/v2 reproducibility

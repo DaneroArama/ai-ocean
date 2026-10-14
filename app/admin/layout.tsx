@@ -17,6 +17,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link href="/admin" className="rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-100">
                 Overview
               </Link>
+              <Link href="/admin/teams" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
+                Teams
+              </Link>
               <Link href="/admin/roles" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
                 Roles
               </Link>
