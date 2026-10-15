@@ -249,7 +249,7 @@ export const ensureCurrentParticipant = mutation({
 });
 
 /**
- * Dev helper — promote current participant to admin (admin can promote others)
+ * Only existing admins may promote participants. Local admins are seeded internally.
  */
 export const promoteToAdmin = mutation({
   args: { email: v.optional(v.string()) },
@@ -284,12 +284,8 @@ export const promoteToAdmin = mutation({
     const target = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", targetEmail)).first();
     if (!target) throw new Error("Participant not found for " + targetEmail);
 
-    const isSelf = targetEmail.toLowerCase() === callerEmail.toLowerCase();
-    if (!isSelf) {
-      const anyAdmin = await ctx.db.query("participants").withIndex("by_role", (q) => q.eq("role", "admin")).first();
-      const caller = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", callerEmail)).first();
-      if (anyAdmin && caller?.role !== "admin") throw new Error("Admin required to promote others");
-    }
+    const caller = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", callerEmail)).first();
+    if (caller?.role !== "admin") throw new Error("Admin required to promote participants");
 
     await ctx.db.patch(target._id, { role: "admin" });
     return { success: true, email: targetEmail };
