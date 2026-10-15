@@ -210,9 +210,11 @@ export function ScheduleSection() {
               </div>
             ) : (
               <div className="space-y-4">
-                {schedule.scheduleItems.map((item, index) => (
-                  <div key={index} data-detail-row className="grid gap-5 rounded-2xl border-2 border-dashed border-[#ddd] bg-white p-4 ring-4 ring-white shadow-[0_0_8px_#00000008] transition-shadow hover:shadow-[0_0_14px_#00000018] md:grid-cols-[minmax(120px,17%)_1fr]">
-                    <p className="text-base font-bold">{item.time}</p>
+                {schedule.scheduleItems.map((item, index) => {
+                  const highlighted = item.events.some(ev => ev.highlight)
+                  return (
+                  <div key={index} data-detail-row className={`grid gap-5 rounded-2xl border-2 border-dashed ${highlighted ? 'border-amber-400 bg-amber-100' : 'border-[#ddd] bg-white'} p-4 ring-4 ring-white shadow-[0_0_8px_#00000008] transition-shadow hover:shadow-[0_0_14px_#00000018] md:grid-cols-[minmax(120px,17%)_1fr]`}>
+                    <p className={`text-base font-bold ${highlighted ? 'text-amber-500' : ''} `}>{item.time}</p>
                     <div className="space-y-4">
                       {item.events.map(event => (
                         <div key={event.title} className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -225,11 +227,15 @@ export function ScheduleSection() {
                               <AnimatedTooltip items={event.people} variant="agenda" />
                             </div>
                           )}
+                          {event.highlight && 
+                            <Image src={EventLogoYellow} alt="" className="size-6 shrink-0 object-contain" />
+                          }
                         </div>
                       ))}
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
             {schedule.registrationLink && (

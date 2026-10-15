@@ -64,12 +64,11 @@ export const AnimatedTooltip = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ type: "spring", stiffness: 300, damping: 24 }}
-              className="pointer-events-none absolute bottom-[calc(100%+24px)] left-2 z-50 w-max max-w-[min(340px,calc(100vw-96px))] rounded-[24px] bg-linear-to-br from-[#ffb710] to-[#ffa600] px-4 py-3 text-left shadow-[0_10px_22px_#00000020] md:left-auto md:right-[-12px]"
+              className="pointer-events-none absolute bottom-[calc(100%+20px)] left-2 z-50 w-max max-w-[min(340px,calc(100vw-96px))] rounded-[24px] bg-linear-to-br from-[#ffb710] to-[#ffa600] px-4 py-3 text-left shadow-[0_10px_22px_#00000020] md:left-auto md:right-[-12px]"
             >
               <div className="text-xl font-bold leading-tight text-white">{activePerson.name}</div>
               <div className="mt-1 text-sm font-semibold leading-snug text-white">{activePerson.designation}</div>
               {activePerson.company && <div className="mt-3 text-sm font-semibold leading-snug text-[#514b3d]">{activePerson.company}</div>}
-              <span aria-hidden="true" className="absolute -bottom-7 left-3 size-6 rounded-full bg-[#ffae0b]" />
             </motion.div>
           )}
         </AnimatePresence>
