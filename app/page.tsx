@@ -8,6 +8,7 @@ import {
   EventCTASection,
   AboutSection,
   MerchandiseSection,
+  EventMerchPopup,
   CommunityPartnersSection,
   ScheduleSection,
   SpeakersSection,
@@ -67,13 +68,16 @@ export default function Home() {
       <EventTeamSection/>
 
       {/* Merchandise Section - Section 9 */}
-      <MerchandiseSection/>
+      <div id="merch"><MerchandiseSection/></div>
 
       {/* Community Partners - Section 10 */}
       <CommunityPartnersSection/>
 
       {/* About UXMM */}
       <AboutSection/>
+
+      {/* Event Merch promo popup — appears 15s after load */}
+      <EventMerchPopup/>
     </PublicLayout>
   )
 }
