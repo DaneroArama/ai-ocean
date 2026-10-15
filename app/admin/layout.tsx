@@ -20,6 +20,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link href="/admin/teams" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
                 Teams
               </Link>
+              <Link href="/admin/attendance" className="rounded-lg px-3 py-1.5 text-sm font-semibold text-ocean-primary hover:bg-ocean-foam">
+                Attendance
+              </Link>
               <Link href="/admin/roles" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
                 Roles
               </Link>
@@ -41,6 +44,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             ← Back to site
           </Link>
         </header>
+        <nav className="flex gap-3 overflow-x-auto border-b bg-white px-4 py-3 text-xs md:hidden" aria-label="Admin sections">
+          <Link href="/admin">Overview</Link><Link href="/admin/attendance" className="font-bold text-ocean-primary">Attendance</Link><Link href="/admin/teams">Teams</Link><Link href="/admin/registrations">Registrations</Link><Link href="/admin/questions">Questions</Link>
+        </nav>
         <main className="mx-auto max-w-7xl p-4 md:p-6">{children}</main>
       </div>
     </AdminAuthGuard>

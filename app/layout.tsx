@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syncopate, Quicksand, Syne, DynaPuff, Dela_Gothic_One } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex/ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
@@ -8,42 +8,44 @@ import enDict from "@/dictionaries/en.json";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 
 // Syncopate for headings - bold, impactful comic-style font
-const syncopate = Syncopate({
-  weight: ["400", "700"],
+const syncopate = localFont({
+  src: [
+    { path: "../public/fonts/Syncopate-Regular.ttf", weight: "400" },
+    { path: "../public/fonts/Syncopate-Bold.ttf", weight: "700" },
+  ],
   variable: "--font-syncopate",
-  subsets: ["latin"],
   display: "swap",
 });
 
 // Quicksand for body text - clean, friendly, readable
-const quicksand = Quicksand({
-  weight: ["300", "400", "500", "600", "700"],
+const quicksand = localFont({
+  src: "../public/fonts/Quicksand.ttf",
+  weight: "300 700",
   variable: "--font-quicksand",
-  subsets: ["latin"],
   display: "swap",
 });
 
 // Syne for alternative headings/display text
-const syne = Syne({
-  weight: ["400", "500", "600", "700", "800"],
+const syne = localFont({
+  src: "../public/fonts/Syne.ttf",
+  weight: "400 800",
   variable: "--font-syne",
-  subsets: ["latin"],
   display: "swap",
 });
 
 // DynaPuff for playful display text
-const dynapuff = DynaPuff({
-  weight: ["400", "500", "600", "700"],
+const dynapuff = localFont({
+  src: "../public/fonts/DynaPuff.ttf",
+  weight: "400 700",
   variable: "--font-dynapuff",
-  subsets: ["latin"],
   display: "swap",
 });
 
 // Dela Gothic One for chunky, heavy display text
-const delaGothicOne = Dela_Gothic_One({
+const delaGothicOne = localFont({
+  src: "../public/fonts/DelaGothicOne-Regular.ttf",
   weight: "400",
   variable: "--font-dela-gothic-one",
-  subsets: ["latin"],
   display: "swap",
 });
 
@@ -100,7 +102,11 @@ export const metadata: Metadata = {
       { url: "/favicons/favicon.ico", sizes: "any" },
     ],
     apple: [
-      { url: "/favicons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/favicons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
     other: [
       {

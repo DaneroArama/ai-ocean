@@ -6,12 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:backend": "node scripts/start-local-backend.mjs",
+    "seed:attendance:local": "node scripts/sync-local-backend.mjs --seed",
+    "test:attendance": "vitest run lib/attendance.test.ts lib/attendance-workbook.test.ts lib/certificate.test.ts --environment node --maxWorkers=1",
+    "test:attendance:local": "node scripts/test-local-attendance.mjs",
+    "test:attendance:ui": "node scripts/test-attendance-ui.mjs"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
     "@convex-dev/auth": "^0.0.95",
     "@gsap/react": "^2.1.2",
+    "@pdf-lib/fontkit": "^1.1.1",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "convex": "^1.44.0",
@@ -20,10 +26,12 @@
     "lenis": "^1.3.26",
     "motion": "^13.4.0",
     "next": "^16.3.6",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.8",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

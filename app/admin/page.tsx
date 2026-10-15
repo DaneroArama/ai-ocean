@@ -66,6 +66,9 @@ export default function AdminOverviewPage() {
         <div className="rounded-2xl border bg-white p-5">
           <h3 className="font-semibold text-gray-800">Quick actions</h3>
           <div className="mt-4 grid gap-2">
+            <Link href="/admin/attendance" className="rounded-xl border border-ocean-surface bg-ocean-foam px-4 py-2.5 text-center text-ocean-deep text-sm font-semibold hover:bg-ocean-surface">
+              Attendance &amp; Certificate Release
+            </Link>
             <Link href="/admin/roles" className="rounded-xl border bg-white px-4 py-2.5 text-center text-ocean-medium text-sm font-semibold hover:bg-gray-50">
               Manage Roles (Product/Design/Eng …)
             </Link>

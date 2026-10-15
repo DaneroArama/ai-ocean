@@ -15,6 +15,25 @@ import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
   ...authTables,
+  attendanceRecords: defineTable({
+    participantId: v.id("participants"), sessionId: v.string(),
+    status: v.union(v.literal("present"), v.literal("absent"), v.literal("pending"), v.literal("unrecorded")),
+    note: v.string(), updatedAt: v.number(), updatedBy: v.id("participants"),
+  }).index("by_participantId_and_sessionId", ["participantId", "sessionId"])
+    .index("by_sessionId", ["sessionId"]),
+  attendanceSettings: defineTable({
+    key: v.string(), revision: v.number(), finalizedAt: v.optional(v.number()),
+    releasedAt: v.optional(v.number()), demoEnabled: v.optional(v.boolean()),
+  }).index("by_key", ["key"]),
+  attendanceAudit: defineTable({
+    actorId: v.id("participants"), actorName: v.string(), action: v.string(),
+    participantId: v.optional(v.id("participants")), sessionId: v.optional(v.string()),
+    before: v.optional(v.string()), after: v.optional(v.string()), reason: v.string(), createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"]),
+  certificateIssues: defineTable({
+    participantId: v.id("participants"), name: v.string(), serial: v.string(),
+    issuedAt: v.number(), demo: v.boolean(),
+  }).index("by_participantId_and_demo", ["participantId", "demo"]),
   /**
    * Participants table
    * Stores user accounts with OAuth/Auth fields and app-specific profile data

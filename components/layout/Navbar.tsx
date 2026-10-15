@@ -108,7 +108,8 @@ export function Navbar() {
               </div>
 
               {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center space-x-4 xl:space-x-8">
+              <div className="hidden xl:flex items-center space-x-4 xl:space-x-8">
+                <Link href="/attendance" className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white hover:text-ocean-foam transition-colors">Attendance</Link>
                 <button
                   onClick={() => scrollTo('agenda')}
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
@@ -172,7 +173,7 @@ export function Navbar() {
               </div>
 
               {/* Mobile Menu Button */}
-              <div className="lg:hidden">
+              <div className="xl:hidden">
                 <button
                   onClick={toggleMobileMenu}
                   className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
@@ -196,8 +197,9 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-ocean-primary/95 backdrop-blur-sm border-t border-white/10 animate-slide-in-top">
+          <div className="xl:hidden bg-ocean-primary/95 backdrop-blur-sm border-t border-white/10 animate-slide-in-top">
             <div className="px-4 py-4 space-y-3">
+              <Link href="/attendance" onClick={closeMobileMenu} className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors">Attendance &amp; Certificates</Link>
               <button
                 onClick={() => scrollTo('agenda')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"

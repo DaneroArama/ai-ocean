@@ -51,3 +51,9 @@ yarn-error.log*
 next-env.d.ts
 
 jwt_private_key.pem
+
+# Local Convex database and credentials
+.convex/
+
+# Private database exports
+/backups/
