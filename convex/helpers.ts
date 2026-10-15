@@ -1,6 +1,10 @@
 import { QueryCtx, MutationCtx } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 
+/** Shared rejection message for emails that are not on the event roster. */
+export const NOT_ON_ROSTER =
+  "This email is not on the participant list for this event. Contact the event team if you think this is a mistake.";
+
 /** Minimal identity shape from @convex-dev/auth */
 export interface AuthIdentity {
   email?: string;

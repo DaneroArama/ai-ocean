@@ -4,6 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import {
+  readRosterFile,
+  exportRosterTemplate,
+  type RosterRow,
+} from "@/lib/roster-workbook";
 
 const CATEGORY_LABEL: Record<string, string> = {
   engineering: "Engineering",
@@ -159,6 +164,18 @@ export default function AdminTeamsPage() {
   const addManualMember = useMutation(api.teams.addManualMember);
   const updateTeamMember = useMutation(api.teams.updateTeamMember);
   const autoCreateTeams = useMutation(api.teams.autoCreateTeams);
+  const importRoster = useMutation(api.roster.importRoster);
+
+  // Roster import
+  const [showImportForm, setShowImportForm] = useState(false);
+  const [rosterRows, setRosterRows] = useState<RosterRow[] | null>(null);
+  const [rosterFilename, setRosterFilename] = useState("");
+  const [rosterError, setRosterError] = useState<string | null>(null);
+  const [rosterBusy, setRosterBusy] = useState(false);
+  const rosterPreview = useQuery(
+    api.roster.previewRosterImport,
+    rosterRows && rosterRows.length ? { rows: rosterRows } : "skip",
+  );
 
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Id<"teams"> | null>(null);
@@ -231,6 +248,50 @@ export default function AdminTeamsPage() {
     } finally {
       setAutoBusy(false);
     }
+  };
+
+  const handleRosterFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setRosterError(null);
+    setRosterRows(null);
+    try {
+      const rows = await readRosterFile(file);
+      setRosterRows(rows);
+      setRosterFilename(file.name);
+    } catch (err: unknown) {
+      setRosterError(err instanceof Error ? err.message : "Could not read the file.");
+    }
+  };
+
+  const handleRosterImport = async () => {
+    if (!rosterRows || !rosterPreview || rosterBusy) return;
+    setRosterBusy(true);
+    try {
+      const res = await importRoster({
+        rows: rosterRows,
+        filename: rosterFilename,
+        expectedRevision: rosterPreview.revision,
+      });
+      setMsg(
+        `✅ Roster imported: ${res.created} created · ${res.updated} updated · ${res.unchanged} unchanged · ${res.promoted} promoted · ${res.attached} team attaches`,
+      );
+      setShowImportForm(false);
+      setRosterRows(null);
+      setRosterFilename("");
+    } catch (e: unknown) {
+      setRosterError(e instanceof Error ? e.message : "Import failed.");
+    } finally {
+      setRosterBusy(false);
+    }
+  };
+
+  const closeImportForm = () => {
+    setShowImportForm(false);
+    setRosterRows(null);
+    setRosterFilename("");
+    setRosterError(null);
   };
 
   const handleDelete = async (teamId: Id<"teams">) => {
@@ -311,6 +372,15 @@ export default function AdminTeamsPage() {
           <p className="text-xs text-gray-700">Create teams and assign participants.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              closeImportForm();
+              setShowImportForm(true);
+            }}
+            className="rounded-xl border border-ocean-primary bg-white px-5 py-2.5 text-sm font-bold text-ocean-primary hover:bg-ocean-foam"
+          >
+            📄 Import Roster
+          </button>
           <button
             onClick={() => setShowAutoForm(true)}
             className="rounded-xl bg-ocean-deep px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-primary"
@@ -605,6 +675,154 @@ export default function AdminTeamsPage() {
                 className="rounded-xl bg-ocean-deep px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-primary disabled:opacity-50"
               >
                 {autoBusy ? "Creating…" : "Create Teams"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Roster Import Modal */}
+      {showImportForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="font-syncopate text-lg font-bold text-ocean-deep">
+              Import Roster
+            </h3>
+            <p className="mt-2 text-sm text-gray-600">
+              Upload an Excel/CSV list of invited people. Only people on this
+              roster can sign in. Existing people are matched by email —
+              importing never removes anyone. Admins on the roster sign in with
+              Google only.
+            </p>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <label className="cursor-pointer rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
+                Choose file…
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  className="hidden"
+                  onChange={handleRosterFile}
+                />
+              </label>
+              <button
+                onClick={() => exportRosterTemplate()}
+                className="rounded-xl border px-4 py-2.5 text-sm font-semibold text-ocean-primary hover:bg-ocean-foam"
+              >
+                Download template
+              </button>
+              {rosterFilename && (
+                <span className="text-sm text-gray-500">
+                  {rosterFilename} — {rosterRows?.length ?? 0} row(s)
+                </span>
+              )}
+            </div>
+
+            {rosterError && (
+              <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+                {rosterError}
+              </div>
+            )}
+
+            {rosterPreview && (
+              <div className="mt-4 min-h-0 flex-1 overflow-y-auto rounded-xl border">
+                {rosterPreview.errors.length > 0 && (
+                  <div className="border-b bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <p className="font-semibold">
+                      Fix these before importing ({rosterPreview.errors.length}):
+                    </p>
+                    <ul className="mt-1 list-inside list-disc">
+                      {rosterPreview.errors.slice(0, 10).map((err) => (
+                        <li key={err}>{err}</li>
+                      ))}
+                      {rosterPreview.errors.length > 10 && (
+                        <li>…and {rosterPreview.errors.length - 10} more</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+                <table className="w-full text-left text-sm">
+                  <thead className="sticky top-0 bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                    <tr>
+                      <th className="px-3 py-2">Email</th>
+                      <th className="px-3 py-2">Name</th>
+                      <th className="px-3 py-2">Role</th>
+                      <th className="px-3 py-2">Team</th>
+                      <th className="px-3 py-2">Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rosterPreview.entries.map((entry) => (
+                      <tr key={entry.email} className="border-t">
+                        <td className="px-3 py-1.5 text-ocean-deep">
+                          {entry.email}
+                        </td>
+                        <td className="px-3 py-1.5">{entry.name}</td>
+                        <td className="px-3 py-1.5">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                              entry.role === "admin"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-ocean-surface text-ocean-deep"
+                            }`}
+                          >
+                            {entry.role}
+                          </span>
+                        </td>
+                        <td className="px-3 py-1.5 text-gray-500">
+                          {entry.team ?? "—"}
+                        </td>
+                        <td className="px-3 py-1.5">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                              entry.before === "new"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : entry.before === "update"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {entry.before === "new"
+                              ? "New"
+                              : entry.before === "update"
+                                ? "Update"
+                                : "Unchanged"}
+                          </span>
+                          {entry.upgradesAdmin && (
+                            <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                              promote
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={closeImportForm}
+                className="rounded-xl border px-5 py-2 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRosterImport}
+                disabled={
+                  rosterBusy ||
+                  !rosterRows ||
+                  !rosterPreview ||
+                  rosterPreview.errors.length > 0
+                }
+                className="rounded-xl bg-ocean-deep px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-primary disabled:opacity-50"
+              >
+                {rosterBusy
+                  ? "Importing…"
+                  : rosterPreview
+                    ? `Import ${rosterPreview.entries.length} row(s)`
+                    : "Import"}
               </button>
             </div>
           </div>

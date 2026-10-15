@@ -154,7 +154,7 @@ export function Navbar() {
                 </button>
               </div>
 
-              {/* Desktop Teams + Register Buttons */}
+              {/* Desktop Teams + Sign in Buttons */}
               <div className="hidden md:flex items-center gap-2 xl:gap-3">
                 <Link
                   href="/team"
@@ -162,14 +162,12 @@ export function Navbar() {
                 >
                   Teams
                 </Link>
-                <a
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSfv4INFwIXb3IaT4tFcbpBHgXZMxHlvlQDrMXN7Eqf_iDx1pw/viewform?usp=dialog"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/auth/signin"
                   className="bg-ocean-primary/20 font-syne [text-shadow:0_1.95px_0_#00000033] px-6 py-2 text-white border border-white/30 rounded-full shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] hover:brightness-110 transition-all font-medium"
                 >
-                  Register
-                </a>
+                  Sign in
+                </Link>
               </div>
 
               {/* Mobile Menu Button */}
@@ -243,7 +241,7 @@ export function Navbar() {
                 About
               </button>
 
-              {/* Mobile Teams + Register Buttons */}
+              {/* Mobile Teams + Sign in Buttons */}
               <div className="pt-4 border-t border-white/10 space-y-3">
                 <Link
                   href="/team"
@@ -252,15 +250,13 @@ export function Navbar() {
                 >
                   Teams
                 </Link>
-                <a
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSfv4INFwIXb3IaT4tFcbpBHgXZMxHlvlQDrMXN7Eqf_iDx1pw/viewform?usp=dialog"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/auth/signin"
                   onClick={closeMobileMenu}
                   className="bg-white/20 block w-full font-syncopate px-6 py-3 text-center text-white border border-white/30 rounded-full shadow-[inset_0px_0px_20px_5px_rgba(255,255,255,10)] hover:brightness-110 transition-all font-medium"
                 >
-                  Register
-                </a>
+                  Sign in
+                </Link>
               </div>
             </div>
           </div>

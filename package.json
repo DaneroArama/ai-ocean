@@ -11,7 +11,9 @@
     "seed:attendance:local": "node scripts/sync-local-backend.mjs --seed",
     "test:attendance": "vitest run lib/attendance.test.ts lib/attendance-workbook.test.ts lib/certificate.test.ts --environment node --maxWorkers=1",
     "test:attendance:local": "node scripts/test-local-attendance.mjs",
-    "test:attendance:ui": "node scripts/test-attendance-ui.mjs"
+    "test:attendance:ui": "node scripts/test-attendance-ui.mjs",
+    "test:roster": "vitest run lib/roster-workbook.test.ts --environment node --maxWorkers=1",
+    "test:auth:local": "node scripts/test-auth-gate.mjs"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",

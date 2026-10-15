@@ -25,6 +25,9 @@ export default defineSchema({
     key: v.string(), revision: v.number(), finalizedAt: v.optional(v.number()),
     releasedAt: v.optional(v.number()), demoEnabled: v.optional(v.boolean()),
   }).index("by_key", ["key"]),
+  rosterSettings: defineTable({
+    key: v.string(), revision: v.number(),
+  }).index("by_key", ["key"]),
   attendanceAudit: defineTable({
     actorId: v.id("participants"), actorName: v.string(), action: v.string(),
     participantId: v.optional(v.id("participants")), sessionId: v.optional(v.string()),
@@ -41,8 +44,8 @@ export default defineSchema({
    */
   participants: defineTable({
     // OAuth/Auth fields (from Convex Auth)
-    // Optional: admin-created roster members may not have an account/email yet.
-    // They auto-link when that email later signs up (see ensureCurrentParticipant).
+    // The roster: every sign-in email must match a document here
+    // (see convex/auth.ts callbacks and ensureCurrentParticipant).
     email: v.optional(v.string()),
     emailVerified: v.optional(v.number()), // timestamp
     name: v.optional(v.string()), // Full name from OAuth provider

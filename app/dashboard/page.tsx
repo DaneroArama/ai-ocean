@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { useState } from "react";
 import Link from "next/link";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { ChangePasswordCard } from "@/components/dashboard/ChangePasswordCard";
 import {
   validateReceiptFile,
   uploadReceiptFile,
@@ -166,96 +167,6 @@ function DashboardInner() {
           </div>
         </div>
 
-        {/* Payment */}
-        <div className="rounded-2xl border bg-white p-6 shadow-sm md:col-span-2 lg:col-span-2 lg:row-span-2">
-          <h3 className="font-semibold text-ocean-deep">Payment</h3>
-          <div className="mt-4">
-            {!hasReceipt ? (
-              <div className="space-y-4">
-                <div className="rounded-xl bg-amber-50 p-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">⚠️</span>
-                    <div>
-                      <p className="font-bold text-amber-800">
-                        No Receipt Uploaded
-                      </p>
-                      <p className="text-sm text-amber-600">
-                        Upload your payment receipt to complete registration.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-xl bg-gray-50 p-3 text-xs text-ocean-primary space-y-1">
-                  <p className="font-bold">Payment Info:</p>
-                  <p>Number: 09260567664</p>
-                  <p>Name: Wai Yi Mon Soe</p>
-                  <p className="text-amber-600">
-                    Note: Into The AI Ocean 2026 - {participant.name}
-                  </p>
-                </div>
-                <label
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep ${uploading ? "opacity-50 pointer-events-none" : ""}`}
-                >
-                  {uploading ? "Uploading..." : "Upload Receipt"}
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={handleReceiptUpload}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
-              </div>
-            ) : paymentStatus === "verified" ? (
-              <div className="rounded-xl bg-emerald-50 p-4 flex items-center gap-3">
-                <span className="text-2xl">✅</span>
-                <div>
-                  <p className="font-bold text-emerald-800">Payment Verified</p>
-                  <p className="text-sm text-emerald-600">
-                    Your payment is approved. Ready to go!
-                  </p>
-                </div>
-              </div>
-            ) : paymentStatus === "rejected" ? (
-              <div className="space-y-4">
-                <div className="rounded-xl bg-red-50 p-4 flex items-center gap-3">
-                  <span className="text-2xl">❌</span>
-                  <div>
-                    <p className="font-bold text-red-800">Payment Rejected</p>
-                    <p className="text-sm text-red-600">
-                      Please upload a valid receipt.
-                    </p>
-                  </div>
-                </div>
-                <label
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white hover:bg-red-700 ${uploading ? "opacity-50 pointer-events-none" : ""}`}
-                >
-                  {uploading ? "Uploading..." : "Upload New Receipt"}
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={handleReceiptUpload}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
-              </div>
-            ) : (
-              <div className="rounded-xl bg-amber-50 p-4 flex items-center gap-3">
-                <span className="text-2xl">⏳</span>
-                <div>
-                  <p className="font-bold text-amber-800">
-                    Pending Verification
-                  </p>
-                  <p className="text-sm text-amber-600">
-                    Your receipt is being reviewed.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Team */}
         <div className="rounded-2xl border bg-white p-6 shadow-sm md:col-span-2 lg:col-span-2">
           <h3 className="font-semibold text-ocean-deep">Your Team</h3>
@@ -301,7 +212,7 @@ function DashboardInner() {
               </div>
             ) : (
               <div className="rounded-xl bg-gray-50 p-4 text-center text-ocean-deep text-sm">
-                Register first to be assigned to a team.
+                The event team will assign you to a team soon.
               </div>
             )}
           </div>
@@ -355,22 +266,6 @@ function DashboardInner() {
         <div className="rounded-2xl border bg-white p-6 shadow-sm md:col-span-2 lg:col-span-4">
           <h3 className="font-semibold text-ocean-deep">Quick Actions</h3>
           <div className="mt-4 flex flex-wrap gap-3">
-            {!hasRegistered && (
-              <Link
-                href="/register/main"
-                className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white hover:bg-emerald-700"
-              >
-                Register for Event
-              </Link>
-            )}
-            {hasRegistered && myReg.state !== "submitted" && (
-              <Link
-                href="/register/main"
-                className="rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep"
-              >
-                Complete Registration
-              </Link>
-            )}
             <Link
               href="/frame-generator"
               className="rounded-xl bg-ocean-primary px-6 py-3 text-sm font-bold text-white hover:bg-ocean-deep"
@@ -385,6 +280,8 @@ function DashboardInner() {
             </Link>
           </div>
         </div>
+
+        <ChangePasswordCard />
       </div>
     </div>
   );

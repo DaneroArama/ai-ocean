@@ -4,16 +4,16 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth } from "convex/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense, FormEvent } from "react";
-import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 function SignInInner() {
-  const { signIn } = useAuthActions();
+  const { signIn, signOut } = useAuthActions();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
   const search = useSearchParams();
   const next = search.get("next");
+  const reason = search.get("reason");
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +54,17 @@ function SignInInner() {
 
   useEffect(() => {
     if (isAuthenticated && participant === null) {
-      ensure({}).catch(() => {});
+      ensure({}).catch(async (err: unknown) => {
+        await signOut();
+        setError(
+          authErrorMessage(
+            err,
+            "This email is not registered for this event. Contact the event team.",
+          ),
+        );
+      });
     }
-  }, [isAuthenticated, participant, ensure]);
+  }, [isAuthenticated, participant, ensure, signOut]);
 
   useEffect(() => {
     if (isLoading || !isAuthenticated) return;
@@ -67,7 +75,7 @@ function SignInInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, isAuthenticated, participant, isAdmin, router, next]);
 
-  const handle = async (provider: "google" | "github") => {
+  const handle = async (provider: "google") => {
     setError(null);
     try {
       const query = search.toString();
@@ -112,7 +120,7 @@ function SignInInner() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-ocean-primary border-t-transparent" />
-        <p className="text-sm text-gray-500">Creating your profile…</p>
+        <p className="text-sm text-gray-500">Checking your invitation…</p>
       </div>
     );
   }
@@ -129,7 +137,17 @@ function SignInInner() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 py-12">
       <h1 className="font-syncopate text-3xl font-bold text-ocean-deep">Welcome back</h1>
-      <p className="mt-2 text-center text-sm text-gray-500">Sign in to access your dashboard — admins will land in the admin area.</p>
+      <p className="mt-2 text-center text-sm text-gray-500">
+        Invited participants only. Sign in with Google or your registered email —
+        admins sign in with Google.
+      </p>
+
+      {reason === "not-invited" && !error && (
+        <div className="mt-4 w-full rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Your account is not on the participant list for this event. Contact the
+          event team if you should have access.
+        </div>
+      )}
 
       {error && <div className="mt-4 w-full rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
@@ -178,22 +196,12 @@ function SignInInner() {
         >
           <span className="text-lg">🔵</span> Continue with Google
         </button>
-        <button
-          onClick={() => handle("github")}
-          className="flex w-full items-center justify-center gap-3 rounded-xl bg-gray-900 px-4 py-3 font-semibold text-white transition hover:bg-black"
-        >
-          <span>⚫</span> Continue with GitHub
-        </button>
       </div>
 
-      <p className="mt-6 text-sm text-gray-500">
-        New here?{" "}
-        <Link href="/register/main" className="font-semibold text-ocean-primary hover:underline">
-          Create an account &amp; register
-        </Link>
+      <p className="mt-6 text-xs text-gray-400">
+        Accounts are created by the event team from the official participant
+        list. Signing in means you agree to our terms.
       </p>
-
-      <p className="mt-6 text-xs text-gray-400">By signing in you agree to our terms. Accounts are created via email &amp; password or OAuth through Convex Auth.</p>
     </div>
   );
 }

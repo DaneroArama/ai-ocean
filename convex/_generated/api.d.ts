@@ -22,6 +22,7 @@ import type * as personalityTest from "../personalityTest.js";
 import type * as registrations from "../registrations.js";
 import type * as roleDiscoveryAnswers from "../roleDiscoveryAnswers.js";
 import type * as roleDiscoveryQuestions from "../roleDiscoveryQuestions.js";
+import type * as roster from "../roster.js";
 import type * as seedAttendanceDemo from "../seedAttendanceDemo.js";
 import type * as seedBuildathon from "../seedBuildathon.js";
 import type * as seedLocalParticipant from "../seedLocalParticipant.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   registrations: typeof registrations;
   roleDiscoveryAnswers: typeof roleDiscoveryAnswers;
   roleDiscoveryQuestions: typeof roleDiscoveryQuestions;
+  roster: typeof roster;
   seedAttendanceDemo: typeof seedAttendanceDemo;
   seedBuildathon: typeof seedBuildathon;
   seedLocalParticipant: typeof seedLocalParticipant;

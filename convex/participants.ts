@@ -6,9 +6,16 @@
  */
 
 import {v} from "convex/values";
-import {internalMutation, mutation, query} from "./_generated/server";
+import {action, internalMutation, internalQuery, mutation, query} from "./_generated/server";
 import {Doc} from "./_generated/dataModel";
-import {AuthIdentity, getEmailFromIdentity} from "./helpers";
+import {internal} from "./_generated/api";
+import {
+  getAuthSessionId,
+  invalidateSessions,
+  modifyAccountCredentials,
+  retrieveAccount,
+} from "@convex-dev/auth/server";
+import {AuthIdentity, getEmailFromIdentity, NOT_ON_ROSTER} from "./helpers";
 
 /**
  * Get the current authenticated participant's profile
@@ -174,77 +181,34 @@ export const getCurrentParticipantRole = query({
 });
 
 /**
- * Ensure participant doc exists for authenticated identity — called right after OAuth
- * First ever participant becomes admin, rest default to participant
+ * Link the authenticated identity to its roster entry.
+ * Only emails already on the roster (participants table) may proceed —
+ * the profile is never created here (see convex/auth.ts callbacks).
  */
 export const ensureCurrentParticipant = mutation({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthorized: no identity — try sign out, clear site data for localhost:3000 + https://wandering-sturgeon-242.convex.site, then sign in again (JWT keys rotated)");
+    if (!identity) throw new Error("Please sign in again.");
 
     const idt = identity as AuthIdentity;
-    let email: string | null = idt.email ?? idt.emailAddress ?? null;
-    let name: string | null = idt.name ?? null;
-    let image: string | null = idt.picture ?? idt.image ?? null;
-
-    if (!email || !name || !image) {
-      const rawSubject = idt.subject;
-      const userId = rawSubject?.split("|")[0];
-      if (userId) {
-        try {
-          const authUser = await ctx.db.get(userId as Doc<"users">["_id"]);
-          if (authUser && "email" in authUser && typeof (authUser as { email?: unknown }).email === "string") {
-            if (!email) email = (authUser as { email: string }).email;
-            if (!name && "name" in authUser && typeof (authUser as { name?: unknown }).name === "string" && (authUser as { name?: string }).name) {
-              name = (authUser as { name: string }).name;
-            }
-            if (!image && "image" in authUser && typeof (authUser as { image?: unknown }).image === "string" && (authUser as { image?: string }).image) {
-              image = (authUser as { image: string }).image;
-            }
-          } else {
-            const users = await ctx.db.query("users").collect();
-            const match = users.find((u) => u._id === userId || idt.tokenIdentifier?.includes(u._id));
-            if (match && "email" in match && typeof (match as { email?: unknown }).email === "string") {
-              if (!email) email = (match as { email: string }).email;
-              if (!name && "name" in match && typeof (match as { name?: unknown }).name === "string" && (match as { name?: string }).name) {
-                name = (match as { name: string }).name;
-              }
-            }
-          }
-        } catch (e) {
-          console.log("users lookup failed", e);
-        }
-      }
-    }
-    if (!email) throw new Error(`Unauthorized: identity has no email — check users table has email for subject`);
+    const email = (idt.email ?? idt.emailAddress ?? "").trim().toLowerCase();
+    if (!email) throw new Error(NOT_ON_ROSTER);
+    const name = idt.name ?? null;
+    const image = idt.picture ?? idt.image ?? null;
 
     const existing = await ctx.db
       .query("participants")
       .withIndex("by_email", (q) => q.eq("email", email))
       .first();
+    if (!existing) throw new Error(NOT_ON_ROSTER);
 
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        lastLoginAt: Date.now(),
-        name: name ?? existing.name,
-        image: image ?? existing.image,
-      });
-      return existing._id;
-    }
-
-    const anyAdmin = await ctx.db.query("participants").withIndex("by_role", (q) => q.eq("role", "admin")).first();
-    const role = anyAdmin ? "participant" : "admin";
-    const now = Date.now();
-    return await ctx.db.insert("participants", {
-      email: email,
-      name: name ?? undefined,
-      image: image ?? undefined,
-      preferredLanguage: "en",
-      role: role as "participant" | "admin",
-      createdAt: now,
-      lastLoginAt: now,
+    await ctx.db.patch(existing._id, {
+      lastLoginAt: Date.now(),
+      ...(name ? { name } : {}),
+      ...(image ? { image } : {}),
     });
+    return existing._id;
   },
 });
 
@@ -280,14 +244,107 @@ export const promoteToAdmin = mutation({
     }
     if (!callerEmail) throw new Error("Unauthorized: no email for caller");
 
-    const targetEmail = args.email ?? callerEmail;
+    const targetEmail = (args.email ?? callerEmail).trim().toLowerCase();
     const target = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", targetEmail)).first();
     if (!target) throw new Error("Participant not found for " + targetEmail);
 
-    const caller = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", callerEmail)).first();
+    const caller = await ctx.db.query("participants").withIndex("by_email", (q) => q.eq("email", callerEmail.trim().toLowerCase())).first();
     if (caller?.role !== "admin") throw new Error("Admin required to promote participants");
 
     await ctx.db.patch(target._id, { role: "admin" });
     return { success: true, email: targetEmail };
+  },
+});
+
+/**
+ * One-shot CLI bootstrap for a deployment with zero admins:
+ *   npx convex run participants:bootstrapAdmin '{"email":"admin@example.com"}'
+ * Promotes an existing roster email. Once any admin exists, this refuses.
+ */
+export const bootstrapAdmin = internalMutation({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const anyAdmin = await ctx.db
+      .query("participants")
+      .withIndex("by_role", (q) => q.eq("role", "admin"))
+      .first();
+    if (anyAdmin)
+      throw new Error(
+        "An admin already exists. Use promoteToAdmin from an admin account instead.",
+      );
+    const email = args.email.trim().toLowerCase();
+    const participant = await ctx.db
+      .query("participants")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+    if (!participant)
+      throw new Error(
+        "That email is not on the roster. Import the roster first.",
+      );
+    await ctx.db.patch(participant._id, { role: "admin" });
+    return { success: true, email };
+  },
+});
+
+/** Roster context for the signed-in user's password account (used by changePassword). */
+export const passwordAccountEmail = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Please sign in.");
+    const email = (await getEmailFromIdentity(ctx, identity as AuthIdentity))
+      ?.trim()
+      .toLowerCase();
+    if (!email) throw new Error(NOT_ON_ROSTER);
+    const participant = await ctx.db
+      .query("participants")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+    if (!participant) throw new Error(NOT_ON_ROSTER);
+    return { email };
+  },
+});
+
+/**
+ * Change the caller's password (participants who activated with the shared
+ * event password). Verifies the current password, sets the new one, and signs
+ * out every other session.
+ */
+export const changePassword = action({
+  args: { currentPassword: v.string(), newPassword: v.string() },
+  handler: async (ctx, args) => {
+    const { email } = await ctx.runQuery(
+      internal.participants.passwordAccountEmail,
+      {},
+    );
+    if (!args.currentPassword || !args.newPassword)
+      throw new Error("Enter your current password and a new password.");
+    if (args.newPassword.length < 8)
+      throw new Error("New password must be at least 8 characters.");
+    if (args.newPassword === args.currentPassword)
+      throw new Error(
+        "The new password must be different from your current password.",
+      );
+    const shared = process.env.ROSTER_SHARED_PASSWORD;
+    if (shared && args.newPassword === shared)
+      throw new Error(
+        "Choose a personal password, not the shared event password.",
+      );
+    const account = await retrieveAccount(ctx, {
+      provider: "password",
+      account: { id: email, secret: args.currentPassword },
+    });
+    if (account === null)
+      throw new Error("Your current password is incorrect.");
+    await modifyAccountCredentials(ctx, {
+      provider: "password",
+      account: { id: email, secret: args.newPassword },
+    });
+    const sessionId = await getAuthSessionId(ctx);
+    await invalidateSessions(ctx, {
+      userId: account.user._id,
+      except: sessionId ? [sessionId] : [],
+    });
+    return { success: true };
   },
 });
