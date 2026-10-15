@@ -109,7 +109,6 @@ export function Navbar() {
 
               {/* Desktop Navigation */}
               <div className="hidden xl:flex items-center space-x-4 xl:space-x-8">
-                <Link href="/attendance" className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white hover:text-ocean-foam transition-colors">Attendance</Link>
                 <button
                   onClick={() => scrollTo('agenda')}
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
@@ -121,18 +120,6 @@ export function Navbar() {
                   className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
                 >
                   Speakers
-                </button>
-                <button
-                  onClick={() => scrollTo('mentors')}
-                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-                >
-                  Mentors
-                </button>
-                <button
-                  onClick={() => scrollTo('event-team')}
-                  className="font-syne text-sm lg:text-base font-semibold tracking-wider text-white [text-shadow:0_1.95px_0_#00000033] hover:text-ocean-foam transition-colors"
-                >
-                  Event Team
                 </button>
                 <button
                   onClick={() => scrollTo('sponsors')}
@@ -197,7 +184,6 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="xl:hidden bg-ocean-primary/95 backdrop-blur-sm border-t border-white/10 animate-slide-in-top">
             <div className="px-4 py-4 space-y-3">
-              <Link href="/attendance" onClick={closeMobileMenu} className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors">Attendance &amp; Certificates</Link>
               <button
                 onClick={() => scrollTo('agenda')}
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
@@ -209,18 +195,6 @@ export function Navbar() {
                 className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
               >
                 Speakers
-              </button>
-              <button
-                onClick={() => scrollTo('mentors')}
-                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
-              >
-                Mentors
-              </button>
-              <button
-                onClick={() => scrollTo('event-team')}
-                className="block w-full text-left font-syncopate text-base font-medium text-white hover:text-ocean-foam py-3 transition-colors"
-              >
-                Event Team
               </button>
               <button
                 onClick={() => scrollTo('sponsors')}
