@@ -106,7 +106,7 @@ function RolePicker({
               {list.map((p) => (
                 <label
                   key={p.name}
-                  className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-gray-50"
+                  className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm text-ocean-deep hover:bg-gray-50"
                 >
                   <input
                     type="checkbox"
@@ -130,12 +130,12 @@ function RolePicker({
                 }
               }}
               placeholder="Custom role…"
-              className="min-w-0 flex-1 rounded border px-2 py-1 text-xs"
+              className="min-w-0 flex-1 rounded border px-2 py-1 text-xs text-ocean-deep"
             />
             <button
               type="button"
               onClick={addCustom}
-              className="rounded bg-gray-100 px-2 py-1 text-xs"
+              className="rounded bg-ocean-light px-2 py-1 text-xs text-white"
             >
               Add
             </button>
@@ -382,7 +382,7 @@ export default function AdminTeamsPage() {
                         placeholder="Name *"
                         value={newMemberName}
                         onChange={(e) => setNewMemberName(e.target.value)}
-                        className="rounded-lg border px-3 py-2 text-sm"
+                        className="rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                       />
                       <RolePicker
                         positions={positions ?? []}
@@ -394,7 +394,7 @@ export default function AdminTeamsPage() {
                         type="email"
                         value={newMemberEmail}
                         onChange={(e) => setNewMemberEmail(e.target.value)}
-                        className="rounded-lg border px-3 py-2 text-sm"
+                        className="rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                       />
                     </div>
                     <div className="mt-2 flex justify-end gap-2">
@@ -448,7 +448,7 @@ export default function AdminTeamsPage() {
                         ) : (
                           <>
                             <div className="flex-1">
-                              <div className="text-sm font-semibold">{member.name}</div>
+                              <div className="text-sm text-ocean-primary font-semibold">{member.name}</div>
                               <div className="text-xs text-gray-500">{member.email}</div>
                             </div>
                             <span className="rounded-full bg-ocean-surface px-2 py-0.5 text-xs font-semibold text-ocean-deep">
@@ -521,33 +521,33 @@ export default function AdminTeamsPage() {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-syncopate text-lg font-bold">{editingTeam ? "Edit Team" : "Create Team"}</h3>
+            <h3 className="font-syncopate text-lg font-bold text-ocean-deep">{editingTeam ? "Edit Team" : "Create Team"}</h3>
             <div className="mt-4 space-y-3">
               <input
                 placeholder="Team name (optional — you can add it later)"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   placeholder="Code (e.g. AI01)"
                   value={teamCode}
                   onChange={(e) => setTeamCode(e.target.value)}
-                  className="rounded-lg border px-3 py-2 text-sm"
+                  className="rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                 />
                 <input
                   placeholder="Badge (e.g. Recent)"
                   value={teamBadge}
                   onChange={(e) => setTeamBadge(e.target.value)}
-                  className="rounded-lg border px-3 py-2 text-sm"
+                  className="rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                 />
               </div>
               <textarea
                 placeholder="Description (optional)"
                 value={teamDesc}
                 onChange={(e) => setTeamDesc(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                 rows={2}
               />
             </div>
