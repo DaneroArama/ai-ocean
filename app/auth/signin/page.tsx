@@ -28,21 +28,27 @@ function SignInInner() {
   };
 
   const authErrorMessage = (err: unknown, fallback: string) => {
-    const raw = (err instanceof Error ? err.message : "")
-      .replace(/^Error:\s*/i, "")
-      .replace(/^(Uncaught Error:\s*)+/i, "")
-      .trim();
+    let raw = err instanceof Error ? err.message : "";
+    // Convex Auth embeds the server error text after "Uncaught Error:".
+    const uncaught = raw.match(/Uncaught Error:\s*([\s\S]*)/);
+    if (uncaught) raw = uncaught[1];
+    raw = raw.replace(/^Error:\s*/i, "").replace(/\s+/g, " ").trim();
     if (!raw) return `❌ ${fallback}`;
     const text = raw.toLowerCase();
     if (
+      text.includes("not on the participant list") ||
+      text.includes("activation password")
+    ) {
+      return `❌ ${raw}`;
+    }
+    if (
       text.includes("invalidsecret") ||
       text.includes("invalid credentials") ||
-      text.includes("incorrect") ||
       text.includes("wrong password")
     ) {
       return "❌ Incorrect email or password.";
     }
-    if (text.includes("rate") || text.includes("too many")) {
+    if (text.includes("toomany") || text.includes("too many")) {
       return "❌ Too many attempts. Please wait a moment and try again.";
     }
     return `❌ ${raw}`;
@@ -103,6 +109,24 @@ function SignInInner() {
     try {
       await signIn("password", { flow: "signIn", email: normalizedEmail, password });
     } catch (err: unknown) {
+      const raw = (err instanceof Error ? err.message : "").toLowerCase();
+      // No password account yet — first-time activation: create it with the
+      // shared event password (server also enforces the roster check).
+      if (raw.includes("invalidaccountid")) {
+        try {
+          await signIn("password", {
+            flow: "signUp",
+            email: normalizedEmail,
+            password,
+          });
+        } catch (signUpErr: unknown) {
+          setError(
+            authErrorMessage(signUpErr, "Could not activate your account."),
+          );
+          setSubmitting(false);
+        }
+        return;
+      }
       setError(authErrorMessage(err, "Could not sign in. Please try again."));
       setSubmitting(false);
     }

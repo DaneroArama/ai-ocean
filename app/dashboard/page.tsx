@@ -190,7 +190,7 @@ function DashboardInner() {
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ocean-primary text-xs text-white">
                         {member.name?.[0] ?? "?"}
                       </div>
-                      <span className="text-sm">{member.name}</span>
+                      <span className="text-sm text-ocean-deep">{member.name}</span>
                       {member.id === participant._id && (
                         <span className="text-xs text-emerald-600">(You)</span>
                       )}

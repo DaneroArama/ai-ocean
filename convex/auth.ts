@@ -85,9 +85,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         ...(image ? { image } : {}),
         ...(oauth ? { emailVerificationTime: Date.now() } : {}),
       };
+      // An auth account can point at a user doc that was deleted (stale data).
+      // Only patch when it still exists; otherwise fall through to re-link or
+      // insert below — the library re-points the auth account to the returned id.
       if (args.existingUserId !== null) {
-        await db.db.patch(args.existingUserId, profile);
-        return args.existingUserId;
+        const existingUser = await db.db.get(args.existingUserId);
+        if (existingUser !== null) {
+          await db.db.patch(args.existingUserId, profile);
+          return args.existingUserId;
+        }
       }
       if (oauth) {
         const linked = await db.db
