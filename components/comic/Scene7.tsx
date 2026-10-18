@@ -5,6 +5,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import Link from "next/link";
 import { AudioController } from "@/lib/comic/audioController";
+import NarrationBox from "./NarrationBox";
 
 // Import mascot images
 import Tuto from "@/app/assets/Mascots/Tuto.png";
@@ -114,7 +115,7 @@ export default function Scene7({ audioController }: Scene7Props) {
       // White flash clears, revealing the final island (tight flash)
       scene7Timeline.to(whiteOverlayRef.current, {
         opacity: 0,
-        duration: 1,
+        duration: 0.3,
         ease: "power2.inOut",
         onStart: () => {
           audioController?.play("beach", 0.3);
@@ -321,25 +322,25 @@ export default function Scene7({ audioController }: Scene7Props) {
       {/* Top text */}
       <div
         ref={topTextRef}
-        className="absolute top-20 md:top-6 inset-x-0 z-30 px-6 md:px-28 text-center invisible opacity-0"
+        className="absolute top-20 md:top-6 inset-x-0 z-30 px-4 md:px-28 invisible opacity-0"
       >
-        <p className="text-white font-quicksand text-lg md:text-2xl leading-relaxed drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">
+        <NarrationBox>
           The AI wave is here, and it&apos;s changing the ocean for everyone.
           How will you ride it? Let&apos;s explore what&apos;s possible,
           together.
-        </p>
+        </NarrationBox>
       </div>
 
       {/* Bottom-right quote */}
       <div
         ref={bottomTextRef}
-        className="absolute bottom-20 md:bottom-6 right-6 z-30 text-right invisible opacity-0"
+        className="absolute bottom-20 md:bottom-6 right-4 md:right-6 z-30 max-w-md invisible opacity-0"
       >
-        <p className="text-white font-quicksand text-base md:text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">
+        <NarrationBox>
           The wave was never something to fear.
           <br />
           It was something to ride.
-        </p>
+        </NarrationBox>
       </div>
 
       {/* White overlay - in from Scene 6 */}

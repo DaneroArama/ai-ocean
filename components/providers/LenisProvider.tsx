@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { setLenis } from "@/lib/comic/lenisClient";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,6 +29,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
     };
 
     const unsubscribeScroll = lenis.on("scroll", ScrollTrigger.update);
+    setLenis(lenis);
 
     gsap.ticker.add(updateLenis);
     gsap.ticker.lagSmoothing(0);
@@ -40,6 +42,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
       window.removeEventListener("load", onLoad);
       unsubscribeScroll();
       gsap.ticker.remove(updateLenis);
+      setLenis(null);
       lenis.destroy();
     };
   }, []);

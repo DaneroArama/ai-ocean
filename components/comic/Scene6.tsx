@@ -122,7 +122,7 @@ export default function Scene6({ audioController }: Scene6Props) {
           whiteOverlayRef.current,
           {
             opacity: 1,
-            duration: 1.2,
+            duration: 0.3,
             ease: "power2.inOut",
           },
           "+=0.3"
