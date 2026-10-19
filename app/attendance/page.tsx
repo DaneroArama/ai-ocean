@@ -8,6 +8,8 @@ import { AttendanceRules } from "@/components/attendance/Rules";
 import { Icon } from "@/components/attendance/ui";
 import { ATTENDANCE_SESSIONS, sessionDate } from "@/lib/attendance";
 import "@/components/attendance/attendance.css";
+import eventLogo from "../assets/event_logo_coloured.png";
+
 export default function Page() {
   const [search, setSearch] = useState("");
   const people = useQuery(api.attendance.publicProgress, { search });
@@ -16,7 +18,15 @@ export default function Page() {
       <div className="att-wrap">
         <nav className="att-topbar">
           <Link className="att-brand" href="/">
-            <span className="att-brand-mark" />
+            <div className="flex items-center mx-auto justify-center">
+              <Image
+                src={eventLogo}
+                alt="Event Logo"
+                width={50}
+                height={50}
+               className="h-full w-10"
+              />
+            </div>
             AI OCEAN
           </Link>
           <Link className="att-button secondary" href="/dashboard/attendance">

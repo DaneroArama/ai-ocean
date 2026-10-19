@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -17,6 +17,71 @@ const CATEGORY_LABEL: Record<string, string> = {
   business: "Business",
   team: "Team",
 };
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const TRACK_FILTERS = [
+  { key: "all", label: "All" },
+  { key: "in_person", label: "In-Person" },
+  { key: "online", label: "Online" },
+] as const;
+
+/** Trailing-edge debounce so filtering runs once the admin stops typing. */
+function useDebounced<T>(value: T, delay = 200): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
+
+/** Wraps every occurrence of `query` in a <mark> inside `text`. */
+function Highlight({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q || !text) return <>{text}</>;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "ig"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === q.toLowerCase() ? (
+          <mark key={i} className="rounded-sm bg-amber-100 px-0.5 text-inherit">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
+function SearchIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M13.2 13.2 17 17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ClearIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="m4.5 4.5 7 7m0-7-7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Convex wraps mutation errors in "Uncaught Error: …" — strip it for display. */
+function errMsg(e: unknown, fallback: string) {
+  let raw = e instanceof Error ? e.message : "";
+  const uncaught = raw.match(/Uncaught Error:\s*([\s\S]*)/);
+  if (uncaught) raw = uncaught[1];
+  raw = raw.replace(/^Error:\s*/i, "").replace(/\s+/g, " ").trim();
+  return "❌ " + (raw || fallback);
+}
 
 /** Multi-select dropdown for team roles. Selected names join with ", ". */
 function RolePicker({
@@ -154,7 +219,7 @@ function RolePicker({
 export default function AdminTeamsPage() {
   const teams = useQuery(api.teams.listTeams);
   const positions = useQuery(api.teamPositions.listPositions);
-  const unassigned = useQuery(api.teams.listUnassignedParticipants);
+  const directory = useQuery(api.teams.listParticipantDirectory);
   const autoCandidates = useQuery(api.teams.countAutoTeamCandidates);
   const createTeam = useMutation(api.teams.createTeam);
   const updateTeam = useMutation(api.teams.updateTeam);
@@ -165,6 +230,15 @@ export default function AdminTeamsPage() {
   const updateTeamMember = useMutation(api.teams.updateTeamMember);
   const autoCreateTeams = useMutation(api.teams.autoCreateTeams);
   const importRoster = useMutation(api.roster.importRoster);
+
+  // Search & filters
+  const [teamSearch, setTeamSearch] = useState("");
+  const [peopleSearch, setPeopleSearch] = useState("");
+  const [trackFilter, setTrackFilter] = useState<"all" | "in_person" | "online">("all");
+  const [groupFilter, setGroupFilter] = useState("all"); // "all" | "unassigned" | team id
+  const [positionFilter, setPositionFilter] = useState("all");
+  const debouncedTeamSearch = useDebounced(teamSearch);
+  const debouncedPeopleSearch = useDebounced(peopleSearch);
 
   // Roster import
   const [showImportForm, setShowImportForm] = useState(false);
@@ -194,10 +268,16 @@ export default function AdminTeamsPage() {
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberPositions, setNewMemberPositions] = useState<string[]>([]);
-  // Inline member edit
-  const [editingMember, setEditingMember] = useState<Id<"participants"> | null>(null);
-  const [editMemberName, setEditMemberName] = useState("");
-  const [editMemberPositions, setEditMemberPositions] = useState<string[]>([]);
+  // Participant edit modal (name / email / positions / group)
+  const [editingPerson, setEditingPerson] = useState<{
+    participantId: Id<"participants">;
+    teamId: Id<"teams"> | null;
+  } | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPositions, setEditPositions] = useState<string[]>([]);
+  const [editTeamId, setEditTeamId] = useState<Id<"teams"> | null>(null);
+  const [editBusy, setEditBusy] = useState(false);
 
   const resetMemberForm = () => {
     setMemberFormTeam(null);
@@ -205,6 +285,81 @@ export default function AdminTeamsPage() {
     setNewMemberEmail("");
     setNewMemberPositions([]);
   };
+
+  // Filtered teams — matches name, code, badge, description or any member.
+  const filteredTeams = useMemo(() => {
+    const list = teams ?? [];
+    const q = debouncedTeamSearch.trim().toLowerCase();
+    return list.filter((team) => {
+      if (trackFilter !== "all" && team.track !== trackFilter) return false;
+      if (!q) return true;
+      const haystack = [
+        team.name,
+        team.code,
+        team.badge,
+        team.description,
+        ...team.members.flatMap((m) => [m.name, m.email, m.position ?? ""]),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [teams, debouncedTeamSearch, trackFilter]);
+
+  // Filtered participant directory — search + group (team) + position filters.
+  const filteredPeople = useMemo(() => {
+    const list = directory?.people ?? [];
+    const q = debouncedPeopleSearch.trim().toLowerCase();
+    return list.filter((person) => {
+      if (groupFilter === "unassigned" && person.teamId) return false;
+      if (groupFilter !== "all" && groupFilter !== "unassigned" && person.teamId !== groupFilter)
+        return false;
+      if (positionFilter !== "all") {
+        const slots = (person.position ?? "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (!slots.includes(positionFilter)) return false;
+      }
+      if (!q) return true;
+      const haystack = [person.name, person.email, person.position, person.teamName, person.teamCode]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [directory, debouncedPeopleSearch, groupFilter, positionFilter]);
+
+  const groupOptions = useMemo(() => {
+    const opts = (teams ?? []).map((t) => ({
+      id: t._id as string,
+      label: [t.code, t.name || "Unnamed team"].filter(Boolean).join(" — "),
+    }));
+    return opts.sort((a, b) => a.label.localeCompare(b.label));
+  }, [teams]);
+
+  const positionOptions = useMemo(
+    () => Array.from(new Set((positions ?? []).map((p) => p.name))),
+    [positions],
+  );
+
+  // Quick-add target: the selected team card, or the team chosen in the group filter.
+  const addTargetTeamId = useMemo(() => {
+    if (selectedTeam) return selectedTeam;
+    if (groupFilter !== "all" && groupFilter !== "unassigned") return groupFilter as Id<"teams">;
+    return null;
+  }, [selectedTeam, groupFilter]);
+
+  // Close the participant modal on Escape
+  useEffect(() => {
+    if (!editingPerson) return;
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setEditingPerson(null);
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [editingPerson]);
 
   const handleCreate = async () => {
     try {
@@ -341,17 +496,62 @@ export default function AdminTeamsPage() {
     }
   };
 
-  const handleSaveMemberEdit = async (participantId: Id<"participants">) => {
+  const openPersonEdit = (person: {
+    participantId: Id<"participants">;
+    name: string | null;
+    email: string | null;
+    position: string | null;
+    teamId: Id<"teams"> | null;
+  }) => {
+    setEditingPerson({ participantId: person.participantId, teamId: person.teamId });
+    setEditName(person.name ?? "");
+    setEditEmail(person.email ?? "");
+    setEditPositions(
+      (person.position ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    );
+    setEditTeamId(person.teamId);
+  };
+
+  const handleSavePersonEdit = async () => {
+    if (!editingPerson || editBusy) return;
+    const name = editName.trim();
+    if (!name) {
+      setMsg("❌ Name is required");
+      return;
+    }
+    const email = editEmail.trim().toLowerCase();
+    if (email && !EMAIL_PATTERN.test(email)) {
+      setMsg("❌ Enter a valid email address");
+      return;
+    }
+    setEditBusy(true);
     try {
       await updateTeamMember({
-        participantId,
-        name: editMemberName.trim() || undefined,
-        position: editMemberPositions.join(", ") || undefined,
+        participantId: editingPerson.participantId,
+        name,
+        email,
+        position: editPositions.join(", "),
       });
-      setMsg("✅ Member updated");
-      setEditingMember(null);
+      if ((editTeamId ?? null) !== (editingPerson.teamId ?? null)) {
+        if (editingPerson.teamId) {
+          await removeMember({
+            teamId: editingPerson.teamId,
+            participantId: editingPerson.participantId,
+          });
+        }
+        if (editTeamId) {
+          await addMember({ teamId: editTeamId, participantId: editingPerson.participantId });
+        }
+      }
+      setMsg("✅ Participant updated");
+      setEditingPerson(null);
     } catch (e: unknown) {
-      setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
+      setMsg(errMsg(e, "Failed to update participant"));
+    } finally {
+      setEditBusy(false);
     }
   };
 
@@ -398,6 +598,49 @@ export default function AdminTeamsPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Teams List */}
         <div className="lg:col-span-2 space-y-4">
+          {/* Team search + track filter */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative min-w-[240px] flex-1">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ocean-medium" />
+              <input
+                type="search"
+                aria-label="Search teams"
+                placeholder="Search teams by name, code or member…"
+                value={teamSearch}
+                onChange={(e) => setTeamSearch(e.target.value)}
+                className="w-full rounded-xl border border-ocean-surface bg-white py-2.5 pl-9 pr-9 text-sm text-ocean-deep placeholder:text-ocean-medium focus:border-ocean-primary focus:outline-none focus:ring-2 focus:ring-ocean-primary/20"
+              />
+              {teamSearch && (
+                <button
+                  type="button"
+                  onClick={() => setTeamSearch("")}
+                  aria-label="Clear team search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <ClearIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {TRACK_FILTERS.map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTrackFilter(t.key)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                    trackFilter === t.key
+                      ? "bg-ocean-primary text-white shadow-sm"
+                      : "border border-ocean-surface bg-white text-ocean-medium hover:border-ocean-primary hover:text-ocean-primary"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-600">
+              {teams ? `${filteredTeams.length} / ${teams.length} teams` : "Loading…"}
+            </span>
+          </div>
+
           {!teams ? (
             <div className="rounded-2xl border bg-white p-8 text-center text-gray-500">Loading teams...</div>
           ) : teams.length === 0 ? (
@@ -406,8 +649,25 @@ export default function AdminTeamsPage() {
               <p>No teams created yet.</p>
               <p className="mt-1 text-xs">Auto-create them from submitted, payment-verified registrations — or add one manually.</p>
             </div>
+          ) : filteredTeams.length === 0 ? (
+            <div className="rounded-2xl border bg-white p-8 text-center text-gray-500">
+              <div className="mb-3 text-3xl">🔍</div>
+              <p>
+                No teams match {debouncedTeamSearch ? `“${debouncedTeamSearch}”` : "your filters"}
+                {trackFilter !== "all" ? ` on the ${TRACK_FILTERS.find((t) => t.key === trackFilter)?.label} track` : ""}.
+              </p>
+              <button
+                onClick={() => {
+                  setTeamSearch("");
+                  setTrackFilter("all");
+                }}
+                className="mt-3 rounded-lg border border-ocean-surface px-3 py-1.5 text-xs font-bold text-ocean-primary hover:bg-ocean-foam"
+              >
+                Clear search & filters
+              </button>
+            </div>
           ) : (
-            teams.map((team) => (
+            filteredTeams.map((team) => (
               <div key={team._id} className={`rounded-2xl border bg-white p-5 shadow-sm transition ${selectedTeam === team._id ? "ring-2 ring-ocean-primary" : ""}`}>
                 <div className="flex items-start justify-between">
                   <div onClick={() => setSelectedTeam(selectedTeam === team._id ? null : team._id)} className="cursor-pointer flex-1">
@@ -487,61 +747,36 @@ export default function AdminTeamsPage() {
                         <div className="w-8 h-8 rounded-full bg-ocean-primary text-white flex items-center justify-center text-sm font-bold">
                           {member.name?.[0] ?? "?"}
                         </div>
-                        {editingMember === member.id ? (
-                          <div className="flex flex-1 flex-wrap items-center gap-2">
-                            <input
-                              value={editMemberName}
-                              onChange={(e) => setEditMemberName(e.target.value)}
-                              className="w-40 rounded border px-2 py-1 text-sm"
-                              placeholder="Name"
-                            />
-                            <div className="min-w-40 flex-1">
-                              <RolePicker
-                                positions={positions ?? []}
-                                selected={editMemberPositions}
-                                onChange={setEditMemberPositions}
-                              />
-                            </div>
-                            <button
-                              onClick={() => handleSaveMemberEdit(member.id)}
-                              className="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => setEditingMember(null)}
-                              className="rounded border px-2 py-1 text-xs"
-                            >
-                              Cancel
-                            </button>
+                        <div className="flex-1 min-w-0">
+                          <div className="truncate text-sm text-ocean-primary font-semibold">
+                            <Highlight text={member.name} query={debouncedTeamSearch} />
                           </div>
-                        ) : (
-                          <>
-                            <div className="flex-1">
-                              <div className="text-sm text-ocean-primary font-semibold">{member.name}</div>
-                              <div className="text-xs text-gray-500">{member.email}</div>
-                            </div>
-                            <span className="rounded-full bg-ocean-surface px-2 py-0.5 text-xs font-semibold text-ocean-deep">
-                              {member.position || "—"}
-                            </span>
-                            <button
-                              onClick={() => {
-                                setEditingMember(member.id);
-                                setEditMemberName(member.name ?? "");
-                                setEditMemberPositions(
-                                  (member.position ?? "")
-                                    .split(",")
-                                    .map((s) => s.trim())
-                                    .filter(Boolean)
-                                );
-                              }}
-                              className="rounded border px-2 py-1 text-xs font-semibold hover:bg-gray-100"
-                            >
-                              Edit
-                            </button>
-                          </>
-                        )}
-                        <button onClick={() => handleRemoveMember(team._id, member.id)} className="rounded bg-red-50 px-2 py-1 text-xs text-red-600 hover:bg-red-100">Remove</button>
+                          <div className="truncate text-xs text-gray-500">
+                            {member.email === "—" ? (
+                              <span className="italic text-gray-400">No email</span>
+                            ) : (
+                              <Highlight text={member.email} query={debouncedTeamSearch} />
+                            )}
+                          </div>
+                        </div>
+                        <span className="hidden shrink-0 rounded-full bg-ocean-surface px-2 py-0.5 text-xs font-semibold text-ocean-deep sm:block">
+                          {member.position || "—"}
+                        </span>
+                        <button
+                          onClick={() =>
+                            openPersonEdit({
+                              participantId: member.id,
+                              name: member.name === "—" ? null : member.name,
+                              email: member.email === "—" ? null : member.email,
+                              position: member.position,
+                              teamId: team._id,
+                            })
+                          }
+                          className="shrink-0 rounded border px-2 py-1 text-xs font-semibold hover:bg-gray-100"
+                        >
+                          Edit
+                        </button>
+                        <button onClick={() => handleRemoveMember(team._id, member.id)} className="shrink-0 rounded bg-red-50 px-2 py-1 text-xs text-red-600 hover:bg-red-100">Remove</button>
                       </div>
                     ))}
                   </div>
@@ -551,38 +786,197 @@ export default function AdminTeamsPage() {
           )}
         </div>
 
-        {/* Unassigned Participants */}
+        {/* Participant search — every person, filterable by group */}
         <div className="space-y-4">
           <div className="rounded-2xl border bg-white p-5 shadow-sm">
-            <h3 className="font-semibold text-ocean-deep">Unassigned Participants</h3>
-            <p className="text-xs text-gray-500">Click a team, then add members.</p>
-            {!unassigned ? (
-              <p className="mt-4 text-sm text-gray-400">Loading...</p>
-            ) : unassigned.length === 0 ? (
-              <p className="mt-4 text-sm text-gray-500">All participants assigned!</p>
-            ) : (
-              <div className="mt-4 space-y-2 max-h-[400px] overflow-y-auto">
-                {unassigned.map((p) => (
-                  <div key={p.participantId} className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-300 text-white flex items-center justify-center text-sm font-bold">
-                      {p.name?.[0] ?? "?"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold truncate">{p.name}</div>
-                      <div className="text-xs text-gray-500 truncate">{p.email}</div>
-                    </div>
-                    {selectedTeam && (
-                      <button onClick={() => handleAddMember(selectedTeam, p.participantId)} className="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
-                        + Add
-                      </button>
-                    )}
-                  </div>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h3 className="font-semibold text-ocean-deep">Find Participants</h3>
+                <p className="text-xs text-gray-500">Search by name, email or position, then filter by group.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
+                {directory ? `${filteredPeople.length}/${directory.people.length}` : "…"}
+              </span>
+            </div>
+
+            <div className="relative mt-3">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ocean-medium" />
+              <input
+                type="search"
+                aria-label="Search participants"
+                placeholder="Search name, email, position…"
+                value={peopleSearch}
+                onChange={(e) => setPeopleSearch(e.target.value)}
+                className="w-full rounded-xl border border-ocean-surface bg-white py-2.5 pl-9 pr-9 text-sm text-ocean-deep placeholder:text-ocean-medium focus:border-ocean-primary focus:outline-none focus:ring-2 focus:ring-ocean-primary/20"
+              />
+              {peopleSearch && (
+                <button
+                  type="button"
+                  onClick={() => setPeopleSearch("")}
+                  aria-label="Clear participant search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <ClearIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <select
+                aria-label="Filter participants by group"
+                value={groupFilter}
+                onChange={(e) => setGroupFilter(e.target.value)}
+                className="w-full rounded-xl border border-ocean-surface bg-white px-3 py-2 text-sm text-ocean-deep focus:border-ocean-primary focus:outline-none"
+              >
+                <option value="all">All groups</option>
+                <option value="unassigned">Unassigned</option>
+                {groupOptions.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
                 ))}
+              </select>
+              <select
+                aria-label="Filter participants by position"
+                value={positionFilter}
+                onChange={(e) => setPositionFilter(e.target.value)}
+                className="w-full rounded-xl border border-ocean-surface bg-white px-3 py-2 text-sm text-ocean-deep focus:border-ocean-primary focus:outline-none"
+              >
+                <option value="all">All positions</option>
+                {positionOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {(peopleSearch || groupFilter !== "all" || positionFilter !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPeopleSearch("");
+                  setGroupFilter("all");
+                  setPositionFilter("all");
+                }}
+                className="mt-2 text-xs font-bold text-ocean-primary hover:underline"
+              >
+                Clear search & filters
+              </button>
+            )}
+
+            {!directory ? (
+              <p className="mt-4 text-sm text-gray-400">Loading...</p>
+            ) : filteredPeople.length === 0 ? (
+              <div className="mt-4 rounded-xl border border-dashed border-ocean-surface bg-ocean-foam/40 p-4 text-center">
+                <p className="text-sm font-semibold text-ocean-deep">No participants found</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Nothing matches {debouncedPeopleSearch ? `“${debouncedPeopleSearch}”` : "the current filters"}.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 max-h-[460px] space-y-2 overflow-y-auto pr-1">
+                {filteredPeople.slice(0, 100).map((person) => {
+                  const slots = (person.position ?? "")
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  return (
+                    <div
+                      key={person.participantId}
+                      className="rounded-xl bg-gray-50 p-3 transition hover:bg-white hover:shadow-sm"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${
+                            person.teamId ? "bg-ocean-primary" : "bg-gray-300"
+                          }`}
+                        >
+                          {(person.name ?? "?").trim().charAt(0).toUpperCase() || "?"}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-semibold text-ocean-deep">
+                            {person.name ? (
+                              <Highlight text={person.name} query={debouncedPeopleSearch} />
+                            ) : (
+                              <span className="italic text-gray-400">Unnamed participant</span>
+                            )}
+                          </div>
+                          <div className="truncate text-xs text-gray-500">
+                            {person.email ? (
+                              <Highlight text={person.email} query={debouncedPeopleSearch} />
+                            ) : (
+                              <span className="italic text-gray-400">No email yet</span>
+                            )}
+                          </div>
+                        </div>
+                        <span
+                          title={person.teamName ?? undefined}
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                            person.teamId ? "bg-ocean-surface text-ocean-deep" : "bg-gray-200 text-gray-600"
+                          }`}
+                        >
+                          {person.teamId
+                            ? person.teamCode || person.teamName || "Team"
+                            : "Unassigned"}
+                        </span>
+                      </div>
+
+                      {slots.length > 0 && (
+                        <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
+                          {slots.slice(0, 3).map((slot) => (
+                            <span
+                              key={slot}
+                              className="max-w-full truncate rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-ocean-medium ring-1 ring-inset ring-ocean-surface"
+                            >
+                              {slot}
+                            </span>
+                          ))}
+                          {slots.length > 3 && (
+                            <span className="text-[10px] text-gray-400">+{slots.length - 3}</span>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-2 flex justify-end gap-1.5">
+                        {!person.teamId && addTargetTeamId && (
+                          <button
+                            onClick={() => handleAddMember(addTargetTeamId, person.participantId)}
+                            className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 hover:bg-emerald-100"
+                          >
+                            + Add to team
+                          </button>
+                        )}
+                        <button
+                          onClick={() => openPersonEdit(person)}
+                          className="rounded-lg border border-ocean-surface px-2.5 py-1 text-xs font-semibold text-ocean-primary hover:bg-ocean-foam"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {filteredPeople.length > 100 && (
+                  <p className="pb-1 text-center text-[11px] text-gray-400">
+                    Showing 100 of {filteredPeople.length} — refine your search to narrow it down.
+                  </p>
+                )}
               </div>
             )}
-            {!selectedTeam && unassigned && unassigned.length > 0 && (
-              <p className="mt-3 text-xs text-amber-600">Select a team first to add members.</p>
+
+            {directory?.capped && (
+              <p className="mt-2 text-[11px] text-amber-600">
+                Directory capped at 2,000 people — search to narrow it down.
+              </p>
             )}
+
+            {!addTargetTeamId &&
+              filteredPeople.some((p) => !p.teamId) && (
+                <p className="mt-3 text-xs text-amber-600">
+                  Select a team card (or pick a group) first to enable quick-add.
+                </p>
+              )}
           </div>
         </div>
       </div>
@@ -823,6 +1217,103 @@ export default function AdminTeamsPage() {
                   : rosterPreview
                     ? `Import ${rosterPreview.entries.length} row(s)`
                     : "Import"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Participant Edit Modal */}
+      {editingPerson && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-syncopate text-lg font-bold text-ocean-deep">Edit Participant</h3>
+                <p className="mt-1 text-xs text-gray-500">Update their details and group assignment.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingPerson(null)}
+                aria-label="Close"
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <ClearIcon className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-gray-600" htmlFor="edit-person-name">
+                  Name
+                </label>
+                <input
+                  id="edit-person-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Full name"
+                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-600" htmlFor="edit-person-email">
+                  Email
+                </label>
+                <input
+                  id="edit-person-email"
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
+                />
+                <p className="mt-1 text-[11px] text-gray-400">
+                  Sign-in uses this address — make sure it&apos;s the one they actually use.
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-600">Positions</label>
+                <div className="mt-1">
+                  <RolePicker
+                    positions={positions ?? []}
+                    selected={editPositions}
+                    onChange={setEditPositions}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-600" htmlFor="edit-person-team">
+                  Group (team)
+                </label>
+                <select
+                  id="edit-person-team"
+                  value={editTeamId ?? ""}
+                  onChange={(e) => setEditTeamId((e.target.value || null) as Id<"teams"> | null)}
+                  className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm text-ocean-deep"
+                >
+                  <option value="">Unassigned</option>
+                  {groupOptions.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setEditingPerson(null)}
+                className="rounded-xl border px-5 py-2 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSavePersonEdit}
+                disabled={editBusy}
+                className="rounded-xl bg-ocean-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep disabled:opacity-50"
+              >
+                {editBusy ? "Saving…" : "Save"}
               </button>
             </div>
           </div>

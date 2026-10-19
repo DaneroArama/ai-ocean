@@ -9,6 +9,8 @@ import type { Doc, Id } from "./_generated/dataModel";
 const MAX_AUTO_PLACEMENTS_PER_RUN = 300;
 const MAX_TEAMS_LISTED = 200;
 const MAX_MEMBERS_PER_TEAM = 50;
+const DIRECTORY_LIMIT = 2000;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type AdminCtx = QueryCtx | MutationCtx;
 
@@ -398,11 +400,17 @@ export const addManualMember = mutation({
   },
 });
 
-/** Edit a team member's name and/or position from the admin dashboard. */
+/**
+ * Edit a team member's name, email and/or position from the admin dashboard.
+ * Email changes stay in sync with the sign-in tables (users + password auth
+ * accounts) and the registration copy, so the person can sign in with the
+ * new address.
+ */
 export const updateTeamMember = mutation({
   args: {
     participantId: v.id("participants"),
     name: v.optional(v.string()),
+    email: v.optional(v.string()),
     position: v.optional(v.string()),
   },
   returns: v.object({ success: v.boolean() }),
@@ -418,6 +426,69 @@ export const updateTeamMember = mutation({
       patch.name = name;
     }
     if (args.position !== undefined) patch.position = args.position.trim() || undefined;
+
+    if (args.email !== undefined) {
+      const email = args.email.trim().toLowerCase();
+      if (email && !EMAIL_PATTERN.test(email)) throw new Error("Enter a valid email address");
+
+      const previousEmail = p.email;
+      const previous = (previousEmail ?? "").trim().toLowerCase();
+      if (email !== previous) {
+        if (email) {
+          const duplicate = await ctx.db
+            .query("participants")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+          if (duplicate && duplicate._id !== args.participantId) {
+            throw new Error("Another participant already uses this email");
+          }
+          const passwordAccount = await ctx.db
+            .query("authAccounts")
+            .withIndex("providerAndAccountId", (q) =>
+              q.eq("provider", "password").eq("providerAccountId", email),
+            )
+            .first();
+          if (passwordAccount) throw new Error("This email already has a sign-in account");
+        }
+
+        if (previousEmail) {
+          // Password sign-in is keyed by the email — move the account with it.
+          const passwordAccount = await ctx.db
+            .query("authAccounts")
+            .withIndex("providerAndAccountId", (q) =>
+              q.eq("provider", "password").eq("providerAccountId", previousEmail),
+            )
+            .first();
+          if (passwordAccount) {
+            if (!email) {
+              throw new Error(
+                "This person signs in with a password — change their email instead of clearing it",
+              );
+            }
+            await ctx.db.patch(passwordAccount._id, { providerAccountId: email });
+          }
+
+          const authUser = await ctx.db
+            .query("users")
+            .withIndex("email", (q) => q.eq("email", previousEmail))
+            .first();
+          if (authUser) await ctx.db.patch(authUser._id, { email: email || undefined });
+        }
+
+        const reg = await ctx.db
+          .query("buildathonRegistrations")
+          .withIndex("by_participant", (q) => q.eq("participantId", args.participantId))
+          .first();
+        if (reg && email && reg.basicInfo.email !== email) {
+          await ctx.db.patch(reg._id, {
+            basicInfo: { ...reg.basicInfo, email },
+            updatedAt: Date.now(),
+          });
+        }
+
+        patch.email = email || undefined;
+      }
+    }
 
     await ctx.db.patch(args.participantId, patch);
     return { success: true };
@@ -575,5 +646,82 @@ export const listUnassignedParticipants = query({
     );
     
     return results;
+  },
+});
+
+/**
+ * Admin directory of every participant with their current team — powers the
+ * search box and group (team) filters on the teams page.
+ */
+export const listParticipantDirectory = query({
+  args: {},
+  returns: v.object({
+    capped: v.boolean(),
+    people: v.array(
+      v.object({
+        participantId: v.id("participants"),
+        name: v.union(v.string(), v.null()),
+        email: v.union(v.string(), v.null()),
+        position: v.union(v.string(), v.null()),
+        role: v.union(v.literal("participant"), v.literal("admin")),
+        teamId: v.union(v.id("teams"), v.null()),
+        teamName: v.union(v.string(), v.null()),
+        teamCode: v.union(v.string(), v.null()),
+      }),
+    ),
+  }),
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    const teams = await ctx.db.query("teams").take(MAX_TEAMS_LISTED);
+    const teamOf = new Map<
+      Id<"participants">,
+      { id: Id<"teams">; name: string | null; code: string | null }
+    >();
+    for (const team of teams) {
+      for (const pid of team.memberIds) {
+        if (!teamOf.has(pid)) {
+          teamOf.set(pid, { id: team._id, name: team.name ?? null, code: team.code ?? null });
+        }
+      }
+    }
+
+    const docs = await ctx.db.query("participants").take(DIRECTORY_LIMIT);
+    const people = await Promise.all(
+      docs.map(async (p) => {
+        let name = p.name?.trim() || null;
+        let email = p.email?.trim() || null;
+        if (!name || !email) {
+          const reg = await ctx.db
+            .query("buildathonRegistrations")
+            .withIndex("by_participant", (q) => q.eq("participantId", p._id))
+            .first();
+          if (reg) {
+            name = name ?? reg.basicInfo.name;
+            email = email ?? reg.basicInfo.email;
+          }
+        }
+        const team = teamOf.get(p._id) ?? null;
+        return {
+          participantId: p._id,
+          name,
+          email,
+          position: p.position?.trim() || null,
+          role: p.role,
+          teamId: team?.id ?? null,
+          teamName: team?.name ?? null,
+          teamCode: team?.code ?? null,
+        };
+      }),
+    );
+
+    people.sort((a, b) => {
+      const an = (a.name ?? "").toLowerCase();
+      const bn = (b.name ?? "").toLowerCase();
+      if (an !== bn) return an.localeCompare(bn);
+      return a.participantId.localeCompare(b.participantId);
+    });
+
+    return { capped: docs.length >= DIRECTORY_LIMIT, people };
   },
 });

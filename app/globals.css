@@ -406,6 +406,13 @@ html.lenis body {
   display: none;
 }
 
+/* Search inputs carry their own clear button — hide the native one */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* Glass corner borders — top-left + bottom-right only */
 .glass-corners {
   position: relative;
