@@ -32,6 +32,7 @@ import Sora from '@/app/assets/Persons/Members/Sora.jpg'
 import KyalSinLinNaungPhoto from '@/app/assets/Persons/Members/Kyal Sin Lin Naung.jpg'
 import SiThuNandaPhoto from '@/app/assets/Persons/Members/Si Thu Nanda.png'
 import SawTheinWinTunPhoto from '@/app/assets/Persons/Members/Saw Thein Win Tun.jpg'
+import MyoMaungMaungPhoto from '@/app/assets/Persons/Speakers/MyoMaung - Myo Maung.webp'
 
 export type TeamMember = {
   name: string
@@ -57,6 +58,7 @@ export const eventTeam: TeamMember[] = [
   { name: 'Lynn Myat Bhone Htut', photo: LynnMyatBhoneHtutPhoto },
   { name: 'Min Naing', photo: MinNaingPhoto },
   { name: 'Min Ye Htut Myat', photo: MinYeHtutMentorPhoto },
+  { name: 'Myo Maung Maung', photo: MyoMaungMaungPhoto },
   { name: 'Naw Shin Nadi Than', photo: NawShinNadiThanPhoto },
   { name: 'Nwe Oo Lwin', photo: NweOoLwinPhoto },
   { name: 'Nyein Zayar Naing', photo: NyeinZayarNaingPhoto },
