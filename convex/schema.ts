@@ -608,4 +608,37 @@ export default defineSchema({
     .index("by_participant", ["participantId"])
     .index("by_session", ["sessionId"])
     .index("by_userType", ["userType"]),
+
+  /**
+   * Buildathon Submissions — project deliverables for judges
+   */
+  buildathonSubmissions: defineTable({
+    teamId: v.id("teams"),
+    projectName: v.string(),
+    tagline: v.optional(v.string()),
+    description: v.string(),
+    // Links from GitHub repo or manual entry
+    pitchDeckUrl: v.optional(v.string()),
+    demoVideoUrl: v.optional(v.string()),
+    liveProductUrl: v.optional(v.string()),
+    githubRepoUrl: v.optional(v.string()),
+    credentialsUrl: v.optional(v.string()), // Login info, API keys doc
+    readmeUrl: v.optional(v.string()),
+    // Metadata
+    submittedAt: v.number(),
+    submittedBy: v.optional(v.id("participants")),
+    lastUpdatedAt: v.number(),
+    isPublished: v.boolean(), // Show to judges
+    // Judge scoring (optional)
+    judgeScores: v.optional(v.array(v.object({
+      judgeId: v.id("participants"),
+      judgeName: v.string(),
+      score: v.number(),
+      feedback: v.optional(v.string()),
+      scoredAt: v.number(),
+    }))),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_published", ["isPublished"])
+    .index("by_submitted_at", ["submittedAt"]),
 });

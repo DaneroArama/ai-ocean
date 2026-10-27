@@ -34,6 +34,9 @@ export function AdminHeader() {
           <Link href="/admin/teams" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
             Teams
           </Link>
+          <Link href="/admin/judges" className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
+            Judges Portal
+          </Link>
           <Link href="/admin/attendance" className="rounded-lg px-3 py-1.5 text-sm font-semibold text-ocean-primary hover:bg-ocean-foam">
             Attendance
           </Link>
