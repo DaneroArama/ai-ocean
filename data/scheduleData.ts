@@ -11,6 +11,8 @@ import HaymarAungPhoto from '@/app/assets/Persons/mentors/Haymar Aung.jpeg'
 import KyisinHsutharPhoto from '@/app/assets/Persons/mentors/Kyisin Hsuthar.jpeg'
 import ThaeSuAyePhoto from '@/app/assets/Persons/mentors/Thae Su Aye.jpg'
 import PhyoThiriThuPhoto from '@/app/assets/Persons/mentors/Phyo Thiri Thu.png'
+import AungKoKoThetPhoto from '@/app/assets/Persons/Speakers/Aung Ko Ko Thet.webp'
+import MyaThandarOoPhoto from '@/app/assets/Persons/Speakers/Mya Thandar Oo.webp'
 
 export type CardType = 'finished' | 'confirmed' | 'upcoming'
 
@@ -275,16 +277,113 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     ]
   },
   6: {
-    type: 'upcoming',
-    backgroundColor: 'from-gray-300 to-gray-400',
+    type: 'confirmed',
+    backgroundColor: 'from-[#ffd700] to-white',
     title: 'Awards Ceremony',
-    description: 'Evaluation, winner announcement & awards ceremony',
-    scheduleItems: [],
-    upcomingItems: [
-      'Final Product Evaluation',
-      'Panel Discussion',
-      'Winner Announcement',
-      'Awards and Celebration'
-    ]
+    description: 'Celebration, presentations & winner announcement',
+    scheduleItems: [
+      {
+        time: '11:30 AM - 12:00 PM',
+        events: [{ title: 'Arrival', description: 'All participants arrival', people: [] }],
+      },
+      {
+        time: '12:00 - 12:10 PM',
+        events: [{
+          title: 'Welcome Back & Agenda Overview',
+          description: 'Thank Main Sponsors - Ko La Min Thaw @ Alvin (UXMM Co-Founder) & Host',
+          people: [agendaPeople['la-min-thaw-alvin']],
+        }],
+      },
+      {
+        time: '12:10 - 12:20 PM',
+        events: [{
+          title: 'Sponsorship Speech (Keynote)',
+          description: 'Ko Kyaw Myo Thet',
+          people: [agendaPeople['kyaw-myo-thet']],
+        }],
+      },
+      {
+        time: '12:20 - 12:30 PM',
+        events: [{
+          title: 'Judging Recap & Special Mentions',
+          description: 'Host',
+          people: [],
+        }],
+      },
+      {
+        time: '12:30 - 1:30 PM',
+        events: [{
+          title: 'Panel Session',
+          description: 'Ma Mya Thandar Oo (MyJobs), Ko Pyit Sone Oo (CEO, BEYOND 360), Ma Wai Yi Mon Soe (Founder, UXMM & BridgeX), Ko Aung Ko Ko Thet (The BuilderPros) | Moderator: Ko Sitt Ye Yint Tun',
+          people: [agendaPeople['pyit-sone-oo'], agendaPeople['wai-yi-mon-soe'], agendaPeople['sitt-ye-yint-tun']],
+        }],
+      },
+      {
+        time: '1:30 - 1:45 PM',
+        events: [{
+          title: 'Top Finalist Announcement',
+          description: 'Mentors announce top finalists',
+          people: [],
+        }],
+      },
+      {
+        time: '1:45 - 2:00 PM',
+        events: [{
+          title: 'Networking & Refreshment',
+          description: 'Network or entertainment (recap videos, behind the scenes)',
+          people: [],
+          highlight: true,
+        }],
+      },
+      {
+        time: '2:00 - 3:00 PM',
+        events: [{
+          title: 'First Round Presentation',
+          description: '6 groups × 3 mins presentation + 5 mins Q&A',
+          people: [],
+        }],
+      },
+      {
+        time: '3:00 - 3:15 PM',
+        events: [{
+          title: 'Interactive Game',
+          description: 'Host-led activity',
+          people: [],
+          highlight: true,
+        }],
+      },
+      {
+        time: '3:15 - 4:15 PM',
+        events: [{
+          title: 'Second Round Presentation',
+          description: '6 groups × 3 mins presentation + 5 mins Q&A',
+          people: [],
+        }],
+      },
+      {
+        time: '4:15 - 4:30 PM',
+        events: [{
+          title: 'Sharing The BuilderPros Course',
+          description: 'Ko Aung Ko Ko Thet',
+          people: [],
+        }],
+      },
+      {
+        time: '4:30 - 5:00 PM',
+        events: [{
+          title: 'Winner Announcement',
+          description: 'Host announces winners',
+          people: [],
+        }],
+      },
+      {
+        time: '5:00 - 5:15 PM',
+        events: [{
+          title: 'Closing & Celebration',
+          description: 'Thanks to all sponsors, photo sessions, feedback forms, memorable letter on boards - Host & Ma Wai Yi Mon Soe',
+          people: [...dayOneHosts, agendaPeople['wai-yi-mon-soe']],
+        }],
+      },
+    ],
   },
 }

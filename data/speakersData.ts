@@ -20,6 +20,7 @@ import KyisinHsutharPhoto from '@/app/assets/Persons/mentors/Kyisin Hsuthar.jpeg
 import SannLynnHtunPhoto from '@/app/assets/Persons/mentors/Sann Lynn Htun.jpg'
 import HaymarAungPhoto from '@/app/assets/Persons/mentors/Haymar Aung.jpeg'
 import PhyoThiriThuPhoto from '@/app/assets/Persons/mentors/Phyo Thiri Thu.png'
+import AlvinPhoto from '@/app/assets/Persons/Judges/Image_20260429_105144_367 - Alvin La Min Thaw.webp'
 import ChawSuHlaingPhoto from '@/app/assets/Persons/mentors/Chaw Su Hlaing.png'
 import ThaeSuAyePhoto from '@/app/assets/Persons/mentors/Thae Su Aye.jpg'
 import BoboLinnaingMentorPhoto from '@/app/assets/Persons/mentors/bobolinnaing_profile - Bobo Linnaing.jpeg'
@@ -236,6 +237,14 @@ export const speakers: Speaker[] = [
     organization: 'LOMTech',
     bio: 'Project Researcher at LOMTech focused on social impact, inclusion, and making AI accessible to non-technical builders and diverse communities. Her background spans research, operations, and youth leadership across Myanmar and international platforms (SEARA member, SEALNet mentor, LP4Y coach, R&D at Indonesia’s Halal Science Center).',
     photo: ThaeSuAyePhoto,
+  },
+  {
+    id: 'la-min-thaw-alvin',
+    name: 'La Min Thaw @ Alvin',
+    position: 'Lead UXUI & Deputy Team Lead, Co-founder',
+    organization: 'General Magick Thailand, UXMM',
+    bio: 'Alvin is a Lead UI/UX Designer and design leader with over a decade of experience across fintech, digital products, and technology in Southeast Asia. He currently leads UI/UX at General Magick Thailand, driving product experience, design strategy, and design systems while supporting the leadership and growth of the Product Team and collaborating with other functions. Alvin is also a co-founder of UXMM (User Experience Myanmar), where he mentors designers and contributes to workshops and community initiatives.',
+    photo: AlvinPhoto,
   }
 ]
 
@@ -383,4 +392,5 @@ export const rolesById: Record<string, SpeakerRole[]> = {
   'phyo-thiri-thu': ['Moderator'],
   'chaw-su-hlaing': ['Panelist'],
   'thae-su-aye': ['Panelist'],
+  'la-min-thaw-alvin': ['Panelist'],
 }
