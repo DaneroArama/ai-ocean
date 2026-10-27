@@ -322,7 +322,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         time: '1:30 - 1:45 PM',
         events: [{
           title: 'Top Finalist Announcement',
-          description: 'Mentors announce top finalists',
+          description: '',
           people: [],
         }],
       },
