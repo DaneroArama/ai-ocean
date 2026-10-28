@@ -11,8 +11,7 @@ import HaymarAungPhoto from '@/app/assets/Persons/mentors/Haymar Aung.jpeg'
 import KyisinHsutharPhoto from '@/app/assets/Persons/mentors/Kyisin Hsuthar.jpeg'
 import ThaeSuAyePhoto from '@/app/assets/Persons/mentors/Thae Su Aye.jpg'
 import PhyoThiriThuPhoto from '@/app/assets/Persons/mentors/Phyo Thiri Thu.png'
-import AungKoKoThetPhoto from '@/app/assets/Persons/Speakers/Aung Ko Ko Thet.webp'
-import MyaThandarOoPhoto from '@/app/assets/Persons/Speakers/Mya Thandar Oo.webp'
+import AungBhonePyaeZawPhoto from '@/app/assets/Persons/Members/Aung Bhone Pyae Zaw.png'
 
 export type CardType = 'finished' | 'confirmed' | 'upcoming'
 
@@ -80,6 +79,11 @@ const dayOneHosts: Person[] = [
 const dayTwoHosts: Person[] = [
   { id: 101, name: 'Su Nandar', designation: 'Host', company: '', image: SuNandarPhoto },
   { id: 102, name: 'Naw Shin Nadi Than', designation: 'Host', company: '', image: NawShinNadiThanPhoto },
+]
+
+const awardsCeremonyHosts: Person[] = [
+  agendaPeople['phyo-thiri-thu'],
+  { id: 103, name: 'Aung Bhone Pyae Zaw', designation: 'Host', company: '', image: AungBhonePyaeZawPhoto },
 ]
 
 // Phase Cards Data
@@ -306,16 +310,16 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         time: '12:20 - 12:30 PM',
         events: [{
           title: 'Judging Recap & Special Mentions',
-          description: 'Host',
-          people: [],
+          description: 'Hosts - Ma Phyo Thiri Thu & Ko Aung Bhone Pyae Zaw',
+          people: awardsCeremonyHosts,
         }],
       },
       {
         time: '12:30 - 1:30 PM',
         events: [{
           title: 'Panel Session',
-          description: 'Ma Mya Thandar Oo (MyJobs), Ko Pyit Sone Oo (CEO, BEYOND 360), Ma Wai Yi Mon Soe (Founder, UXMM & BridgeX), Ko Aung Ko Ko Thet (The BuilderPros) | Moderator: Ko Sitt Ye Yint Tun',
-          people: [agendaPeople['pyit-sone-oo'], agendaPeople['wai-yi-mon-soe'], agendaPeople['sitt-ye-yint-tun']],
+          description: 'Beyond the Build: People, Products & Opportunities in the AI Era',
+          people: [agendaPeople['mya-thandar-oo'], agendaPeople['pyit-sone-oo'], agendaPeople['wai-yi-mon-soe'], agendaPeople['sitt-ye-yint-tun']],
         }],
       },
       {
@@ -365,7 +369,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         events: [{
           title: 'Sharing The BuilderPros Course',
           description: 'Ko Aung Ko Ko Thet',
-          people: [],
+          people: [agendaPeople['aung-ko-ko-thet']],
         }],
       },
       {
@@ -380,8 +384,8 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         time: '5:00 - 5:15 PM',
         events: [{
           title: 'Closing & Celebration',
-          description: 'Thanks to all sponsors, photo sessions, feedback forms, memorable letter on boards - Host & Ma Wai Yi Mon Soe',
-          people: [...dayOneHosts, agendaPeople['wai-yi-mon-soe']],
+          description: 'Thanks to all sponsors, photo sessions, feedback forms, memorable letter on boards - Ma Phyo Thiri Thu & Ko Aung Bhone Pyae Zaw',
+          people: awardsCeremonyHosts,
         }],
       },
     ],
