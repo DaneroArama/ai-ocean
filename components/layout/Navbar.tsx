@@ -97,7 +97,9 @@ export function Navbar() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
-              <div className="flex items-center">
+              <button 
+                onClick={() => scrollTo('hero')}
+                className="flex items-center">
                 <Image
                   src={uxmmLogo}
                   alt="UXMM Logo"
@@ -105,7 +107,7 @@ export function Navbar() {
                   height={50}
                   className="h-full w-12"
                 />
-              </div>
+              </button>
 
               {/* Desktop Navigation */}
               <div className="hidden xl:flex items-center space-x-4 xl:space-x-8">

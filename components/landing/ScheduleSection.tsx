@@ -15,6 +15,7 @@ gsap.registerPlugin(ScrollTrigger)
 export function ScheduleSection() {
   const [activePhase, setActivePhase] = useState(6)
   const schedule = phaseSchedules[activePhase]
+  const isAwardsCeremony = schedule.title === 'Awards Ceremony'
   const rootRef = useRef<HTMLElement>(null)
   const phasesRef = useRef<HTMLDivElement>(null)
   const detailRef = useRef<HTMLDivElement>(null)
@@ -150,6 +151,7 @@ export function ScheduleSection() {
           <div ref={phasesRef} className="grid min-w-[790px] grid-cols-7 gap-2.5" aria-label="Event phases">
             {phases.map((phase, index) => {
               const selected = activePhase === index
+              const isAwards = phase.title === 'Awards Ceremony'
               return (
                 <button
                   key={`${phase.phase}-${index}`}
@@ -158,23 +160,34 @@ export function ScheduleSection() {
                   aria-pressed={selected}
                   aria-controls="schedule-detail"
                   onClick={() => setActivePhase(index)}
-                  className={`group relative flex min-h-[144px] cursor-pointer flex-col justify-between rounded-2xl p-3 text-left shadow-[0_0_5px_#0000000d] transition-colors md:min-h-[130px] lg:min-h-[180px] lg:p-4 ${selected ? 'bg-[#00b5ed] text-white' : 'bg-white text-[#00558c] hover:bg-[#f2fbff]'}`}
+                  className={`group relative flex min-h-[144px] cursor-pointer flex-col justify-between rounded-2xl p-3 text-left transition-colors md:min-h-[130px] lg:min-h-[180px] lg:p-4 ${
+                    isAwards
+                      ? selected
+                        ? 'bg-linear-to-br from-[#ffe27a] via-[#ffd700] to-[#ffb300] text-white ring-2 ring-white shadow-[0_0_0_2px_#ffd700,0_12px_30px_#ffb30066]'
+                        : 'bg-linear-to-b from-[#fffdf2] to-[#fff3c4] text-[#8a6100] ring-2 ring-[#ffd700]/70 shadow-[0_6px_20px_#ffd70040] hover:from-[#fffbe6] hover:to-[#ffec9e]'
+                      : selected
+                        ? 'bg-[#00b5ed] text-white shadow-[0_0_5px_#0000000d]'
+                        : 'bg-white text-[#00558c] shadow-[0_0_5px_#0000000d] hover:bg-[#f2fbff]'
+                  }`}
                 >
                   {selected && (
                     <>
-                      <span data-sel-deco aria-hidden="true" className="pointer-events-none absolute inset-[3px] rounded-[13px] border-[1.5px] border-dashed border-white" />
+                      <span data-sel-deco aria-hidden="true" className={`pointer-events-none absolute inset-[3px] rounded-[13px] border-[1.5px] border-dashed ${isAwards ? 'border-[#8a6100]/40' : 'border-white'}`} />
                       <span data-sel-deco aria-hidden="true" className="pointer-events-none absolute -top-7 left-4 h-7 w-20 bg-[repeating-conic-gradient(from_-65deg_at_50%_100%,#fff4a8_0deg_14deg,transparent_14deg_28deg)] mask-[linear-gradient(to_top,black,transparent)]" />
                     </>
                   )}
+                  {isAwards && (
+                    <Image src={EventLogoGrey} alt="" aria-hidden="true" className="pointer-events-none absolute right-2 top-2 size-5 object-contain brightness-0 invert opacity-80 lg:right-3 lg:top-3" />
+                  )}
                   <span>
-                    <span className={`mb-1 block text-[10px] font-semibold ${selected ? 'text-white' : 'text-[#ff9f00]'}`}>
+                    <span className={`mb-1 block text-[10px] font-semibold ${isAwards ? (selected ? 'text-[#7a5200]' : 'text-[#c98a00]') : selected ? 'text-white' : 'text-[#ff9f00]'}`}>
                       {phase.phase}{index === 0 ? ' Complete' : ''}
                     </span>
                     <span className="font-syne block text-xs font-bold leading-[1.2] lg:text-base">{phase.title}</span>
                   </span>
                   {phase.date ? (
                     <span className="font-syne mt-4 flex flex-col font-bold leading-none">
-                      <span className="text-[28px]">{phase.date}</span>
+                      <span className={`text-[28px] ${isAwards ? 'drop-shadow-[0_1px_0_#ffffff80]' : ''}`}>{phase.date}</span>
                       <span className="mt-1 text-base">{phase.month}</span>
                     </span>
                   ) : (
@@ -186,16 +199,16 @@ export function ScheduleSection() {
           </div>
         </div>
 
-        <div ref={detailRef} id="schedule-detail" role="region" aria-labelledby="agenda-title" className="relative mx-auto mt-8 max-w-[1200px] rounded-[22px] bg-linear-to-b from-[#36c8f3] via-[#e8faff] via-60% to-white px-3 pb-8 shadow-[inset_0_2px_8px_#ffffffa0,0_4px_16px_#00558c04] md:mx-4 md:pb-10">
+        <div ref={detailRef} id="schedule-detail" role="region" aria-labelledby="agenda-title" className={`relative mx-auto mt-8 max-w-[1200px] rounded-[22px] px-3 pb-8 md:mx-4 md:pb-10 ${isAwardsCeremony ? 'bg-linear-to-b from-[#ffd700] via-[#fff6cc] via-60% to-white ring-1 ring-[#ffd700]/60 shadow-[inset_0_2px_8px_#ffffffa0,0_10px_34px_#ffb30033]' : 'bg-linear-to-b from-[#36c8f3] via-[#e8faff] via-60% to-white shadow-[inset_0_2px_8px_#ffffffa0,0_4px_16px_#00558c04]'}`}>
           <div className="flex min-h-10 items-center justify-between gap-3 px-2 py-2">
-            <h3 id="agenda-title" data-detail-title className="font-dela-gothic-one text-sm text-white md:text-base">{schedule.title}</h3>
+            <h3 id="agenda-title" data-detail-title className={`font-dela-gothic-one text-sm md:text-base text-white`}>{schedule.title}</h3>
             <div data-detail-logos aria-hidden="true" className="flex shrink-0 gap-2">
               {[0, 90, 180].map(rotation => (
                 <Image key={rotation} src={EventLogoGrey} alt="" className="size-5 brightness-0 invert" style={{ transform: `rotate(${rotation}deg)` }} />
               ))}
             </div>
           </div>
-          <div className="rounded-2xl bg-white bg-[radial-gradient(#e9edf0_1px,transparent_1px)] bg-size-[22px_22px] px-4 py-8 md:px-5">
+          <div className={`rounded-2xl bg-white bg-[radial-gradient(#e9edf0_1px,transparent_1px)] bg-size-[22px_22px] px-4 py-8 md:px-5 ${isAwardsCeremony ? 'ring-1 ring-[#ffd700]/30' : ''}`}>
             {schedule.type === 'upcoming' ? (
               <div data-detail-row className="rounded-2xl border-2 border-dashed border-[#ddd] bg-white p-5 md:p-7">
                 <p className="font-syne text-lg font-bold">{schedule.description}</p>

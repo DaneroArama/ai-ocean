@@ -1,6 +1,7 @@
 ﻿﻿// Types for Schedule Data
 import type { StaticImageData } from 'next/image'
 import { speakers } from '@/data/speakersData'
+import { judges } from '@/data/judgesData'
 import EiEiPhyoPhoto from '@/app/assets/Persons/Members/B6 - Ei Ei Phyo.webp'
 import SuNandarPhoto from '@/app/assets/Persons/Members/B6 - SuNandar.webp'
 import NawShinNadiThanPhoto from '@/app/assets/Persons/Members/Naw Shin Nadi Than.jpg'
@@ -68,6 +69,16 @@ const agendaPeople: Record<string, Person> = Object.fromEntries(
     designation: speaker.position,
     company: speaker.organization,
     image: speaker.photo,
+  }])
+)
+
+const judgePeople: Record<string, Person> = Object.fromEntries(
+  judges.map((judge, index) => [judge.id, {
+    id: index + 200,
+    name: judge.name,
+    designation: judge.position,
+    company: judge.organization,
+    image: judge.photo,
   }])
 )
 
@@ -269,16 +280,41 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
     ]
   },
   5: {
-    type: 'upcoming',
-    backgroundColor: 'from-gray-300 to-gray-400',
+    type: 'finished',
+    backgroundColor: 'from-green-500 to-white',
     title: 'Judge Insights',
-    description: 'Inside the judge\'s mind : what makes a product succeed',
-    scheduleItems: [],
-    upcomingItems: [
-      'Judges\' Expert Insights',
-      'Online Panel Discussion on Product Success by Judges',
-      'Discover What Makes a Product Succeed'
-    ]
+    scheduleItems: [
+      {
+        time: '7:00 - 8:30 PM',
+        events: [
+          {
+            title: 'Panel Discussion',
+            description: 'Inside the Judge\'s Mind: What Makes a Product Succeed - an online panel on the judges\' perspectives and criteria for product success.',
+            people: []
+          },
+          {
+            title: 'Panelists',
+            description: 'Ko Myo Htet Aung, Ko Harry Hein, Ko Bo Bo Min, Ko La Min Thaw, Ko Aung Kyaw Min, Ma Phyu Mon Theint, Lincoln Leong',
+            people: [
+              judgePeople['myo-htet-aung'],
+              judgePeople['harry-hein'],
+              judgePeople['bo-bo-min'],
+              judgePeople['la-min-thaw-alvin'],
+              { ...agendaPeople['aung-kyaw-minn'], name: 'Aung Kyaw Min', designation: 'Co-Founder', company: 'Eventickat' },
+              judgePeople['phyu-mon-theint'],
+              judgePeople['lincoln-leong'],
+            ]
+          },
+          {
+            title: 'Moderator',
+            description: 'La Min Thaw',
+            people: [
+               judgePeople['la-min-thaw-alvin'],
+            ]
+          }
+        ]
+      }
+    ],
   },
   6: {
     type: 'confirmed',
@@ -295,7 +331,7 @@ export const phaseSchedules: Record<number, PhaseSchedule> = {
         events: [{
           title: 'Welcome Back & Agenda Overview',
           description: 'Thank Main Sponsors - Ko La Min Thaw @ Alvin (UXMM Co-Founder) & Host',
-          people: [agendaPeople['la-min-thaw-alvin']],
+          people: [agendaPeople['la-min-thaw-alvin'], awardsCeremonyHosts[0], awardsCeremonyHosts[1]]
         }],
       },
       {
