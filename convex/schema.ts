@@ -239,6 +239,9 @@ export default defineSchema({
     code: v.optional(v.string()),
     // Small highlight pill shown on the public team modal, e.g. "Recent"
     badge: v.optional(v.string()),
+    // Project submission shown on the public team page
+    projectName: v.optional(v.string()),
+    projectDescription: v.optional(v.string()),
     description: v.optional(v.string()),
     track: v.optional(v.union(
       v.literal("in_person"),

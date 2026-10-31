@@ -257,6 +257,8 @@ export default function AdminTeamsPage() {
   const [teamDesc, setTeamDesc] = useState("");
   const [teamCode, setTeamCode] = useState("");
   const [teamBadge, setTeamBadge] = useState("");
+  const [teamProjectName, setTeamProjectName] = useState("");
+  const [teamProjectDesc, setTeamProjectDesc] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Id<"teams"> | null>(null);
   const [showAutoForm, setShowAutoForm] = useState(false);
@@ -297,6 +299,8 @@ export default function AdminTeamsPage() {
         team.name,
         team.code,
         team.badge,
+        team.projectName,
+        team.projectDescription,
         team.description,
         ...team.members.flatMap((m) => [m.name, m.email, m.position ?? ""]),
       ]
@@ -370,6 +374,8 @@ export default function AdminTeamsPage() {
           description: teamDesc || undefined,
           code: teamCode.trim() || "",
           badge: teamBadge.trim() || "",
+          projectName: teamProjectName.trim() || "",
+          projectDescription: teamProjectDesc.trim() || "",
         });
         setMsg("✅ Team updated");
       } else {
@@ -378,6 +384,8 @@ export default function AdminTeamsPage() {
           description: teamDesc || undefined,
           code: teamCode.trim() || undefined,
           badge: teamBadge.trim() || undefined,
+          projectName: teamProjectName.trim() || undefined,
+          projectDescription: teamProjectDesc.trim() || undefined,
         });
         setMsg("✅ Team created" + (teamName.trim() ? "" : " — give it a name later"));
       }
@@ -387,6 +395,8 @@ export default function AdminTeamsPage() {
       setTeamDesc("");
       setTeamCode("");
       setTeamBadge("");
+      setTeamProjectName("");
+      setTeamProjectDesc("");
     } catch (e: unknown) {
       setMsg("❌ " + (e instanceof Error ? e.message : "Failed"));
     }
@@ -555,12 +565,22 @@ export default function AdminTeamsPage() {
     }
   };
 
-  const openEdit = (team: { _id: Id<"teams">; name?: string; description?: string; code?: string; badge?: string }) => {
+  const openEdit = (team: {
+    _id: Id<"teams">;
+    name?: string;
+    description?: string;
+    code?: string;
+    badge?: string;
+    projectName?: string;
+    projectDescription?: string;
+  }) => {
     setEditingTeam(team._id);
     setTeamName(team.name ?? "");
     setTeamDesc(team.description ?? "");
     setTeamCode(team.code ?? "");
     setTeamBadge(team.badge ?? "");
+    setTeamProjectName(team.projectName ?? "");
+    setTeamProjectDesc(team.projectDescription ?? "");
     setShowForm(true);
   };
 
@@ -587,7 +607,7 @@ export default function AdminTeamsPage() {
           >
             ⚡ Auto-Create from Registrations
           </button>
-          <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setTeamCode(""); setTeamBadge(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
+          <button onClick={() => { setEditingTeam(null); setTeamName(""); setTeamDesc(""); setTeamCode(""); setTeamBadge(""); setTeamProjectName(""); setTeamProjectDesc(""); setShowForm(true); }} className="rounded-xl bg-ocean-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean-deep">
             + New Team
           </button>
         </div>
@@ -682,8 +702,14 @@ export default function AdminTeamsPage() {
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">{team.badge}</span>
                       )}
                     </div>
+                    {team.projectName && (
+                      <p className="mt-1 text-sm font-bold text-ocean-primary">{team.projectName}</p>
+                    )}
+                    {team.projectDescription && (
+                      <p className="line-clamp-2 text-sm text-gray-500">{team.projectDescription}</p>
+                    )}
                     <div className="flex flex-wrap items-center gap-2">
-                      {team.description && <p className="text-sm text-gray-500">{team.description}</p>}
+                      {team.description && <p className="text-xs italic text-gray-400">Notes: {team.description}</p>}
                       {team.track && (
                         <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${team.track === "in_person" ? "bg-ocean-surface text-ocean-deep" : "bg-gray-100 text-gray-600"}`}>
                           {team.track === "in_person" ? "In-Person" : "Online"}
@@ -984,7 +1010,7 @@ export default function AdminTeamsPage() {
       {/* Create/Edit Form Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-syncopate text-lg font-bold text-ocean-deep">{editingTeam ? "Edit Team" : "Create Team"}</h3>
             <div className="mt-4 space-y-3">
               <input
@@ -1007,8 +1033,28 @@ export default function AdminTeamsPage() {
                   className="rounded-lg border px-3 py-2 text-sm text-ocean-deep"
                 />
               </div>
+
+              <div className="space-y-2 rounded-xl border border-dashed border-ocean-primary/40 bg-ocean-foam/40 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-ocean-medium">
+                  Public project — shown on the team page
+                </p>
+                <input
+                  placeholder="Project name"
+                  value={teamProjectName}
+                  onChange={(e) => setTeamProjectName(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
+                />
+                <textarea
+                  placeholder="What the team built"
+                  value={teamProjectDesc}
+                  onChange={(e) => setTeamProjectDesc(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"
+                  rows={4}
+                />
+              </div>
+
               <textarea
-                placeholder="Description (optional)"
+                placeholder="Internal notes (optional — not shown publicly)"
                 value={teamDesc}
                 onChange={(e) => setTeamDesc(e.target.value)}
                 className="w-full rounded-lg border px-3 py-2 text-sm text-ocean-deep"

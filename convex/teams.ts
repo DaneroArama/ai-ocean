@@ -35,6 +35,8 @@ export const listPublicTeams = query({
       code: v.union(v.string(), v.null()),
       name: v.string(),
       badge: v.union(v.string(), v.null()),
+      projectName: v.union(v.string(), v.null()),
+      projectDescription: v.union(v.string(), v.null()),
       members: v.array(v.object({ name: v.string(), position: v.union(v.string(), v.null()) })),
     })
   ),
@@ -49,7 +51,7 @@ export const listPublicTeams = query({
     });
 
     const results = await Promise.all(
-      named.map(async (team): Promise<{ _id: Id<"teams">; code: string | null; name: string; badge: string | null; members: PublicMember[] }> => {
+      named.map(async (team): Promise<{ _id: Id<"teams">; code: string | null; name: string; badge: string | null; projectName: string | null; projectDescription: string | null; members: PublicMember[] }> => {
         const members: PublicMember[] = [];
         for (const pid of team.memberIds.slice(0, MAX_MEMBERS_PER_TEAM)) {
           const p = await ctx.db.get(pid);
@@ -64,6 +66,8 @@ export const listPublicTeams = query({
           code: team.code ?? null,
           name: team.name,
           badge: team.badge ?? null,
+          projectName: team.projectName ?? null,
+          projectDescription: team.projectDescription ?? null,
           members,
         };
       })
@@ -77,6 +81,8 @@ export const createTeam = mutation({
     name: v.optional(v.string()),
     code: v.optional(v.string()),
     badge: v.optional(v.string()),
+    projectName: v.optional(v.string()),
+    projectDescription: v.optional(v.string()),
     description: v.optional(v.string()),
   },
   returns: v.object({ teamId: v.id("teams") }),
@@ -96,6 +102,8 @@ export const createTeam = mutation({
       name: args.name?.trim() || undefined,
       code,
       badge: args.badge?.trim() || undefined,
+      projectName: args.projectName?.trim() || undefined,
+      projectDescription: args.projectDescription?.trim() || undefined,
       description: args.description,
       memberIds: [],
       createdBy: admin._id,
@@ -277,6 +285,8 @@ export const updateTeam = mutation({
     name: v.optional(v.string()),
     code: v.optional(v.string()),
     badge: v.optional(v.string()),
+    projectName: v.optional(v.string()),
+    projectDescription: v.optional(v.string()),
     description: v.optional(v.string()),
   },
   returns: v.object({ success: v.boolean() }),
@@ -286,6 +296,10 @@ export const updateTeam = mutation({
     const patch: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.name !== undefined) patch.name = args.name;
     if (args.description !== undefined) patch.description = args.description;
+    if (args.projectName !== undefined) patch.projectName = args.projectName.trim() || undefined;
+    if (args.projectDescription !== undefined) {
+      patch.projectDescription = args.projectDescription.trim() || undefined;
+    }
     if (args.code !== undefined) {
       const code = args.code.trim() || undefined;
       if (code) {

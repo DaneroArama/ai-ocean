@@ -28,6 +28,7 @@ import type * as seedBuildathon from "../seedBuildathon.js";
 import type * as seedLocalParticipant from "../seedLocalParticipant.js";
 import type * as seedOceanTest from "../seedOceanTest.js";
 import type * as seedTeamPositions from "../seedTeamPositions.js";
+import type * as seedTeamProjects from "../seedTeamProjects.js";
 import type * as seedTeams from "../seedTeams.js";
 import type * as teamPositions from "../teamPositions.js";
 import type * as teams from "../teams.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   seedLocalParticipant: typeof seedLocalParticipant;
   seedOceanTest: typeof seedOceanTest;
   seedTeamPositions: typeof seedTeamPositions;
+  seedTeamProjects: typeof seedTeamProjects;
   seedTeams: typeof seedTeams;
   teamPositions: typeof teamPositions;
   teams: typeof teams;

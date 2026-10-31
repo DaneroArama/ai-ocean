@@ -10,7 +10,13 @@ import Waves from '@/app/assets/waves_2.png'
 import EventLogoGrey from '@/app/assets/event_logo_grey.png'
 
 type TeamMember = { name: string; role?: string }
-type Team = { name: string; badge?: string; members: TeamMember[] }
+type Team = {
+  name: string
+  badge?: string
+  projectName?: string
+  projectDescription?: string
+  members: TeamMember[]
+}
 
 const ROLE_ABBREV: Record<string, string> = {
   'Full Stack Developer': 'FSD',
@@ -52,6 +58,7 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
   const contentRef = useRef<HTMLDivElement>(null)
   const closingRef = useRef(false)
   const [activeRole, setActiveRole] = useState<string | null>(null)
+  const [expandedProjects, setExpandedProjects] = useState<string[]>([])
 
   const publicTeams = useQuery(api.teams.listPublicTeams)
   const activePositions = useQuery(api.teamPositions.listActivePositions)
@@ -70,6 +77,8 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
     publicTeams?.map(team => ({
       name: team.name,
       badge: team.badge ?? undefined,
+      projectName: team.projectName ?? undefined,
+      projectDescription: team.projectDescription ?? undefined,
       members: team.members.map(m => ({
         name: m.name,
         role: m.position ?? undefined,
@@ -250,7 +259,11 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                   </p>
                 ) : (
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {teams.map((team, index) => (
+                  {teams.map((team, index) => {
+                    const projectKey = `${team.name}-${index}`
+                    const projectIsLong = (team.projectDescription?.length ?? 0) > 200
+                    const projectExpanded = expandedProjects.includes(projectKey)
+                    return (
                     <div
                       key={`team-${index}`}
                       data-team-card
@@ -272,6 +285,47 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                           </span>
                         )}
                       </div>
+
+                      {/* Project submission */}
+                      {(team.projectName || team.projectDescription) && (
+                        <div className="relative mb-4 rounded-xl border border-[#a4ecff] bg-[#eefaff] px-3.5 py-3">
+                          <p className="font-quicksand text-[10px] font-bold uppercase tracking-[0.14em] text-[#00558c]/50">
+                            Project
+                          </p>
+                          {team.projectName && (
+                            <p className="mt-0.5 font-syne text-sm font-bold leading-snug text-[#00558c]">
+                              {team.projectName}
+                            </p>
+                          )}
+                          {team.projectDescription && (
+                            <>
+                              <p
+                                className={`font-quicksand mt-1.5 text-[13px] leading-relaxed text-[#00558c]/80 ${
+                                  projectIsLong && !projectExpanded ? 'line-clamp-3' : ''
+                                }`}
+                              >
+                                {team.projectDescription}
+                              </p>
+                              {projectIsLong && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedProjects(prev =>
+                                      prev.includes(projectKey)
+                                        ? prev.filter(key => key !== projectKey)
+                                        : [...prev, projectKey]
+                                    )
+                                  }
+                                  aria-expanded={projectExpanded}
+                                  className="mt-1.5 font-quicksand text-[12px] font-bold text-[#0077b6] underline-offset-2 hover:underline"
+                                >
+                                  {projectExpanded ? 'Show less' : 'Read more'}
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
 
                       {/* Members list */}
                       <ul className="relative">
@@ -312,7 +366,8 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
                       {/* Hover decoration */}
                       <div className="pointer-events-none absolute -right-2 -top-2 h-12 w-12 rounded-full bg-[#00b5ed]/10 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
                 )}
 
