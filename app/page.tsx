@@ -13,7 +13,8 @@ import {
   ScheduleSection,
   SpeakersSection,
   MentorsSection,
-  EventTeamSection
+  EventTeamSection,
+  WinnersSection
 } from '@/components/landing'
 import { FloatingBubbles } from '@/components/landing/FloatingBubbles'
 import { BubbleClickTrail } from '@/components/landing/BubbleClickTrail'
@@ -43,6 +44,9 @@ export default function Home() {
 
         {/* Hero Section - Section 1 */}
         <div id="hero"><HeroSection/></div>
+
+        {/* Winners & Awards - below the hero */}
+        <WinnersSection/>
 
         {/* About OCEAN Test - Section 2 */}
         <div id="event"><BentoSection/></div>

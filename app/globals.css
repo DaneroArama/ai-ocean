@@ -406,6 +406,21 @@ html.lenis body {
   display: none;
 }
 
+/* Comic route (app/comic) — hide the page scrollbar entirely.
+   Scrolling itself is untouched: wheel/keyboard/touch and GSAP ScrollTrigger
+   all still work, there is just no visible track or thumb. */
+html:has(.comic-layout) {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html:has(.comic-layout)::-webkit-scrollbar,
+html:has(.comic-layout) body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* Search inputs carry their own clear button — hide the native one */
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
@@ -486,4 +501,72 @@ input[type="search"]::-webkit-search-decoration {
 }
 @media (prefers-reduced-motion: reduce) {
   .cta-star, .cta-beam, .cta-square { animation: none; }
+}
+
+/* ---- Winners & Awards section: rays, glow, confetti, shine, marquee ---- */
+@keyframes awardRaysSpin {
+  to { transform: rotate(360deg); }
+}
+.award-rays {
+  animation: awardRaysSpin 32s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes awardGlowPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+.award-glow {
+  animation: awardGlowPulse 3.6s ease-in-out infinite;
+}
+
+@keyframes awardConfettiBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) rotate(0deg) scale(0.7);
+  }
+  12% { opacity: 1; }
+  70% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dx, 0), var(--dy, -90px), 0) rotate(var(--rot, 180deg)) scale(1);
+  }
+}
+.award-confetti {
+  animation: awardConfettiBurst var(--dur, 3s) ease-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
+}
+
+@keyframes awardShineSweep {
+  0%, 52% { transform: translateX(0) skewX(-18deg); }
+  100% { transform: translateX(420%) skewX(-18deg); }
+}
+.award-shine {
+  animation: awardShineSweep 5.5s ease-in-out infinite;
+}
+
+@keyframes awardMarqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.award-marquee {
+  animation: awardMarqueeScroll 45s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .award-glow,
+  .award-confetti,
+  .award-shine {
+    animation: none;
+  }
+
+  /* Kept in gentle motion even when the OS asks for reduced motion —
+     slow, non-flashing, and central to the celebration. */
+  .award-rays {
+    animation: awardRaysSpin 32s linear infinite !important;
+  }
+  .award-marquee {
+    animation: awardMarqueeScroll 45s linear infinite !important;
+  }
 }

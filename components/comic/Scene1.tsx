@@ -25,38 +25,32 @@ const characters = [
     name: "Turty",
     image: Tuto,
     dialogue: "Ahh… what a perfect day for a cool coconut.",
-    side: "right",
   },
   {
     name: "Sharky",
     image: Shark,
     dialogue: "How can you all just relax? Look, the next island's already in sight!",
-    side: "right",
   },
   {
     name: "Otto",
     image: Octo,
     dialogue: "The island's not going anywhere, Sharky. …Wait, what are you doing, Crabbi?",
-    side: "right",
   },
   {
     name: "Crabbi",
     image: Crabi,
     dialogue: "Just a little more sand… right here.",
-    side: "left",
   },
   {
     name: "Croco",
     image: Ali,
     dialogue: "Back in the river, I never got waves like this!",
-    side: "left",
   },
 ];
 
 export default function Scene1({ audioController }: Scene1Props) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const backgroundRef = useRef<HTMLDivElement>(null);
   const narration1Ref = useRef<HTMLDivElement>(null);
   const narration2Ref = useRef<HTMLDivElement>(null);
 
@@ -76,7 +70,7 @@ export default function Scene1({ audioController }: Scene1Props) {
         const dialogueElement = sceneRef.current?.querySelector(
           `[data-dialogue="${character.name}"]`
         );
-        if (charElement) gsap.set(charElement, { opacity: 0, x: 0 });
+        if (charElement) gsap.set(charElement, { opacity: 0 });
         if (dialogueElement) gsap.set(dialogueElement, { opacity: 0, scale: 1 });
       });
 
@@ -150,7 +144,7 @@ export default function Scene1({ audioController }: Scene1Props) {
         );
 
       // Characters enter one by one
-      characters.forEach((character, index) => {
+      characters.forEach((character) => {
         const charElement = sceneRef.current?.querySelector(
           `[data-character="${character.name}"]`
         );
@@ -160,19 +154,11 @@ export default function Scene1({ audioController }: Scene1Props) {
 
         if (!charElement || !dialogueElement) return;
 
-        const enterFrom = character.side === "right" ? 200 : -200;
-        const cameraShift = character.side === "right" ? 20 : -20;
-
-        // Character enters from side
+        // Character simply fades in — no horizontal drift/parallax
         scene1Timeline
-          .fromTo(
+          .to(
             charElement,
             {
-              x: enterFrom,
-              opacity: 0,
-            },
-            {
-              x: 0,
               opacity: 1,
               duration: 1.5,
               ease: "power2.out",
@@ -181,16 +167,6 @@ export default function Scene1({ audioController }: Scene1Props) {
               },
             },
             `+=0.5`
-          )
-          // Camera subtly shifts
-          .to(
-            backgroundRef.current,
-            {
-              x: cameraShift,
-              duration: 1,
-              ease: "power1.inOut",
-            },
-            "<"
           )
           // Dialogue appears
           .fromTo(
@@ -209,16 +185,6 @@ export default function Scene1({ audioController }: Scene1Props) {
               },
             },
             "+=0.3"
-          )
-          // Camera returns to center
-          .to(
-            backgroundRef.current,
-            {
-              x: 0,
-              duration: 1,
-              ease: "power1.inOut",
-            },
-            "+=0.5"
           )
           // Dialogue fades
           .to(
@@ -264,8 +230,8 @@ export default function Scene1({ audioController }: Scene1Props) {
   return (
     <div ref={wrapperRef} className="h-[550vh] -mt-[125vh]">
     <div ref={sceneRef} className="scene1 sticky top-0 w-full h-screen overflow-hidden will-change-transform bg-linear-to-b from-ocean-medium to-ocean-light to-10%">
-      {/* Beach Background with parallax */}
-      <div ref={backgroundRef} className="absolute inset-0 z-10">
+      {/* Beach Background */}
+      <div className="absolute inset-0 z-10">
         <Image
           src="/assets/comic/Background Scenes/Beach with Sky Area Transparent Background.png"
           alt="Beach Background"

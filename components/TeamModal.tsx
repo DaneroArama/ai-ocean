@@ -8,6 +8,7 @@ import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import Waves from '@/app/assets/waves_2.png'
 import EventLogoGrey from '@/app/assets/event_logo_grey.png'
+import { WinnersSection } from '@/components/landing/WinnersSection'
 
 type TeamMember = { name: string; role?: string }
 type Team = {
@@ -203,8 +204,14 @@ export function TeamModal({ variant = 'modal' }: { variant?: 'modal' | 'page' })
           data-lenis-prevent
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
         >
+
+          {/* Winners & Awards */}
+          <div className="py-12">
+            <WinnersSection variant="embedded" />
+          </div>
+
           {/* Header */}
-          <div className="px-6 pt-20 pb-8 text-center">
+          <div className="px-6 pt-12 pb-8 text-center">
             <div className="relative inline-block w-fit">
               <span className="absolute left-3 top-3 md:-left-12 md:-top-8 rounded-full bg-linear-to-b from-[#ffb99b] to-[#ff8659] px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_0_5px_2px_#ffffff80,0_2px_10px_#00000020] md:-left-16">
                 Ideas
